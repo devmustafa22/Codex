@@ -1,3 +1,4 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useState } from 'react';
 import {
   ArrowUpLeft,
@@ -23,7 +24,7 @@ import {
   formatDate,
   formatMinutes,
   parseDate,
-  shortDays,
+  getShortDays,
   todayKey,
   weekKeys,
 } from '../lib/dates';
@@ -31,6 +32,7 @@ import { dailyMinutes, skillProgress, streakDays, weeklyMinutes } from '../lib/m
 import type { Task } from '../lib/types';
 
 export default function DashboardPage() {
+  const { t } = useLanguage();
   const { data, setPage, updateTask, notify } = useApp();
   const [editor, setEditor] = useState<Task | 'new' | null>(null);
   const [entryOpen, setEntryOpen] = useState(false);
@@ -45,7 +47,11 @@ export default function DashboardPage() {
     }).format(new Date()),
   );
   const greeting =
-    hour >= 5 && hour < 12 ? 'صباح الخير' : hour >= 12 && hour < 18 ? 'أهلاً بعودتك' : 'مساء الخير';
+    hour >= 5 && hour < 12
+      ? t('shell.dashboard.morning')
+      : hour >= 12 && hour < 18
+        ? t('shell.dashboard.welcome')
+        : t('shell.dashboard.evening');
   const todayTasks = data.tasks.filter((t) => t.dueDate === today);
   const doneToday = todayTasks.filter((t) => t.status === 'done').length;
   const active = data.tasks.filter((t) => t.status !== 'done');
@@ -74,18 +80,18 @@ export default function DashboardPage() {
   return (
     <>
       <PageHeader
-        eyebrow="مساحتك، على وتيرتك"
-        title={`${greeting}، ${data.profile.name} ☀️`}
-        description="يوم جديد، فرصة جديدة. خلّينا نخطو خطوة أقرب لأهدافك."
+        eyebrow={t('shell.dashboard.eyebrow')}
+        title={t('shell.dashboard.greeting', { greeting, name: data.profile.name })}
+        description={t('shell.dashboard.description')}
         action={
           <>
             <button className="button secondary" onClick={() => setEntryOpen(true)}>
               <BookOpen size={16} />
-              تسجيل نشاط
+              {t('shell.dashboard.log')}
             </button>
             <button className="button primary" onClick={() => setEditor('new')}>
               <Plus size={17} />
-              مهمة جديدة
+              {t('shell.task.new')}
             </button>
           </>
         }
@@ -93,7 +99,7 @@ export default function DashboardPage() {
       <div className="dashboard-stats">
         <div className="stat-card stat-featured">
           <div className="stat-top">
-            <span>إنجاز اليوم</span>
+            <span>{t('shell.dashboard.todayProgress')}</span>
             <span className="stat-icon">
               <CheckCheck size={18} />
             </span>
@@ -105,8 +111,8 @@ export default function DashboardPage() {
           <div className="stat-foot">
             <span>
               {todayTasks.length
-                ? `${todayTasks.length - doneToday} مهام بانتظار خطوتك التالية`
-                : 'يومك صفحة جديدة'}
+                ? t('shell.dashboard.tasksWaiting', { count: todayTasks.length - doneToday })
+                : t('shell.dashboard.freshDay')}
             </span>
             <ArrowUpLeft size={15} />
           </div>
@@ -118,53 +124,56 @@ export default function DashboardPage() {
         </div>
         <div className="stat-card">
           <div className="stat-top">
-            <span>وقت التعلّم هذا الأسبوع</span>
+            <span>{t('shell.dashboard.learningTime')}</span>
             <span className="stat-icon lavender">
               <Clock3 size={18} />
             </span>
           </div>
           <div className="stat-value">
             {Number((weekTime / 60).toFixed(1))}
-            <span>ساعة</span>
+            <span>{t('shell.dashboard.hour')}</span>
           </div>
           <div className="stat-foot">
             <span className="tiny-dot lavender-dot" />
-            <span>من أصل {Number((goal / 60).toFixed(1))} ساعات مستهدفة</span>
+            <span>
+              {t('shell.dashboard.targetHours', { hours: Number((goal / 60).toFixed(1)) })}
+            </span>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-top">
-            <span>مهارات تنمو معك</span>
+            <span>{t('shell.dashboard.growingSkills')}</span>
             <span className="stat-icon mint">
               <Sprout size={18} />
             </span>
           </div>
           <div className="stat-value">
             {data.skills.length}
-            <span>مهارات</span>
+            <span>{t('shell.dashboard.skills')}</span>
           </div>
           <div className="stat-foot">
             <span className="tiny-dot" />
             <span>
-              {data.skills.filter((s) => skillProgress(data, s) >= 100).length} أهداف مكتملة،
-              والبقية في طريقها
+              {t('shell.dashboard.completedGoals', {
+                count: data.skills.filter((skill) => skillProgress(data, skill) >= 100).length,
+              })}
             </span>
           </div>
         </div>
         <div className="stat-card">
           <div className="stat-top">
-            <span>سلسلة الاستمرارية</span>
+            <span>{t('shell.dashboard.streak')}</span>
             <span className="stat-icon peach">
               <Flame size={18} />
             </span>
           </div>
           <div className="stat-value">
             {streakDays(data)}
-            <span>أيام</span>
+            <span>{t('shell.dashboard.days')}</span>
           </div>
           <div className="stat-foot">
             <span className="tiny-dot peach-dot" />
-            <span>القليل كل يوم يصنع الكثير</span>
+            <span>{t('shell.dashboard.streakHint')}</span>
           </div>
         </div>
       </div>
@@ -172,17 +181,17 @@ export default function DashboardPage() {
         <Card className="activity-card">
           <div className="card-heading">
             <div>
-              <h2>إيقاع نشاطك</h2>
-              <p className="card-subtitle">وقتك المستثمر في التعلّم والإنجاز</p>
+              <h2>{t('shell.dashboard.activity')}</h2>
+              <p className="card-subtitle">{t('shell.dashboard.activityHint')}</p>
             </div>
             <select
               className="compact-select"
-              aria-label="فترة رسم النشاط"
+              aria-label={t('shell.dashboard.activityPeriod')}
               value={chartPeriod}
               onChange={(e) => setChartPeriod(e.target.value)}
             >
-              <option value="last7">آخر 7 أيام</option>
-              <option value="week">الأسبوع الحالي</option>
+              <option value="last7">{t('shell.dashboard.last7')}</option>
+              <option value="week">{t('shell.dashboard.thisWeek')}</option>
             </select>
           </div>
           <div className="activity-chart">
@@ -199,17 +208,22 @@ export default function DashboardPage() {
                     className={`activity-column ${selectedDay === date ? 'selected' : ''}`}
                     key={date}
                     onClick={() => setSelectedDay(date)}
-                    aria-label={`${formatDate(date)}، ${minutes} دقيقة نشاط`}
+                    aria-label={t('shell.dashboard.dayActivity', {
+                      date: formatDate(date),
+                      minutes,
+                    })}
                     aria-pressed={selectedDay === date}
                   >
-                    <span className="activity-bar-value">{minutes ? `${minutes} د` : '—'}</span>
+                    <span className="activity-bar-value">
+                      {minutes ? t('shell.dashboard.minuteShort', { count: minutes }) : '—'}
+                    </span>
                     <span
                       className={`activity-bar ${minutes === 0 ? 'bar-empty' : ''}`}
                       style={{
                         height: `${Math.max(minutes ? 18 : 12, (minutes / maxMinutes) * 136)}px`,
                       }}
                     />
-                    <span className="activity-day">{shortDays[parseDate(date).getDay()]}</span>
+                    <span className="activity-day">{getShortDays()[parseDate(date).getDay()]}</span>
                     {date === today && <i className="today-dot" />}
                   </button>
                 );
@@ -219,17 +233,20 @@ export default function DashboardPage() {
           <div className="activity-chart-footer">
             <span>
               <i />
-              {formatDate(selectedDay)} · {formatMinutes(dailyMinutes(data, selectedDay))} من النشاط
+              {t('shell.dashboard.daySummary', {
+                date: formatDate(selectedDay),
+                duration: formatMinutes(dailyMinutes(data, selectedDay)),
+              })}
             </span>
             <button onClick={() => setPage('insights')}>
-              استكشف تحليلاتك
+              {t('shell.dashboard.explore')}
               <ArrowUpLeft size={13} />
             </button>
           </div>
         </Card>
         <Card className="weekly-goal-card">
           <div className="card-heading">
-            <h2>هدفك الأسبوعي</h2>
+            <h2>{t('shell.dashboard.weeklyGoal')}</h2>
             <Sparkles size={17} />
           </div>
           <div className="goal-ring">
@@ -249,29 +266,34 @@ export default function DashboardPage() {
                 {goalPercent}
                 <small>%</small>
               </strong>
-              <span>من هدف الأسبوع</span>
+              <span>{t('shell.dashboard.weeklyGoalLabel')}</span>
             </div>
           </div>
           <p className="goal-caption">
             {goalPercent === 100
-              ? 'أنت وصلت للهدف. احتفل بخطوتك! ✦'
-              : 'كل دقيقة تستثمرها اليوم، تقرّبك أكثر.'}
+              ? t('shell.dashboard.goalComplete')
+              : t('shell.dashboard.goalHint')}
           </p>
           <button className="goal-link" onClick={() => setPage('settings')}>
-            {formatMinutes(weekTime)} من {formatMinutes(goal)}
+            {t('shell.dashboard.goalSummary', {
+              current: formatMinutes(weekTime),
+              goal: formatMinutes(goal),
+            })}
             <ArrowUpLeft size={13} />
           </button>
         </Card>
         <FocusTimer />
         <Card
           className="today-tasks-card"
-          title="خطتك لليوم"
-          action={<TextLink onClick={() => setPage('tasks')}>كل المهام</TextLink>}
+          title={t('shell.dashboard.todayPlan')}
+          action={
+            <TextLink onClick={() => setPage('tasks')}>{t('shell.dashboard.allTasks')}</TextLink>
+          }
         >
           <div className="today-task-intro">
             <span>{formatDate(today, { weekday: 'long', day: 'numeric', month: 'long' })}</span>
             <span className="badge">
-              {doneToday} / {todayTasks.length} مكتملة
+              {t('shell.dashboard.tasksCompleted', { done: doneToday, total: todayTasks.length })}
             </span>
           </div>
           <div className="today-task-list">
@@ -284,11 +306,18 @@ export default function DashboardPage() {
                 >
                   <button
                     className={`task-checkbox ${task.status === 'done' ? 'checked' : ''}`}
-                    aria-label={`${task.status === 'done' ? 'إعادة فتح' : 'إكمال'} ${task.title}`}
+                    aria-label={t(
+                      task.status === 'done'
+                        ? 'shell.dashboard.reopenTask'
+                        : 'shell.dashboard.completeTask',
+                      { title: task.title },
+                    )}
                     onClick={() => {
                       updateTask(task.id, { status: task.status === 'done' ? 'todo' : 'done' });
                       notify(
-                        task.status === 'done' ? 'أعدنا المهمة إلى خطتك' : 'إنجاز جديد! أحسنت',
+                        task.status === 'done'
+                          ? t('shell.dashboard.taskReopened')
+                          : t('shell.dashboard.taskComplete'),
                       );
                     }}
                   >
@@ -297,37 +326,37 @@ export default function DashboardPage() {
                   <button className="today-task-title" onClick={() => setEditor(task)}>
                     <strong>{task.title}</strong>
                     <span>
-                      {skill?.name ?? 'تطوير شخصي'}
+                      {skill?.name ?? t('shell.dashboard.personalGrowth')}
                       <i />
                       {formatMinutes(task.estimatedMinutes)}
                     </span>
                   </button>
                   <span className={`priority-label priority-${task.priority}`}>
                     {task.priority === 'high'
-                      ? 'عالية'
+                      ? t('shell.priority.high')
                       : task.priority === 'medium'
-                        ? 'متوسطة'
-                        : 'منخفضة'}
+                        ? t('shell.priority.medium')
+                        : t('shell.priority.low')}
                   </span>
                 </div>
               );
             })}
             {todayList.length === 0 && (
-              <div className="mini-empty">ما عندك مهام لليوم. اترك مساحة لخطوة جديدة.</div>
+              <div className="mini-empty">{t('shell.dashboard.noTasks')}</div>
             )}
           </div>
           <button className="add-inline" onClick={() => setEditor('new')}>
             <Plus size={15} />
-            أضف مهمة إلى يومك
+            {t('shell.dashboard.addToday')}
           </button>
         </Card>
         <Card
           className="growing-skills-card"
-          title="مهاراتك في تطوّر"
+          title={t('shell.dashboard.skillsGrowing')}
           action={
             <button
               className="icon-button"
-              aria-label="عرض كل المهارات"
+              aria-label={t('shell.dashboard.allSkills')}
               onClick={() => setPage('skills')}
             >
               <ArrowUpLeft size={17} />
@@ -356,16 +385,20 @@ export default function DashboardPage() {
                 <ProgressBar value={skillProgress(data, skill)} color={skill.color} />
               </button>
             ))}
-            {skills.length === 0 && <div className="mini-empty">أضف مهارة وابدأ مسار تعلّمك.</div>}
+            {skills.length === 0 && (
+              <div className="mini-empty">{t('shell.dashboard.noSkills')}</div>
+            )}
           </div>
-          <TextLink onClick={() => setPage('skills')}>لكل مهارة، رحلة تستحق</TextLink>
+          <TextLink onClick={() => setPage('skills')}>
+            {t('shell.dashboard.skillsJourney')}
+          </TextLink>
         </Card>
       </div>
       <div className="dashboard-bottom-grid">
         <Card
           className="recent-activity-card"
-          title="آخر خطواتك"
-          action={<TextLink onClick={() => setPage('journal')}>سجلّ الرحلة</TextLink>}
+          title={t('shell.dashboard.recent')}
+          action={<TextLink onClick={() => setPage('journal')}>{t('shell.nav.journal')}</TextLink>}
         >
           <div className="recent-activities">
             {recent.map((entry) => (
@@ -384,22 +417,24 @@ export default function DashboardPage() {
                 </span>
               </div>
             ))}
-            {recent.length === 0 && <div className="mini-empty">وثّق نشاطك الأول اليوم.</div>}
+            {recent.length === 0 && (
+              <div className="mini-empty">{t('shell.dashboard.noActivities')}</div>
+            )}
           </div>
         </Card>
         <div className="next-event-card">
           <div className="next-event-icon">
             <CalendarDays size={22} />
           </div>
-          <span className="eyebrow">في مدار أيامك</span>
-          <h2>{nextEvent?.title ?? 'مساحة لشيء جميل'}</h2>
+          <span className="eyebrow">{t('shell.dashboard.daysEyebrow')}</span>
+          <h2>{nextEvent?.title ?? t('shell.dashboard.noEvent')}</h2>
           <p>
             {nextEvent
               ? `${formatDate(nextEvent.date)} · ${nextEvent.startTime}`
-              : 'خطّط لوقتك القادم من التقويم.'}
+              : t('shell.dashboard.planCalendar')}
           </p>
           <button onClick={() => setPage('calendar')}>
-            شوف تقويمك
+            {t('shell.dashboard.openCalendar')}
             <ArrowLeft size={16} />
           </button>
           <div className="event-orbit" aria-hidden="true" />
@@ -408,10 +443,10 @@ export default function DashboardPage() {
       <div className="dashboard-footer">
         <span>
           <span className="tiny-dot" />
-          تقدّم حقيقي، خطوة بخطوة.
+          {t('shell.dashboard.footer')}
         </span>
         <button onClick={() => setPage('tasks')}>
-          {active.length} مهام في مدارك
+          {t('shell.dashboard.activeTasks', { count: active.length })}
           <ChevronLeft size={14} />
         </button>
       </div>

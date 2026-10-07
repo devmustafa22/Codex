@@ -26,14 +26,15 @@ import {
   kindLabels,
   monthLabel,
   parseDate,
-  shortDays,
+  getShortDays,
   todayKey,
 } from '../lib/dates';
 import type { CalendarEvent, EntryKind, NewEvent } from '../lib/types';
 import { useApp } from '../state/AppContext';
+import { useLanguage } from '../state/LanguageContext';
+import { getLocale } from '../lib/i18n';
 
 type CalendarView = 'month' | 'week' | 'year';
-const calendarWeekdays = [...shortDays.slice(1), shortDays[0]];
 
 /** Dates are stored as local YYYY-MM-DD keys; calendar navigation never relies on UTC conversion. */
 function monthDays(year: number, month: number): Array<string | null> {
@@ -55,6 +56,7 @@ function EventEditor({
   onClose: () => void;
 }) {
   const { data, addEvent, updateEvent, notify } = useApp();
+  const { t } = useLanguage();
   const [values, setValues] = useState<NewEvent>(() =>
     event
       ? {
@@ -82,7 +84,7 @@ function EventEditor({
   function save(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!values.title.trim()) {
-      setError('اكتب عنوانًا واضحًا للموعد.');
+      setError('planning.calendar.error.title');
       return;
     }
     if (
@@ -90,11 +92,11 @@ function EventEditor({
       !Number.isFinite(parseDate(values.date).getTime()) ||
       dateKey(parseDate(values.date)) !== values.date
     ) {
-      setError('اختر تاريخًا صحيحًا للموعد.');
+      setError('planning.calendar.error.date');
       return;
     }
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(values.startTime)) {
-      setError('اختر وقتًا صحيحًا للموعد.');
+      setError('planning.calendar.error.time');
       return;
     }
     if (
@@ -102,32 +104,35 @@ function EventEditor({
       values.durationMinutes < 1 ||
       values.durationMinutes > 1440
     ) {
-      setError('مدة الموعد يجب أن تكون بين دقيقة و1440 دقيقة.');
+      setError('planning.calendar.error.duration');
       return;
     }
     const clean = { ...values, title: values.title.trim(), note: values.note.trim() };
     if (event) {
       updateEvent(event.id, clean);
-      notify('تم تحديث الموعد');
+      notify(t('planning.calendar.updated'));
     } else addEvent(clean);
     onClose();
   }
   return (
-    <Modal title={event ? 'تعديل الموعد' : 'موعد جديد'} onClose={onClose}>
+    <Modal
+      title={event ? t('planning.calendar.edit') : t('planning.calendar.new')}
+      onClose={onClose}
+    >
       <form onSubmit={save} className="event-form">
         <div className="form-grid">
           <label className="form-field full-width">
-            <span>عنوان الموعد</span>
+            <span>{t('planning.calendar.field.title')}</span>
             <input
               required
               maxLength={160}
               value={values.title}
               onChange={(e) => setField('title', e.target.value)}
-              placeholder="مثل: جلسة تعلّم أو موعد شخصي"
+              placeholder={t('planning.calendar.titlePlaceholder')}
             />
           </label>
           <label className="form-field">
-            <span>التاريخ</span>
+            <span>{t('planning.calendar.field.date')}</span>
             <input
               required
               type="date"
@@ -136,7 +141,7 @@ function EventEditor({
             />
           </label>
           <label className="form-field">
-            <span>وقت البداية</span>
+            <span>{t('planning.calendar.field.start')}</span>
             <input
               required
               type="time"
@@ -145,7 +150,7 @@ function EventEditor({
             />
           </label>
           <label className="form-field">
-            <span>المدة بالدقائق</span>
+            <span>{t('planning.calendar.field.duration')}</span>
             <input
               required
               type="number"
@@ -157,22 +162,22 @@ function EventEditor({
             />
           </label>
           <label className="form-field">
-            <span>نوع الموعد</span>
+            <span>{t('planning.calendar.field.kind')}</span>
             <select
               value={values.kind}
               onChange={(e) => setField('kind', e.target.value as EntryKind)}
             >
               {Object.entries(kindLabels).map(([key, label]) => (
                 <option key={key} value={key}>
-                  {label}
+                  {t(label)}
                 </option>
               ))}
             </select>
           </label>
           <label className="form-field full-width">
-            <span>المهارة المرتبطة</span>
+            <span>{t('planning.calendar.field.skill')}</span>
             <select value={values.skillId} onChange={(e) => setField('skillId', e.target.value)}>
-              <option value="">بدون مهارة</option>
+              <option value="">{t('planning.calendar.noSkill')}</option>
               {data.skills.map((skill) => (
                 <option key={skill.id} value={skill.id}>
                   {skill.name}
@@ -182,29 +187,29 @@ function EventEditor({
           </label>
           <label className="form-field full-width">
             <span>
-              ملاحظات <small>اختياري</small>
+              {t('planning.calendar.notes')} <small>{t('planning.calendar.optional')}</small>
             </span>
             <textarea
               rows={3}
               maxLength={3000}
               value={values.note}
               onChange={(e) => setField('note', e.target.value)}
-              placeholder="الهدف من الموعد أو التفاصيل التي تحتاجها"
+              placeholder={t('planning.calendar.notePlaceholder')}
             />
           </label>
         </div>
-        <p className="form-hint">الموعد ينظّم وقتك. سجّل الوقت الفعلي في اليوميات بعد إنجازه.</p>
+        <p className="form-hint">{t('planning.calendar.hint')}</p>
         {error && (
           <p className="form-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="form-actions">
           <button type="submit" className="button primary">
-            {event ? 'حفظ التعديلات' : 'إضافة الموعد'}
+            {event ? t('planning.calendar.save') : t('planning.calendar.add')}
           </button>
           <button type="button" className="button secondary" onClick={onClose}>
-            إلغاء
+            {t('planning.calendar.cancel')}
           </button>
         </div>
       </form>
@@ -215,6 +220,19 @@ function EventEditor({
 export default function CalendarPage() {
   const { data, setPage, updateTask, notify, deleteEvent, selectedItem, clearSelectedItem } =
     useApp();
+  const { language, t } = useLanguage();
+  const number = new Intl.NumberFormat(getLocale());
+  const yearNumber = new Intl.NumberFormat(getLocale(), { useGrouping: false });
+  const describeTasks = (count: number) =>
+    t(count === 1 ? 'planning.calendar.oneTask' : 'planning.calendar.taskCount', {
+      count: number.format(count),
+    });
+  const describeEvents = (count: number) =>
+    t(count === 1 ? 'planning.calendar.oneEvent' : 'planning.calendar.eventCount', {
+      count: number.format(count),
+    });
+  const shortDays = getShortDays();
+  const calendarWeekdays = [...shortDays.slice(1), shortDays[0]];
   const today = todayKey();
   const [view, setView] = useState<CalendarView>('month');
   const [anchor, setAnchor] = useState(today);
@@ -300,21 +318,30 @@ export default function CalendarPage() {
   }
   const periodLabel =
     view === 'year'
-      ? String(year)
+      ? yearNumber.format(year)
       : view === 'week'
         ? `${formatDate(weekStart)} – ${formatDate(addDays(weekStart, 6), { day: 'numeric', month: 'long', year: 'numeric' })}`
         : monthLabel(current);
   const ariaDay = (key: string) => {
     const items = dateItems.get(key);
-    return `${formatDate(key, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}، ${items?.tasks.length ?? 0} مهام، ${items?.events.length ?? 0} مواعيد، ${items?.entries.length ?? 0} أنشطة مسجلة`;
+    return t('planning.calendar.dayDescription', {
+      date: formatDate(key, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }),
+      tasks: number.format(items?.tasks.length ?? 0),
+      events: number.format(items?.events.length ?? 0),
+      activities: number.format(items?.entries.length ?? 0),
+    });
   };
   return (
     <>
       <PageHeader
-        eyebrow="وقتك، بصورة أوضح"
-        title="التقويم"
-        description="رتّب أيامك وشاهد مهامك ومواعيدك، من اليوم إلى السنة كاملة."
-        action={<AddButton onClick={() => setEditor({ event: null })}>موعد جديد</AddButton>}
+        eyebrow={t('planning.calendar.eyebrow')}
+        title={t('planning.calendar.title')}
+        description={t('planning.calendar.description')}
+        action={
+          <AddButton onClick={() => setEditor({ event: null })}>
+            {t('planning.calendar.new')}
+          </AddButton>
+        }
       />
       <div className="calendar-layout">
         <Card className="calendar-card">
@@ -322,18 +349,18 @@ export default function CalendarPage() {
             <div className="calendar-navigation">
               <button
                 className="icon-button"
-                aria-label="الفترة السابقة"
+                aria-label={t('planning.calendar.previous')}
                 onClick={() => navigate(-1)}
               >
-                <ChevronRight size={19} />
+                {language === 'ar' ? <ChevronRight size={19} /> : <ChevronLeft size={19} />}
               </button>
               <h2>{periodLabel}</h2>
               <button
                 className="icon-button"
-                aria-label="الفترة التالية"
+                aria-label={t('planning.calendar.next')}
                 onClick={() => navigate(1)}
               >
-                <ChevronLeft size={19} />
+                {language === 'ar' ? <ChevronLeft size={19} /> : <ChevronRight size={19} />}
               </button>
               <button
                 className="button secondary small"
@@ -342,15 +369,15 @@ export default function CalendarPage() {
                   setSelectedDate(today);
                 }}
               >
-                اليوم
+                {t('planning.calendar.today')}
               </button>
             </div>
-            <div className="segmented-control" aria-label="طريقة عرض التقويم">
+            <div className="segmented-control" aria-label={t('planning.calendar.view')}>
               {(
                 [
-                  ['month', 'شهر'],
-                  ['week', 'أسبوع'],
-                  ['year', 'سنة'],
+                  ['month', t('planning.calendar.month')],
+                  ['week', t('planning.calendar.week')],
+                  ['year', t('planning.calendar.year')],
                 ] as const
               ).map(([value, label]) => (
                 <button
@@ -367,15 +394,15 @@ export default function CalendarPage() {
           <div className="calendar-summary">
             <span>
               <span className="calendar-key task" />
-              {scheduledTasks} مهمة
+              {describeTasks(scheduledTasks)}
             </span>
             <span>
               <span className="calendar-key event" />
-              {scheduledEvents} موعد
+              {describeEvents(scheduledEvents)}
             </span>
             <span>
               <span className="calendar-key entry" />
-              نشاط مسجّل
+              {t('planning.calendar.recordedActivity')}
             </span>
           </div>
           {view === 'year' ? (
@@ -400,11 +427,11 @@ export default function CalendarPage() {
                       }}
                     >
                       <strong>
-                        {new Date(year, monthIndex, 1).toLocaleDateString('ar-IQ', {
+                        {new Date(year, monthIndex, 1).toLocaleDateString(getLocale(), {
                           month: 'long',
                         })}
                       </strong>
-                      <ChevronLeft size={14} />
+                      {language === 'ar' ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
                     </button>
                     <div className="mini-calendar">
                       {calendarWeekdays.map((day) => (
@@ -421,7 +448,7 @@ export default function CalendarPage() {
                             aria-pressed={key === selectedDate}
                             onClick={() => selectDay(key, true)}
                           >
-                            {parseDate(key).getDate()}
+                            {number.format(parseDate(key).getDate())}
                             {dateItems.has(key) && <span className="mini-day-dot" />}
                           </button>
                         ) : (
@@ -430,7 +457,7 @@ export default function CalendarPage() {
                       )}
                     </div>
                     <p className="mini-month-count">
-                      {taskCount} مهمة <span>·</span> {eventCount} موعد
+                      {describeTasks(taskCount)} <span>·</span> {describeEvents(eventCount)}
                     </p>
                   </div>
                 );
@@ -471,7 +498,8 @@ export default function CalendarPage() {
                       onClick={() => selectDay(key)}
                     >
                       <span className="day-number">
-                        {parseDate(key).getDate()} {key === today && <small>اليوم</small>}
+                        {number.format(parseDate(key).getDate())}{' '}
+                        {key === today && <small>{t('planning.calendar.today')}</small>}
                       </span>
                       <span className="calendar-day-items">
                         {previews.slice(0, previewLimit).map((item) => (
@@ -483,16 +511,21 @@ export default function CalendarPage() {
                           </span>
                         ))}
                         {count > previewLimit && (
-                          <span className="calendar-more">+{count - previewLimit} أخرى</span>
+                          <span className="calendar-more">
+                            {t('planning.calendar.more', {
+                              count: number.format(count - previewLimit),
+                            })}
+                          </span>
                         )}
                       </span>
                       {items.entries.length > 0 && (
                         <span className="day-markers">
                           <span className="calendar-key entry" />
-                          {formatMinutes(
-                            items.entries.reduce((sum, entry) => sum + entry.minutes, 0),
-                          )}{' '}
-                          مسجّلة
+                          {t('planning.calendar.recordedTime', {
+                            time: formatMinutes(
+                              items.entries.reduce((sum, entry) => sum + entry.minutes, 0),
+                            ),
+                          })}
                         </span>
                       )}
                     </button>
@@ -507,27 +540,33 @@ export default function CalendarPage() {
           title={formatDate(selectedDate, { weekday: 'long', day: 'numeric', month: 'long' })}
           action={
             <span className="badge neutral">
-              {selectedDate === today ? 'اليوم' : formatDate(selectedDate, { year: 'numeric' })}
+              {selectedDate === today
+                ? t('planning.calendar.today')
+                : formatDate(selectedDate, { year: 'numeric' })}
             </span>
           }
         >
           <p className="day-detail-summary">
-            {selectedItems.tasks.length} مهمة <span>·</span> {selectedItems.events.length} موعد{' '}
+            {describeTasks(selectedItems.tasks.length)} <span>·</span>{' '}
+            {describeEvents(selectedItems.events.length)}
             <span>·</span>{' '}
-            {formatMinutes(selectedItems.entries.reduce((sum, entry) => sum + entry.minutes, 0))}{' '}
-            نشاط
+            {t('planning.calendar.activityTime', {
+              time: formatMinutes(
+                selectedItems.entries.reduce((sum, entry) => sum + entry.minutes, 0),
+              ),
+            })}
           </p>
           {selectedItems.tasks.length +
             selectedItems.events.length +
             selectedItems.entries.length ===
           0 ? (
             <EmptyState
-              title="مساحة ليوم جديد"
-              description="ما عندك مهام أو مواعيد في هذا اليوم. خصّص وقتًا لشيء مهم."
+              title={t('planning.calendar.empty.title')}
+              description={t('planning.calendar.empty.description')}
               action={
                 <button className="button primary small" onClick={() => setEditor({ event: null })}>
                   <Plus size={16} />
-                  إضافة موعد
+                  {t('planning.calendar.addAction')}
                 </button>
               }
             />
@@ -537,7 +576,8 @@ export default function CalendarPage() {
                 <div className="agenda-section">
                   <h3>
                     <CalendarDays size={16} />
-                    المواعيد <span>{selectedItems.events.length}</span>
+                    {t('planning.calendar.events')}{' '}
+                    <span>{number.format(selectedItems.events.length)}</span>
                   </h3>
                   {selectedItems.events.map((event) => {
                     const skill = data.skills.find((item) => item.id === event.skillId);
@@ -552,21 +592,21 @@ export default function CalendarPage() {
                             {formatMinutes(event.durationMinutes)}
                           </p>
                           <span className="badge neutral">
-                            {skill?.name ?? kindLabels[event.kind]}
+                            {skill?.name ?? t(kindLabels[event.kind])}
                           </span>
                           {event.note && <p className="agenda-note">{event.note}</p>}
                         </div>
                         <div className="agenda-actions">
                           <button
                             className="icon-button"
-                            aria-label={`تعديل ${event.title}`}
+                            aria-label={t('planning.calendar.editNamed', { title: event.title })}
                             onClick={() => setEditor({ event })}
                           >
                             <Pencil size={15} />
                           </button>
                           <button
                             className="icon-button danger-icon"
-                            aria-label={`حذف ${event.title}`}
+                            aria-label={t('planning.calendar.deleteNamed', { title: event.title })}
                             onClick={() => setDeleting(event)}
                           >
                             <Trash2 size={15} />
@@ -580,7 +620,8 @@ export default function CalendarPage() {
               {selectedItems.tasks.length > 0 && (
                 <div className="agenda-section">
                   <h3>
-                    المهام <span>{selectedItems.tasks.length}</span>
+                    {t('planning.calendar.tasks')}{' '}
+                    <span>{number.format(selectedItems.tasks.length)}</span>
                   </h3>
                   {selectedItems.tasks.map((task) => (
                     <label
@@ -590,13 +631,13 @@ export default function CalendarPage() {
                       <input
                         type="checkbox"
                         checked={task.status === 'done'}
-                        aria-label={`إنجاز ${task.title}`}
+                        aria-label={t('planning.calendar.completeNamed', { title: task.title })}
                         onChange={(e) => {
                           updateTask(task.id, { status: e.target.checked ? 'done' : 'todo' });
                           notify(
                             e.target.checked
-                              ? 'خطوة ممتازة، تم إنجاز المهمة'
-                              : 'تمت إعادة المهمة إلى قائمة العمل',
+                              ? t('planning.calendar.completedToast')
+                              : t('planning.calendar.reopenedToast'),
                           );
                         }}
                       />
@@ -604,10 +645,10 @@ export default function CalendarPage() {
                         <strong>{task.title}</strong>
                         <span className="agenda-task-meta">
                           {task.status === 'done'
-                            ? 'مكتملة'
+                            ? t('planning.calendar.task.done')
                             : task.status === 'in-progress'
-                              ? 'قيد التنفيذ'
-                              : 'لم تبدأ'}
+                              ? t('planning.calendar.task.inProgress')
+                              : t('planning.calendar.task.todo')}
                           {task.estimatedMinutes > 0 &&
                             ` · ${formatMinutes(task.estimatedMinutes)}`}
                         </span>
@@ -619,7 +660,8 @@ export default function CalendarPage() {
               {selectedItems.entries.length > 0 && (
                 <div className="agenda-section">
                   <h3>
-                    النشاط المسجّل <span>{selectedItems.entries.length}</span>
+                    {t('planning.calendar.loggedActivities')}{' '}
+                    <span>{number.format(selectedItems.entries.length)}</span>
                   </h3>
                   {selectedItems.entries.map((entry) => (
                     <div className="agenda-item" key={entry.id}>
@@ -627,7 +669,7 @@ export default function CalendarPage() {
                       <div className="agenda-item-body">
                         <strong>{entry.title}</strong>
                         <p>
-                          {kindLabels[entry.kind]} <span>·</span> {formatMinutes(entry.minutes)}
+                          {t(kindLabels[entry.kind])} <span>·</span> {formatMinutes(entry.minutes)}
                         </p>
                       </div>
                     </div>
@@ -637,8 +679,12 @@ export default function CalendarPage() {
             </div>
           )}
           <div className="day-detail-links">
-            <TextLink onClick={() => setPage('tasks')}>إدارة المهام</TextLink>
-            <TextLink onClick={() => setPage('journal')}>تسجيل نشاط</TextLink>
+            <TextLink onClick={() => setPage('tasks')}>
+              {t('planning.calendar.manageTasks')}
+            </TextLink>
+            <TextLink onClick={() => setPage('journal')}>
+              {t('planning.calendar.logActivity')}
+            </TextLink>
           </div>
         </Card>
       </div>
@@ -651,8 +697,8 @@ export default function CalendarPage() {
       )}
       {deleting && (
         <ConfirmDialog
-          title="حذف الموعد؟"
-          description={`سيتم حذف «${deleting.title}» من تقويمك. يمكنك إنشاء موعد جديد لاحقًا.`}
+          title={t('planning.calendar.delete.title')}
+          description={t('planning.calendar.delete.description', { title: deleting.title })}
           onConfirm={() => deleteEvent(deleting.id)}
           onClose={() => setDeleting(null)}
         />

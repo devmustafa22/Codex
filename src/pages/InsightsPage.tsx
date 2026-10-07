@@ -24,6 +24,8 @@ import {
 } from '../lib/dates';
 import type { JournalEntry, PageId, Task } from '../lib/types';
 import { useApp } from '../state/AppContext';
+import { useLanguage } from '../state/LanguageContext';
+import { getLocale } from '../lib/i18n';
 
 type Period = 'week' | 'month' | 'year';
 interface TimeBucket {
@@ -39,11 +41,10 @@ interface ReviewSuggestion {
   action: string;
 }
 
-const number = new Intl.NumberFormat('ar-IQ-u-nu-latn');
 const periodLabels: Record<Period, string> = {
-  week: 'هذا الأسبوع',
-  month: 'هذا الشهر',
-  year: 'هذه السنة',
+  week: 'planning.insights.period.week',
+  month: 'planning.insights.period.month',
+  year: 'planning.insights.period.year',
 };
 const completedDate = (task: Task) => task.completedAt?.slice(0, 10) ?? '';
 const totalMinutes = (entries: JournalEntry[]) =>
@@ -70,6 +71,7 @@ function chartBuckets(
   entries: JournalEntry[],
 ): TimeBucket[] {
   const ranges: Omit<TimeBucket, 'minutes'>[] = [];
+  const number = new Intl.NumberFormat(getLocale());
   if (period === 'week') {
     for (let day = start; day <= end; day = addDays(day, 1))
       ranges.push({ start: day, end: day, label: formatDate(day, { weekday: 'short' }) });
@@ -80,7 +82,7 @@ function chartBuckets(
       ranges.push({
         start: first,
         end: last,
-        label: `${parseDate(first).getDate()}–${parseDate(last).getDate()}`,
+        label: `${number.format(parseDate(first).getDate())}–${number.format(parseDate(last).getDate())}`,
       });
     }
   } else {
@@ -104,6 +106,9 @@ function chartBuckets(
 
 export default function InsightsPage() {
   const { data, setPage } = useApp();
+  const { language, t } = useLanguage();
+  const number = new Intl.NumberFormat(getLocale());
+  const yearNumber = new Intl.NumberFormat(getLocale(), { useGrouping: false });
   const today = todayKey();
   const [period, setPeriod] = useState<Period>('week');
   const [heatmapYear, setHeatmapYear] = useState(() => parseDate(today).getFullYear());
@@ -132,7 +137,7 @@ export default function InsightsPage() {
     })),
     {
       id: 'unassigned',
-      name: 'أنشطة عامة',
+      name: t('planning.insights.general'),
       color: '#99a59e',
       minutes: totalMinutes(
         entries.filter((entry) => !data.skills.some((skill) => skill.id === entry.skillId)),
@@ -197,44 +202,61 @@ export default function InsightsPage() {
   const suggestions: ReviewSuggestion[] = [];
   if (weeklyGoal <= 0) {
     suggestions.push({
-      title: 'ابدأ بهدف يناسب وقتك',
-      description:
-        'حدّد عدد دقائق التعلّم والتركيز التي تريد تسجيلها كل أسبوع، ثم تابع تقدّمك هنا.',
+      title: t('planning.insights.review.goal.title'),
+      description: t('planning.insights.review.goal.description'),
       page: 'settings',
-      action: 'ضبط الهدف',
+      action: t('planning.insights.review.goal.action'),
     });
   } else if (weeklyTime >= weeklyGoal) {
     suggestions.push({
-      title: 'وصلت إلى هدفك الأسبوعي',
-      description: `سجّلت ${formatMinutes(weeklyTime)} من هدف ${formatMinutes(weeklyGoal)}. دوّن أهم شيء تعلّمته حتى تحتفظ بأثر هذا الأسبوع.`,
+      title: t('planning.insights.review.reached.title'),
+      description: t('planning.insights.review.reached.description', {
+        time: formatMinutes(weeklyTime),
+        goal: formatMinutes(weeklyGoal),
+      }),
       page: 'journal',
-      action: 'كتابة نشاط',
+      action: t('planning.insights.review.reached.action'),
     });
   } else {
     const remaining = weeklyGoal - weeklyTime;
     const daysLeft = week.filter((day) => day >= today).length;
     suggestions.push({
-      title: 'خطوة صغيرة تقرّبك من هدفك',
-      description: `باقي ${formatMinutes(remaining)} لهدف الأسبوع؛ حوالي ${formatMinutes(Math.ceil(remaining / daysLeft))} يومياً خلال الأيام المتبقية، بما فيها اليوم.`,
+      title: t('planning.insights.review.remaining.title'),
+      description: t('planning.insights.review.remaining.description', {
+        remaining: formatMinutes(remaining),
+        daily: formatMinutes(Math.ceil(remaining / daysLeft)),
+      }),
       page: 'calendar',
-      action: 'حجز جلسة',
+      action: t('planning.insights.review.remaining.action'),
     });
   }
   if (overdue > 0) {
     suggestions.push({
-      title: 'خفّف المهام المتراكمة',
-      description: `عندك ${number.format(overdue)} ${overdue === 1 ? 'مهمة تجاوزت موعدها' : 'مهام تجاوزت موعدها'}. راجع المواعيد واختَر مهمة واحدة قابلة للإنجاز اليوم.`,
+      title: t('planning.insights.review.overdue.title'),
+      description: t(
+        overdue === 1
+          ? 'planning.insights.review.overdue.one'
+          : 'planning.insights.review.overdue.many',
+        { count: number.format(overdue) },
+      ),
       page: 'tasks',
-      action: 'مراجعة المهام',
+      action: t('planning.insights.review.overdue.action'),
     });
   } else {
     suggestions.push({
-      title: weeklyDone ? 'ثبّت تقدّمك بالمراجعة' : 'اجعل خطوتك القادمة واضحة',
+      title: weeklyDone
+        ? t('planning.insights.review.completed.title')
+        : t('planning.insights.review.noTasks.title'),
       description: weeklyDone
-        ? `أنجزت ${number.format(weeklyDone)} ${weeklyDone === 1 ? 'مهمة' : 'مهام'} هذا الأسبوع. راجع أولوياتك وحدّد المهمة التالية.`
-        : 'لم تُسجّل مهمة مكتملة هذا الأسبوع. اختَر مهمة صغيرة وحدّد لها موعداً مناسباً.',
+        ? t(
+            weeklyDone === 1
+              ? 'planning.insights.review.completed.one'
+              : 'planning.insights.review.completed.many',
+            { count: number.format(weeklyDone) },
+          )
+        : t('planning.insights.review.noTasks.description'),
       page: 'tasks',
-      action: 'فتح المهام',
+      action: t('planning.insights.review.tasks.action'),
     });
   }
   const leastPracticed = data.skills
@@ -245,20 +267,23 @@ export default function InsightsPage() {
     .sort((a, b) => a.minutes - b.minutes)[0];
   if (leastPracticed) {
     suggestions.push({
-      title: 'أعطِ مهاراتك مساحة منتظمة',
+      title: t('planning.insights.review.skills.title'),
       description:
         leastPracticed.minutes === 0
-          ? `لم تسجّل وقتاً لمهارة «${leastPracticed.skill.name}» هذا الأسبوع. إذا كانت ضمن أولوياتك، خصّص لها جلسة قصيرة.`
-          : `«${leastPracticed.skill.name}» هي الأقل ممارسة هذا الأسبوع بواقع ${formatMinutes(leastPracticed.minutes)}. راجع توازن وقتك بحسب أولوياتك.`,
+          ? t('planning.insights.review.skills.noTime', { skill: leastPracticed.skill.name })
+          : t('planning.insights.review.skills.least', {
+              skill: leastPracticed.skill.name,
+              time: formatMinutes(leastPracticed.minutes),
+            }),
       page: 'skills',
-      action: 'مراجعة المهارات',
+      action: t('planning.insights.review.skills.action'),
     });
   } else {
     suggestions.push({
-      title: 'حوّل اهتمامك إلى مهارة واضحة',
-      description: 'أضف مهارتك الأولى واربط أنشطتك بها حتى تستطيع معرفة أين يذهب وقتك وكيف تتقدّم.',
+      title: t('planning.insights.review.firstSkill.title'),
+      description: t('planning.insights.review.firstSkill.description'),
       page: 'skills',
-      action: 'إضافة مهارة',
+      action: t('planning.insights.review.firstSkill.action'),
     });
   }
 
@@ -291,19 +316,19 @@ export default function InsightsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="كل خطوة إلها أثر"
-        title="إحصائياتك، قصة تقدّمك"
-        description="اعرف وين يروح وقتك، وراجع إنجازاتك حتى تخطّط للأيام الجاية بوضوح."
+        eyebrow={t('planning.insights.eyebrow')}
+        title={t('planning.insights.title')}
+        description={t('planning.insights.description')}
         action={
           <button className="button secondary" onClick={() => setPage('journal')}>
             <ArrowUpLeft size={16} />
-            سجّل نشاطاً
+            {t('planning.insights.logActivity')}
           </button>
         }
       />
 
       <div className="filter-bar insights-toolbar">
-        <div className="segmented-control" aria-label="الفترة الإحصائية">
+        <div className="segmented-control" aria-label={t('planning.insights.period.label')}>
           {(['week', 'month', 'year'] as Period[]).map((value) => (
             <button
               key={value}
@@ -311,7 +336,7 @@ export default function InsightsPage() {
               aria-pressed={period === value}
               onClick={() => setPeriod(value)}
             >
-              {periodLabels[value]}
+              {t(periodLabels[value])}
             </button>
           ))}
         </div>
@@ -327,65 +352,79 @@ export default function InsightsPage() {
           <span className="insight-metric-icon">
             <Clock3 size={20} />
           </span>
-          <span className="insight-metric-label">وقت النشاط المسجّل</span>
+          <span className="insight-metric-label">{t('planning.insights.metric.time')}</span>
           <strong className="insight-metric-value">{formatMinutes(minutes)}</strong>
           <small>
-            {number.format(entries.length)} {entries.length === 1 ? 'نشاط مسجّل' : 'أنشطة مسجّلة'}
+            {t(
+              entries.length === 1
+                ? 'planning.insights.metric.entry.one'
+                : 'planning.insights.metric.entry.many',
+              { count: number.format(entries.length) },
+            )}
           </small>
         </Card>
         <Card className="insight-metric">
           <span className="insight-metric-icon">
             <CheckCheck size={20} />
           </span>
-          <span className="insight-metric-label">مهام أُنجزت</span>
+          <span className="insight-metric-label">{t('planning.insights.metric.tasks')}</span>
           <strong className="insight-metric-value">{number.format(completed.length)}</strong>
-          <small>بحسب تاريخ الإكمال</small>
+          <small>{t('planning.insights.metric.completionDate')}</small>
         </Card>
         <Card className="insight-metric">
           <span className="insight-metric-icon">
             <Flame size={20} />
           </span>
-          <span className="insight-metric-label">أيام نشطة</span>
+          <span className="insight-metric-label">{t('planning.insights.metric.activeDays')}</span>
           <strong className="insight-metric-value">{number.format(activeDates.size)}</strong>
-          <small>نشاط مسجّل أو مهمة مكتملة</small>
+          <small>{t('planning.insights.metric.activeHint')}</small>
         </Card>
         <Card className="insight-metric">
           <span className="insight-metric-icon">
             <TrendingUp size={20} />
           </span>
-          <span className="insight-metric-label">متوسط الوقت باليوم النشط</span>
+          <span className="insight-metric-label">{t('planning.insights.metric.average')}</span>
           <strong className="insight-metric-value">
             {formatMinutes(activeDates.size ? minutes / activeDates.size : 0)}
           </strong>
-          <small>خلال الفترة المحدّدة</small>
+          <small>{t('planning.insights.metric.period')}</small>
         </Card>
       </div>
 
       <div className="insights-main-grid">
         <Card
           className="insights-chart-card"
-          title="إيقاع نشاطك"
-          action={<span className="badge">{periodLabels[period]}</span>}
+          title={t('planning.insights.chart.title')}
+          action={<span className="badge">{t(periodLabels[period])}</span>}
         >
           <div className="insights-chart-summary">
             <div>
               <strong className="insights-chart-total">{formatMinutes(minutes)}</strong>
-              <p>كل جلسة تضيف شيئاً إلى رحلتك</p>
+              <p>{t('planning.insights.chart.tagline')}</p>
             </div>
             <span className="insights-skill-dot" style={{ background: '#1e7854' }} />{' '}
-            <span>وقت مسجّل</span>
+            <span>{t('planning.insights.chart.loggedTime')}</span>
           </div>
           {entries.length ? (
             <div
               className="insights-chart"
-              aria-label={`توزيع وقت النشاط خلال ${periodLabels[period]}`}
+              aria-label={t('planning.insights.chart.aria', { period: t(periodLabels[period]) })}
             >
               <div className="insights-chart-columns">
                 {buckets.map((bucket) => (
                   <div
                     className="insights-chart-column"
                     key={bucket.start}
-                    title={`${formatDate(bucket.start)}${bucket.start !== bucket.end ? ` إلى ${formatDate(bucket.end)}` : ''}: ${formatMinutes(bucket.minutes)}`}
+                    title={t(
+                      bucket.start !== bucket.end
+                        ? 'planning.insights.chart.rangeTitle'
+                        : 'planning.insights.chart.dayTitle',
+                      {
+                        start: formatDate(bucket.start),
+                        end: formatDate(bucket.end),
+                        time: formatMinutes(bucket.minutes),
+                      },
+                    )}
                   >
                     <span className="insights-chart-value">
                       {bucket.minutes ? formatMinutes(bucket.minutes) : '—'}
@@ -404,25 +443,25 @@ export default function InsightsPage() {
             </div>
           ) : (
             <EmptyState
-              title="ابدأ أول نقطة في الرسم"
-              description="سجّل مدة نشاطك وستظهر هنا صورة واضحة لوقت التعلّم والعمل."
+              title={t('planning.insights.chart.empty.title')}
+              description={t('planning.insights.chart.empty.description')}
               action={
                 <button className="button secondary" onClick={() => setPage('journal')}>
-                  سجّل نشاطاً
+                  {t('planning.insights.logActivity')}
                 </button>
               }
             />
           )}
           <p className="insights-chart-footnote">
             {period === 'month'
-              ? 'كل عمود يمثّل أسبوعاً، ويُحتسب الجزء الواقع داخل هذا الشهر.'
+              ? t('planning.insights.chart.monthFootnote')
               : period === 'year'
-                ? 'كل عمود يمثّل شهراً من السنة الحالية.'
-                : 'كل عمود يمثّل يوماً من الأسبوع الحالي.'}{' '}
-            يُحتسب النشاط المسجّل حتى اليوم.
+                ? t('planning.insights.chart.yearFootnote')
+                : t('planning.insights.chart.weekFootnote')}{' '}
+            {t('planning.insights.chart.cutoff')}
           </p>
         </Card>
-        <Card title="وين استثمرت وقتك؟" action={<Target size={18} />}>
+        <Card title={t('planning.insights.distribution.title')} action={<Target size={18} />}>
           {distributions.length ? (
             <div className="insights-distribution">
               {distributions.map((skill) => (
@@ -439,55 +478,60 @@ export default function InsightsPage() {
                     color={skill.color}
                   />
                   <span className="insights-distribution-meta">
-                    {Math.round((skill.minutes / minutes) * 100)}% من وقتك المسجّل
+                    {t('planning.insights.distribution.percent', {
+                      percent: number.format(Math.round((skill.minutes / minutes) * 100)),
+                    })}
                   </span>
                 </div>
               ))}
             </div>
           ) : (
             <EmptyState
-              title="وقتك يرسم أولوياتك"
-              description="اربط الأنشطة بمهاراتك، أو سجّلها كأنشطة عامة، ليظهر توزيع وقتك."
+              title={t('planning.insights.distribution.empty.title')}
+              description={t('planning.insights.distribution.empty.description')}
             />
           )}
-          <p className="insights-chart-footnote">
-            يعتمد على مدد الأنشطة المحفوظة خلال الفترة المحدّدة.
-          </p>
+          <p className="insights-chart-footnote">{t('planning.insights.distribution.note')}</p>
         </Card>
       </div>
 
       <Card
         className="insights-year-card"
-        title="سنة من الخطوات الصغيرة"
+        title={t('planning.insights.year.title')}
         action={
           <div className="insights-year-controls">
             <button
               className="icon-button"
-              aria-label="السنة السابقة"
+              aria-label={t('planning.insights.year.previous')}
               onClick={() => changeYear(-1)}
               disabled={heatmapYear <= 1900}
             >
-              <ChevronRight size={17} />
+              {language === 'ar' ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}
             </button>
-            <strong>{heatmapYear}</strong>
+            <strong>{yearNumber.format(heatmapYear)}</strong>
             <button
               className="icon-button"
-              aria-label="السنة التالية"
+              aria-label={t('planning.insights.year.next')}
               onClick={() => changeYear(1)}
               disabled={heatmapYear >= 2100}
             >
-              <ChevronLeft size={17} />
+              {language === 'ar' ? <ChevronLeft size={17} /> : <ChevronRight size={17} />}
             </button>
           </div>
         }
       >
         <div className="insights-heatmap-toolbar">
           <p className="insights-heatmap-summary">
-            <strong>{number.format(yearActive)} يوم نشاط</strong>
+            <strong>
+              {t('planning.insights.heatmap.activeDays', { count: number.format(yearActive) })}
+            </strong>
             <span>•</span>
-            {formatMinutes(yearMinutes)} مسجّلة خلال {heatmapYear}
+            {t('planning.insights.heatmap.recordedYear', {
+              time: formatMinutes(yearMinutes),
+              year: yearNumber.format(heatmapYear),
+            })}
           </p>
-          <p id="insights-heatmap-help">اختَر يوماً لعرض تفاصيله؛ استخدم الأسهم للتنقّل.</p>
+          <p id="insights-heatmap-help">{t('planning.insights.heatmap.help')}</p>
         </div>
         <div className="insights-heatmap-scroll">
           <div className="insights-heatmap" dir="ltr">
@@ -510,19 +554,21 @@ export default function InsightsPage() {
             </div>
             <div className="insights-heatmap-body">
               <div className="insights-heatmap-weekdays" aria-hidden="true">
-                <span>إثنين</span>
+                <span>{t('planning.insights.weekday.monday')}</span>
                 <span />
-                <span>أربعاء</span>
+                <span>{t('planning.insights.weekday.wednesday')}</span>
                 <span />
-                <span>جمعة</span>
+                <span>{t('planning.insights.weekday.friday')}</span>
                 <span />
-                <span>أحد</span>
+                <span>{t('planning.insights.weekday.sunday')}</span>
               </div>
               <div
                 className="insights-heatmap-grid"
                 style={{ gridTemplateColumns: `repeat(${columnCount}, minmax(10px, 1fr))` }}
                 role="group"
-                aria-label={`تقويم النشاط السنوي ${heatmapYear}`}
+                aria-label={t('planning.insights.heatmap.aria', {
+                  year: yearNumber.format(heatmapYear),
+                })}
                 aria-describedby="insights-heatmap-help"
               >
                 {days.map((day, index) => {
@@ -546,7 +592,22 @@ export default function InsightsPage() {
                           : record.entries || record.tasks
                             ? 1
                             : 0;
-                  const label = `${formatDate(day, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}، ${number.format(record.entries)} نشاط، ${formatMinutes(record.minutes)}، ${number.format(record.tasks)} مهمة مكتملة${future ? '، يوم قادم' : ''}`;
+                  const label = t(
+                    future
+                      ? 'planning.insights.heatmap.futureDayAria'
+                      : 'planning.insights.heatmap.dayAria',
+                    {
+                      date: formatDate(day, {
+                        weekday: 'long',
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric',
+                      }),
+                      activities: number.format(record.entries),
+                      time: formatMinutes(record.minutes),
+                      tasks: number.format(record.tasks),
+                    },
+                  );
                   return (
                     <button
                       id={`insights-day-${day}`}
@@ -568,15 +629,15 @@ export default function InsightsPage() {
           </div>
         </div>
         <div className="insights-heatmap-legend">
-          <span>نشاط أقل</span>
+          <span>{t('planning.insights.heatmap.less')}</span>
           <div className="insights-legend-cells" aria-hidden="true">
             {[0, 1, 2, 3, 4].map((level) => (
               <span className="insights-heatmap-cell" data-intensity={level} key={level} />
             ))}
           </div>
-          <span>نشاط أكثر</span>
+          <span>{t('planning.insights.heatmap.more')}</span>
           <i className="insights-heatmap-cell is-future" aria-hidden="true" />
-          <span>أيام قادمة</span>
+          <span>{t('planning.insights.heatmap.future')}</span>
         </div>
         <div className="insights-day-detail">
           <div className="insights-day-heading">
@@ -590,14 +651,17 @@ export default function InsightsPage() {
             </h3>
             <div className="insights-day-stats">
               <span className="badge">{formatMinutes(totalMinutes(selectedEntries))}</span>
-              {selectedDay > today && <span className="badge">يوم قادم</span>}
+              {selectedDay > today && (
+                <span className="badge">{t('planning.insights.day.future')}</span>
+              )}
             </div>
           </div>
           {selectedEntries.length || selectedTasks.length ? (
             <div className="insights-day-grid">
               <div>
                 <h4>
-                  الأنشطة المسجّلة <span>({selectedEntries.length})</span>
+                  {t('planning.insights.day.activities')}{' '}
+                  <span>({number.format(selectedEntries.length)})</span>
                 </h4>
                 {selectedEntries.length ? (
                   <div className="insights-day-list">
@@ -609,7 +673,7 @@ export default function InsightsPage() {
                         <div className="insights-day-content">
                           <strong>{entry.title}</strong>
                           <small>
-                            {kindLabels[entry.kind]}
+                            {t(kindLabels[entry.kind])}
                             {entry.skillId &&
                             data.skills.find((skill) => skill.id === entry.skillId)
                               ? ` · ${data.skills.find((skill) => skill.id === entry.skillId)?.name}`
@@ -621,12 +685,13 @@ export default function InsightsPage() {
                     ))}
                   </div>
                 ) : (
-                  <p className="insights-chart-footnote">لا توجد أنشطة مسجّلة في هذا اليوم.</p>
+                  <p className="insights-chart-footnote">{t('planning.insights.day.noEntries')}</p>
                 )}
               </div>
               <div>
                 <h4>
-                  المهام المكتملة <span>({selectedTasks.length})</span>{' '}
+                  {t('planning.insights.day.tasks')}{' '}
+                  <span>({number.format(selectedTasks.length)})</span>{' '}
                 </h4>
                 {selectedTasks.length ? (
                   <div className="insights-day-list">
@@ -637,30 +702,36 @@ export default function InsightsPage() {
                         </span>
                         <div className="insights-day-content">
                           <strong>{task.title}</strong>
-                          <small>أُنجزت في هذا اليوم</small>
+                          <small>{t('planning.insights.day.completedToday')}</small>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="insights-chart-footnote">لا توجد مهام مكتملة في هذا اليوم.</p>
+                  <p className="insights-chart-footnote">{t('planning.insights.day.noTasks')}</p>
                 )}
               </div>
             </div>
           ) : (
             <EmptyState
-              title={selectedDay > today ? 'هذا اليوم ينتظر خطّتك' : 'يوم بدون نشاط مسجّل'}
+              title={
+                selectedDay > today
+                  ? t('planning.insights.day.future.title')
+                  : t('planning.insights.day.empty.title')
+              }
               description={
                 selectedDay > today
-                  ? 'أضف موعداً إلى تقويمك وامنح مهاراتك مساحة في الأيام القادمة.'
-                  : 'سجّل ما عملته في يومياتك لتحتفظ بأثر كل خطوة.'
+                  ? t('planning.insights.day.future.description')
+                  : t('planning.insights.day.empty.description')
               }
               action={
                 <button
                   className="button secondary"
                   onClick={() => setPage(selectedDay > today ? 'calendar' : 'journal')}
                 >
-                  {selectedDay > today ? 'فتح التقويم' : 'فتح اليوميات'}
+                  {selectedDay > today
+                    ? t('planning.insights.day.future.action')
+                    : t('planning.insights.day.empty.action')}
                 </button>
               }
             />
@@ -669,24 +740,31 @@ export default function InsightsPage() {
       </Card>
 
       <Card
-        title="مراجعتك الأسبوعية"
-        action={<span className="badge">من {formatDate(week[0])} إلى اليوم</span>}
+        title={t('planning.insights.review.title')}
+        action={
+          <span className="badge">
+            {t('planning.insights.review.range', { start: formatDate(week[0]) })}
+          </span>
+        }
       >
         <div className="insights-review-grid">
           <div className="insights-review-summary">
             <div className="insights-review-icon">
               <Target size={25} />
             </div>
-            <h3>خطوة ثابتة، أثر أكبر</h3>
+            <h3>{t('planning.insights.review.tagline')}</h3>
             <p>
-              سجّلت نشاطاً في{' '}
+              {t('planning.insights.review.daysBefore')}{' '}
               <strong>
-                {weeklyActive} من {elapsedDays}
+                {t('planning.insights.review.daysCount', {
+                  active: number.format(weeklyActive),
+                  elapsed: number.format(elapsedDays),
+                })}
               </strong>{' '}
-              أيام مرّت هذا الأسبوع.
+              {t('planning.insights.review.daysAfter')}
             </p>
             <div className="insights-goal-header">
-              <span>هدف الأسبوع</span>
+              <span>{t('planning.insights.review.weeklyGoal')}</span>
               <strong>
                 {formatMinutes(weeklyTime)} / {formatMinutes(weeklyGoal)}
               </strong>
@@ -694,14 +772,20 @@ export default function InsightsPage() {
             <ProgressBar value={weeklyGoal > 0 ? (weeklyTime / weeklyGoal) * 100 : 0} />
             <small>
               {weeklyGoal > 0
-                ? `${Math.round((weeklyTime / weeklyGoal) * 100)}% من هدفك الأسبوعي`
-                : 'حدّد هدفك من الإعدادات'}
+                ? t('planning.insights.review.goalPercent', {
+                    percent: number.format(Math.round((weeklyTime / weeklyGoal) * 100)),
+                  })
+                : t('planning.insights.review.setGoal')}
             </small>
           </div>
           <div className="insights-review-list">
             {suggestions.map((suggestion, index) => (
               <div className="insights-review-item" key={suggestion.title}>
-                <span className="insights-review-number">0{index + 1}</span>
+                <span className="insights-review-number">
+                  {new Intl.NumberFormat(getLocale(), { minimumIntegerDigits: 2 }).format(
+                    index + 1,
+                  )}
+                </span>
                 <div className="insights-review-copy">
                   <h3>{suggestion.title}</h3>
                   <p>{suggestion.description}</p>

@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n';
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
@@ -60,31 +61,29 @@ function authError(error: { message?: string; code?: string } | null, fallback: 
   const code = error?.code ?? '';
   const message = error?.message ?? '';
   if (code === 'invalid_credentials' || /invalid login credentials/i.test(message)) {
-    return new Error('اسم المستخدم أو كلمة المرور غير صحيحة.');
+    return new Error(t('auth.invalidCredentials'));
   }
   if (code === 'email_not_confirmed' || /email not confirmed/i.test(message)) {
-    return new Error('فعّل بريدك الإلكتروني من رسالة التأكيد قبل تسجيل الدخول.');
+    return new Error(t('auth.emailUnconfirmed'));
   }
   if (code === 'user_banned' || /user.*banned/i.test(message)) {
-    return new Error('حسابك موقوف. تواصل مع إدارة الموقع لإعادة تفعيله.');
+    return new Error(t('auth.accountBanned'));
   }
   if (code === 'user_already_exists' || /already registered/i.test(message)) {
-    return new Error('هذا البريد مسجّل مسبقاً. سجّل الدخول أو استرجع كلمة المرور.');
+    return new Error(t('auth.emailRegistered'));
   }
   if (/username|database error saving new user/i.test(message)) {
-    return new Error(
-      'تعذّر إنشاء الحساب. جرّب اسم مستخدم آخر، وتأكد من تطبيق إعداد قاعدة البيانات.',
-    );
+    return new Error(t('auth.signupDatabaseError'));
   }
-  if (code === 'same_password') return new Error('اختر كلمة مرور جديدة تختلف عن السابقة.');
+  if (code === 'same_password') return new Error(t('auth.samePassword'));
   if (/rate|too[ _]many|429/i.test(`${code} ${message}`)) {
-    return new Error('محاولات كثيرة خلال وقت قصير. انتظر دقائق قليلة ثم حاول مجدداً.');
+    return new Error(t('auth.rateLimited'));
   }
   if (/password|weak/i.test(`${code} ${message}`)) {
-    return new Error('اختر كلمة مرور قوية من 10 أحرف على الأقل، مع حرف ورقم.');
+    return new Error(t('auth.weakPassword'));
   }
   if (/fetch|network|timeout|connection/i.test(message)) {
-    return new Error('تعذّر الاتصال. تأكد من الإنترنت ثم حاول مجدداً.');
+    return new Error(t('auth.connectionFailed'));
   }
   return new Error(fallback);
 }
@@ -96,18 +95,18 @@ function assertPassword(password: string) {
     !/\p{L}/u.test(password) ||
     !/\d/.test(password)
   ) {
-    throw new Error('كلمة المرور لازم تكون من 10 إلى 128 حرفاً، وبيها حرف ورقم.');
+    throw new Error(t('auth.passwordRequirements'));
   }
 }
 
 function assertEmail(email: string) {
   if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    throw new Error('اكتب بريداً إلكترونياً صحيحاً.');
+    throw new Error(t('auth.invalidEmail'));
   }
 }
 
 function client() {
-  if (!supabase) throw new Error('الحسابات غير مهيأة. أضف إعدادات Supabase أولاً.');
+  if (!supabase) throw new Error(t('auth.accountsNotConfigured'));
   return supabase;
 }
 
@@ -190,16 +189,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       async signIn(identifier, password) {
         const instance = client();
         const normalized = identifier.trim().toLowerCase();
-        if (!normalized || !password) throw new Error('اكتب اسم المستخدم وكلمة المرور.');
+        if (!normalized || !password) throw new Error(t('auth.credentialsRequired'));
         if (normalized.includes('@')) {
           assertEmail(normalized);
           const { error } = await instance.auth.signInWithPassword({ email: normalized, password });
-          if (error) throw authError(error, 'تعذّر تسجيل الدخول. حاول مجدداً.');
+          if (error) throw authError(error, t('auth.signinFailed'));
         } else {
           if (!/^[a-z0-9_]{3,24}$/.test(normalized)) {
-            throw new Error(
-              'اسم المستخدم يتكوّن من 3 إلى 24 حرفاً إنكليزياً أو رقماً أو شرطة سفلية.',
-            );
+            throw new Error(t('auth.usernameRequirements'));
           }
           const { data, error } = await instance.functions.invoke('username-login', {
             body: { identifier: normalized, password },
@@ -218,17 +215,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 code: response?.code ?? response?.error,
                 message: response?.error ?? error.message,
               },
-              'تعذّر تسجيل الدخول. تأكد من نشر دالة username-login أو جرّب بريدك الإلكتروني.',
+              t('auth.usernameFunctionOrEmail'),
             );
           }
           if (typeof data?.access_token !== 'string' || typeof data?.refresh_token !== 'string') {
-            throw new Error('تعذّر تسجيل الدخول. تأكد من نشر دالة username-login.');
+            throw new Error(t('auth.usernameFunctionMissing'));
           }
           const { error: sessionError } = await instance.auth.setSession({
             access_token: data.access_token,
             refresh_token: data.refresh_token,
           });
-          if (sessionError) throw authError(sessionError, 'تعذّر تثبيت جلسة الدخول. حاول مجدداً.');
+          if (sessionError) throw authError(sessionError, t('auth.sessionFailed'));
         }
         setRecovery(false);
         setRecoveryVerified(false);
@@ -239,11 +236,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const email = input.email.trim().toLowerCase();
         const name = input.name.trim();
         if (!/^[a-z0-9_]{3,24}$/.test(username)) {
-          throw new Error(
-            'اسم المستخدم: 3 إلى 24 حرفاً إنكليزياً أو رقماً أو شرطة سفلية، بدون مسافات.',
-          );
+          throw new Error(t('auth.signupUsernameRequirements'));
         }
-        if (!name || name.length > 80) throw new Error('اكتب اسمك، بحد أقصى 80 حرفاً.');
+        if (!name || name.length > 80) throw new Error(t('auth.nameRequirements'));
         assertEmail(email);
         assertPassword(input.password);
         const { data, error } = await client().auth.signUp({
@@ -254,14 +249,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             emailRedirectTo: `${window.location.origin}${window.location.pathname}`,
           },
         });
-        if (error) throw authError(error, 'تعذّر إنشاء الحساب. حاول مجدداً.');
+        if (error) throw authError(error, t('auth.signupFailed'));
         return { confirmationRequired: !data.session };
       },
       async signOut() {
         // Local scope signs out this browser without interrupting other devices.
         if (supabase && session) {
           const { error } = await supabase.auth.signOut({ scope: 'local' });
-          if (error) throw authError(error, 'تعذّر تسجيل الخروج. حاول مجدداً.');
+          if (error) throw authError(error, t('auth.signOutFailed'));
         }
         rememberDemo(false);
         setDemo(false);
@@ -276,15 +271,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { error } = await client().auth.resetPasswordForEmail(normalized, {
           redirectTo: `${window.location.origin}${window.location.pathname}?auth=recovery`,
         });
-        if (error) throw authError(error, 'تعذّر إرسال رسالة الاسترجاع. حاول مجدداً.');
+        if (error) throw authError(error, t('auth.recoveryEmailFailed'));
       },
       async changePassword(password) {
         if (recovery && (!session || !recoveryVerified)) {
-          throw new Error('رابط الاسترجاع غير صالح. اطلب رابطاً جديداً وافتحه بنفس المتصفح.');
+          throw new Error(t('auth.recoveryInvalid'));
         }
         assertPassword(password);
         const { error } = await client().auth.updateUser({ password });
-        if (error) throw authError(error, 'تعذّر تحديث كلمة المرور. افتح رابط استرجاع جديد.');
+        if (error) throw authError(error, t('auth.passwordUpdateFailed'));
         setRecovery(false);
         setRecoveryVerified(false);
         clearRecoveryLocation();

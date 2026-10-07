@@ -1,0 +1,57 @@
+import type { Dictionary } from './types';
+
+export const commonMessages: Dictionary = {
+  'common.switchToArabic': { en: 'Switch to Arabic', ar: 'التحويل إلى العربية' },
+  'common.switchToEnglish': { en: 'Switch to English', ar: 'التحويل إلى الإنجليزية' },
+  'common.language': { en: 'Language', ar: 'اللغة' },
+  'common.minutesShort': { en: '{value} min', ar: '{value} د' },
+  'common.hoursShort': { en: '{value} hr', ar: '{value} س' },
+  'common.kind.learning': { en: 'Learning', ar: 'تعلّم' },
+  'common.kind.work': { en: 'Work', ar: 'عمل' },
+  'common.kind.personal': { en: 'Personal', ar: 'شخصي' },
+  'common.kind.focus': { en: 'Focus', ar: 'تركيز' },
+  'common.mood.great': { en: 'Great', ar: 'ممتاز' },
+  'common.mood.good': { en: 'Good', ar: 'جيد' },
+  'common.mood.okay': { en: 'Okay', ar: 'عادي' },
+  'common.mood.tough': { en: 'Tough', ar: 'متعب' },
+  'common.mySpace': { en: 'My space', ar: 'مساحتي' },
+  'common.localSaveError': {
+    en: 'Your changes could not be saved in this browser. Download a backup from Settings before closing this page.',
+    ar: 'تعذّر حفظ التغييرات على المتصفح. نزّل نسخة احتياطية من الإعدادات قبل إغلاق الصفحة.',
+  },
+  'common.openingWorkspace': { en: 'Opening your space…', ar: 'نفتح مساحتك…' },
+  'common.workspaceLoadFailed': { en: 'Your space could not be loaded', ar: 'تعذّر تحميل مساحتك' },
+  'common.loadingWorkspace': {
+    en: 'Loading your account data from the cloud.',
+    ar: 'نحمّل بيانات حسابك من السحابة.',
+  },
+  'common.retry': { en: 'Try again', ar: 'إعادة المحاولة' },
+  'common.signOutFailed': {
+    en: 'Sign out failed. Please try again.',
+    ar: 'تعذّر تسجيل الخروج. جرّب مجدداً.',
+  },
+  'common.signOut': { en: 'Sign out', ar: 'تسجيل الخروج' },
+  'common.taskAdded': { en: 'Task added', ar: 'تمت إضافة المهمة' },
+  'common.taskDeleted': { en: 'Task deleted', ar: 'تم حذف المهمة' },
+  'common.skillAdded': { en: 'Skill added', ar: 'تمت إضافة المهارة' },
+  'common.skillDeleted': {
+    en: 'Skill deleted. Your activity records have been kept.',
+    ar: 'تم حذف المهارة مع الاحتفاظ بسجلات النشاط',
+  },
+  'common.activitySaved': {
+    en: 'Activity saved. Another step forward.',
+    ar: 'تم حفظ النشاط، خطوة جديدة في رحلتك',
+  },
+  'common.activityDeleted': { en: 'Activity deleted', ar: 'تم حذف النشاط' },
+  'common.eventAdded': { en: 'Event added', ar: 'تمت إضافة الموعد' },
+  'common.eventDeleted': { en: 'Event deleted', ar: 'تم حذف الموعد' },
+  'common.settingsSaved': { en: 'Settings saved', ar: 'تم حفظ الإعدادات' },
+  'common.backupRestored': { en: 'Backup restored', ar: 'تم استرجاع النسخة الاحتياطية' },
+  'common.spaceCleared': {
+    en: 'Your space is ready for a fresh start',
+    ar: 'مساحتك جاهزة لبداية جديدة',
+  },
+  'common.demoRestored': { en: 'Demo data restored', ar: 'تمت استعادة البيانات التجريبية' },
+  'common.openSyncSettings': { en: 'Open sync settings', ar: 'فتح إعدادات المزامنة' },
+  'common.preparingWorkspace': { en: 'Preparing your space…', ar: 'نجهّز مساحتك…' },
+};

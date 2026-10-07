@@ -1,3 +1,4 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { X, Plus, ArrowUpLeft, Inbox } from 'lucide-react';
@@ -101,6 +102,7 @@ export function Modal({
   onClose: () => void;
   wide?: boolean;
 }) {
+  const { t } = useLanguage();
   const dialogRef = useRef<HTMLDivElement>(null);
   const openerRef = useRef(document.activeElement as HTMLElement | null);
   const closeRef = useRef(onClose);
@@ -160,7 +162,12 @@ export function Modal({
       >
         <div className="modal-heading">
           <h2>{title}</h2>
-          <button type="button" className="icon-button" aria-label="إغلاق" onClick={onClose}>
+          <button
+            type="button"
+            className="icon-button"
+            aria-label={t('shell.editor.close')}
+            onClick={onClose}
+          >
             <X size={20} />
           </button>
         </div>
@@ -180,6 +187,7 @@ export function ConfirmDialog({
   onConfirm: () => void;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
   return (
     <Modal title={title} onClose={onClose}>
       <p className="confirm-text">{description}</p>
@@ -191,10 +199,10 @@ export function ConfirmDialog({
             onClose();
           }}
         >
-          تأكيد
+          {t('shell.editor.confirm')}
         </button>
         <button className="button secondary" onClick={onClose}>
-          إلغاء
+          {t('shell.editor.cancel')}
         </button>
       </div>
     </Modal>

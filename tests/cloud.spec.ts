@@ -1,7 +1,13 @@
 import { Buffer } from 'node:buffer';
 import { test as base, expect } from '@playwright/test';
 import type { Page, Route } from '@playwright/test';
-import { createEmptyWorkspace } from '../src/lib/cloud-workspace';
+import { createEmptyWorkspace as createInitialWorkspace } from '../src/lib/cloud-workspace';
+
+function createEmptyWorkspace(name: string) {
+  const data = createInitialWorkspace(name);
+  data.profile.language = 'ar';
+  return data;
+}
 import type { AppData } from '../src/lib/types';
 
 const HOST = 'https://madar-test.supabase.co';
@@ -221,7 +227,8 @@ const test = base.extend<{ cloud: MockSupabase; appErrors: string[] }>({
     await use(cloud);
   },
   appErrors: [
-    async ({ page }, use) => {
+    async ({ page, context }, use) => {
+      await context.addInitScript(() => localStorage.setItem('madar:language', 'ar'));
       const errors: string[] = [];
       page.on('pageerror', (error) => errors.push(error.message));
       await use(errors);

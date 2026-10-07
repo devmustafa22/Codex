@@ -19,32 +19,35 @@ import { useAuth } from '../state/AuthContext';
 import { supabase } from '../lib/supabase';
 import { AdminError, createAdminApi } from '../lib/admin';
 import type { AccountAction, AccountFilter, AccountList, ManagedAccount } from '../lib/admin';
-
-const dateFormatter = new Intl.DateTimeFormat('ar-IQ', {
-  dateStyle: 'medium',
-  timeStyle: 'short',
-  timeZone: 'Asia/Baghdad',
-});
-
-function accountDate(value: string | null) {
-  return value ? dateFormatter.format(new Date(value)) : 'لم يسجّل الدخول بعد';
-}
-
-const mutationLabels = {
-  suspend: { title: 'إيقاف الحساب', confirm: 'تأكيد الإيقاف', success: 'تم إيقاف الحساب.' },
-  reactivate: {
-    title: 'إعادة تفعيل الحساب',
-    confirm: 'تأكيد التفعيل',
-    success: 'تمت إعادة تفعيل الحساب.',
-  },
-  delete: {
-    title: 'حذف الحساب نهائياً',
-    confirm: 'حذف الحساب نهائياً',
-    success: 'تم حذف الحساب وبياناته.',
-  },
-};
+import { useLanguage } from '../state/LanguageContext';
+import { getLocale, localizeMessage } from '../lib/i18n';
 
 export default function AdminPage() {
+  const { language, t } = useLanguage();
+  const dateFormatter = new Intl.DateTimeFormat(getLocale(), {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Asia/Baghdad',
+  });
+  const accountDate = (value: string | null) =>
+    value ? dateFormatter.format(new Date(value)) : t('settings.admin.date.noSignIn');
+  const mutationLabels = {
+    suspend: {
+      title: t('settings.admin.suspend.title'),
+      confirm: t('settings.admin.suspend.confirm'),
+      success: t('settings.admin.suspend.success'),
+    },
+    reactivate: {
+      title: t('settings.admin.reactivate.title'),
+      confirm: t('settings.admin.reactivate.confirm'),
+      success: t('settings.admin.reactivate.success'),
+    },
+    delete: {
+      title: t('settings.admin.delete.title'),
+      confirm: t('settings.admin.delete.confirm'),
+      success: t('settings.admin.delete.success'),
+    },
+  };
   const { user, accountAccess } = useAuth();
   const actorId = user?.id ?? '';
   const authorized =
@@ -141,7 +144,9 @@ export default function AdminPage() {
       (requestError: unknown) => {
         if (!active) return;
         setResult(null);
-        setError(requestError instanceof Error ? requestError.message : 'تعذّر تحميل الحسابات.');
+        setError(
+          requestError instanceof Error ? requestError.message : t('settings.admin.loadFailed'),
+        );
         setLoading(false);
       },
     );
@@ -207,7 +212,7 @@ export default function AdminPage() {
         setReload((previous) => previous + 1);
       }
       setMutationError(
-        requestError instanceof Error ? requestError.message : 'تعذّر تنفيذ العملية.',
+        requestError instanceof Error ? requestError.message : t('settings.admin.actionFailed'),
       );
     } finally {
       if (lifetime.current === currentLifetime) setBusy(false);
@@ -218,8 +223,8 @@ export default function AdminPage() {
     return (
       <Card>
         <EmptyState
-          title="إدارة الحسابات متاحة للأدمن فقط"
-          description="يتم التحقق من الصلاحية من الخادم. سجّل الدخول بحساب الإدارة النشط."
+          title={t('settings.admin.access.title')}
+          description={t('settings.admin.access.description')}
         />
       </Card>
     );
@@ -227,18 +232,38 @@ export default function AdminPage() {
 
   const pages = result ? Math.max(1, Math.ceil(result.total / result.pageSize)) : 1;
   const stats = [
-    { label: 'إجمالي الحسابات', value: result?.stats.total, icon: Users, tone: 'green' },
-    { label: 'الحسابات النشطة', value: result?.stats.active, icon: UserCheck, tone: 'green' },
-    { label: 'الحسابات الموقوفة', value: result?.stats.suspended, icon: Ban, tone: 'amber' },
-    { label: 'حسابات الإدارة', value: result?.stats.admins, icon: ShieldCheck, tone: 'purple' },
+    {
+      label: t('settings.admin.stats.total'),
+      value: result?.stats.total,
+      icon: Users,
+      tone: 'green',
+    },
+    {
+      label: t('settings.admin.stats.active'),
+      value: result?.stats.active,
+      icon: UserCheck,
+      tone: 'green',
+    },
+    {
+      label: t('settings.admin.stats.suspended'),
+      value: result?.stats.suspended,
+      icon: Ban,
+      tone: 'amber',
+    },
+    {
+      label: t('settings.admin.stats.admins'),
+      value: result?.stats.admins,
+      icon: ShieldCheck,
+      tone: 'purple',
+    },
   ];
 
   return (
     <div className="admin-page">
       <PageHeader
-        eyebrow="مساحة الإدارة"
-        title="إدارة الحسابات"
-        description="تابع الحسابات المسجّلة، وأدر الوصول إلى مدار من مكان واحد."
+        eyebrow={t('settings.admin.eyebrow')}
+        title={t('settings.admin.title')}
+        description={t('settings.admin.description')}
         action={
           <button
             className="button secondary"
@@ -246,12 +271,12 @@ export default function AdminPage() {
             disabled={loading || busy}
           >
             <RefreshCw size={17} className={loading ? 'admin-spinning' : ''} />
-            تحديث الحسابات
+            {t('settings.admin.refresh')}
           </button>
         }
       />
 
-      <div className="admin-stats" aria-label="إحصائيات الحسابات">
+      <div className="admin-stats" aria-label={t('settings.admin.stats.label')}>
         {stats.map(({ label, value, icon: Icon, tone }) => (
           <Card key={label} className="admin-stat">
             <span className={`admin-stat-icon admin-tone-${tone}`}>
@@ -259,7 +284,7 @@ export default function AdminPage() {
             </span>
             <div>
               <p>{label}</p>
-              <strong>{value === undefined ? '—' : value.toLocaleString('ar-IQ')}</strong>
+              <strong>{value === undefined ? '—' : value.toLocaleString(getLocale())}</strong>
             </div>
           </Card>
         ))}
@@ -267,10 +292,7 @@ export default function AdminPage() {
 
       <div className="admin-access-note">
         <ShieldCheck size={20} />
-        <p>
-          الإيقاف يمنع الدخول والوصول السحابي مع الاحتفاظ بالبيانات. حسابات الإدارة محمية من الإيقاف
-          والحذف.
-        </p>
+        <p>{t('settings.admin.accessNote')}</p>
       </div>
       {notice && (
         <p
@@ -278,26 +300,26 @@ export default function AdminPage() {
           role={noticeIsError ? 'alert' : 'status'}
         >
           {!noticeIsError && <CheckCircle2 size={18} />}
-          {notice}
+          {localizeMessage(notice)}
         </p>
       )}
 
-      <Card className="admin-accounts" title="الحسابات المسجّلة">
+      <Card className="admin-accounts" title={t('settings.admin.accounts.title')}>
         <div className="admin-filters">
           <label className="search-field admin-search">
             <Search size={18} />
             <input
-              aria-label="البحث عن حساب"
-              placeholder="اسم المستخدم، الاسم، أو البريد"
+              aria-label={t('settings.admin.search.label')}
+              placeholder={t('settings.admin.search.placeholder')}
               value={searchInput}
               maxLength={100}
               onChange={(event) => setSearchInput(event.target.value)}
             />
           </label>
           <label className="admin-status-filter">
-            <span>حالة الحساب</span>
+            <span>{t('settings.admin.filter.label')}</span>
             <select
-              aria-label="حالة الحساب"
+              aria-label={t('settings.admin.filter.label')}
               value={query.status}
               onChange={(event) =>
                 setQuery((previous) => ({
@@ -307,9 +329,9 @@ export default function AdminPage() {
                 }))
               }
             >
-              <option value="all">كل الحسابات</option>
-              <option value="active">نشط</option>
-              <option value="suspended">موقوف</option>
+              <option value="all">{t('settings.admin.filter.all')}</option>
+              <option value="active">{t('settings.admin.status.active')}</option>
+              <option value="suspended">{t('settings.admin.status.suspended')}</option>
             </select>
           </label>
         </div>
@@ -317,44 +339,44 @@ export default function AdminPage() {
         {loading ? (
           <div className="admin-loading" role="status">
             <LoaderCircle size={28} className="admin-spinning" />
-            <p>جاري تحميل الحسابات…</p>
+            <p>{t('settings.admin.loading')}</p>
           </div>
         ) : error ? (
           <div className="admin-load-error" role="alert">
-            <p>{error}</p>
+            <p>{localizeMessage(error)}</p>
             <button
               className="button secondary"
               onClick={() => setReload((previous) => previous + 1)}
             >
               <RefreshCw size={16} />
-              إعادة المحاولة
+              {t('settings.admin.retry')}
             </button>
           </div>
         ) : !result?.accounts.length ? (
           <EmptyState
-            title="لا توجد حسابات مطابقة"
+            title={t('settings.admin.empty.title')}
             description={
               query.search || query.status !== 'all'
-                ? 'جرّب كلمة بحث أخرى أو غيّر فلتر الحالة.'
-                : 'تظهر الحسابات هنا بعد التسجيل في مدار.'
+                ? t('settings.admin.empty.filtered')
+                : t('settings.admin.empty.initial')
             }
           />
         ) : (
           <>
             <div className="admin-table-head" aria-hidden="true">
-              <span>الحساب</span>
-              <span>الحالة والصلاحية</span>
-              <span>تاريخ التسجيل / آخر دخول</span>
-              <span>إدارة الحساب</span>
+              <span>{t('settings.admin.table.account')}</span>
+              <span>{t('settings.admin.table.access')}</span>
+              <span>{t('settings.admin.table.dates')}</span>
+              <span>{t('settings.admin.table.manage')}</span>
             </div>
-            <div className="admin-account-list" aria-label="قائمة الحسابات">
+            <div className="admin-account-list" aria-label={t('settings.admin.accounts.label')}>
               {result.accounts.map((account) => {
                 const protectedAccount = account.id === actorId || account.role === 'admin';
                 return (
                   <article
                     className="admin-account"
                     key={account.id}
-                    aria-label={`حساب ${account.username}`}
+                    aria-label={t('settings.admin.account.label', { username: account.username })}
                   >
                     <div className="admin-account-identity">
                       <span className="admin-avatar" aria-hidden="true">
@@ -366,42 +388,46 @@ export default function AdminPage() {
                           @{account.username}
                         </span>
                         <span className="admin-email" dir="ltr">
-                          {account.email || 'بدون بريد إلكتروني'}
+                          {account.email || t('settings.admin.email.none')}
                         </span>
                         <small className="admin-email-state">
-                          {account.emailConfirmed ? 'البريد مؤكّد' : 'بانتظار تأكيد البريد'}
+                          {account.emailConfirmed
+                            ? t('settings.admin.email.confirmed')
+                            : t('settings.admin.email.pending')}
                         </small>
                       </div>
                     </div>
                     <div className="admin-account-badges">
                       <span className={`admin-badge admin-state-${account.status}`}>
-                        {account.status === 'active' ? 'نشط' : 'موقوف'}
+                        {account.status === 'active'
+                          ? t('settings.admin.status.active')
+                          : t('settings.admin.status.suspended')}
                       </span>
                       <span className={`admin-badge admin-role-${account.role}`}>
                         {account.role === 'admin' ? (
                           <>
                             <ShieldCheck size={13} />
-                            أدمن
+                            {t('settings.admin.role.admin')}
                           </>
                         ) : (
-                          'مستخدم'
+                          t('settings.admin.role.user')
                         )}
                       </span>
-                      {account.id === actorId && <small>حسابك الحالي</small>}
+                      {account.id === actorId && <small>{t('settings.admin.current')}</small>}
                     </div>
                     <div className="admin-account-dates">
                       <div>
-                        <span>تاريخ التسجيل</span>
+                        <span>{t('settings.admin.date.registered')}</span>
                         <time dateTime={account.createdAt}>{accountDate(account.createdAt)}</time>
                       </div>
                       <div>
-                        <span>آخر دخول</span>
+                        <span>{t('settings.admin.date.lastSignIn')}</span>
                         {account.lastSignInAt ? (
                           <time dateTime={account.lastSignInAt}>
                             {accountDate(account.lastSignInAt)}
                           </time>
                         ) : (
-                          <p>لم يسجّل الدخول بعد</p>
+                          <p>{t('settings.admin.date.noSignIn')}</p>
                         )}
                       </div>
                     </div>
@@ -409,7 +435,7 @@ export default function AdminPage() {
                       {protectedAccount ? (
                         <span className="admin-protected">
                           <LockKeyhole size={15} />
-                          حساب إدارة محمي
+                          {t('settings.admin.protected')}
                         </span>
                       ) : (
                         <>
@@ -428,7 +454,9 @@ export default function AdminPage() {
                             ) : (
                               <UserCheck size={15} />
                             )}
-                            {account.status === 'active' ? 'إيقاف الحساب' : 'إعادة تفعيل الحساب'}
+                            {account.status === 'active'
+                              ? t('settings.admin.suspend.title')
+                              : t('settings.admin.reactivate.title')}
                           </button>
                           <button
                             className="button admin-delete"
@@ -436,13 +464,13 @@ export default function AdminPage() {
                             onClick={() => openConfirmation('delete', account)}
                           >
                             <Trash2 size={15} />
-                            حذف الحساب
+                            {t('settings.admin.delete.button')}
                           </button>
                           {blockedActions[account.id] && (
                             <small className="admin-protected">
                               {blockedActions[account.id].kind === 'delete'
-                                ? 'حذف معلّق بانتظار مراجعة مالك الموقع'
-                                : 'تغيير الحالة قيد التحقق؛ انتظر 15 دقيقة'}
+                                ? t('settings.admin.blocked.delete')
+                                : t('settings.admin.blocked.status')}
                             </small>
                           )}
                         </>
@@ -454,27 +482,30 @@ export default function AdminPage() {
             </div>
             <div className="admin-pagination">
               <p>
-                {result.total.toLocaleString('ar-IQ')} حساب مطابق · الصفحة{' '}
-                {query.page.toLocaleString('ar-IQ')} من {pages.toLocaleString('ar-IQ')}
+                {t('settings.admin.pagination.summary', {
+                  count: result.total.toLocaleString(getLocale()),
+                  page: query.page.toLocaleString(getLocale()),
+                  pages: pages.toLocaleString(getLocale()),
+                })}
               </p>
               <div>
                 <button
                   className="button secondary"
-                  aria-label="الصفحة السابقة"
+                  aria-label={t('settings.admin.pagination.previousLabel')}
                   disabled={query.page <= 1 || busy}
                   onClick={() => setQuery((previous) => ({ ...previous, page: previous.page - 1 }))}
                 >
-                  <ChevronRight size={17} />
-                  السابق
+                  {language === 'ar' ? <ChevronRight size={17} /> : <ChevronLeft size={17} />}
+                  {t('settings.admin.pagination.previous')}
                 </button>
                 <button
                   className="button secondary"
-                  aria-label="الصفحة التالية"
+                  aria-label={t('settings.admin.pagination.nextLabel')}
                   disabled={query.page >= pages || busy}
                   onClick={() => setQuery((previous) => ({ ...previous, page: previous.page + 1 }))}
                 >
-                  التالي
-                  <ChevronLeft size={17} />
+                  {t('settings.admin.pagination.next')}
+                  {language === 'ar' ? <ChevronLeft size={17} /> : <ChevronRight size={17} />}
                 </button>
               </div>
             </div>
@@ -491,18 +522,18 @@ export default function AdminPage() {
             </div>
             <p className="confirm-text">
               {pending.action === 'suspend'
-                ? 'سيتم منع هذا الحساب من تسجيل الدخول والوصول إلى بياناته السحابية. تبقى بياناته محفوظة ويمكنك إعادة تفعيله لاحقاً.'
+                ? t('settings.admin.suspend.description')
                 : pending.action === 'reactivate'
-                  ? 'سيتم السماح لهذا الحساب بتسجيل الدخول والوصول إلى بياناته السحابية مرة أخرى.'
-                  : 'سيتم حذف الحساب وجميع بياناته السحابية نهائياً، بما فيها المهام والمهارات وسجل النشاط. لا يمكن التراجع عن هذه العملية.'}
+                  ? t('settings.admin.reactivate.description')
+                  : t('settings.admin.delete.description')}
             </p>
             {pending.action === 'delete' && (
               <label className="form-field admin-delete-confirm">
                 <span>
-                  اكتب اسم المستخدم للتأكيد: <bdi>{pending.account.username}</bdi>
+                  {t('settings.admin.delete.typeUsername')}: <bdi>{pending.account.username}</bdi>
                 </span>
                 <input
-                  aria-label="اكتب اسم المستخدم للتأكيد"
+                  aria-label={t('settings.admin.delete.typeUsername')}
                   value={confirmation}
                   onChange={(event) => setConfirmation(event.target.value)}
                   dir="ltr"
@@ -514,7 +545,7 @@ export default function AdminPage() {
             )}
             {mutationError && (
               <p className="form-error" role="alert">
-                {mutationError}
+                {localizeMessage(mutationError)}
               </p>
             )}
             <div className="form-actions">
@@ -526,7 +557,7 @@ export default function AdminPage() {
                 type="submit"
               >
                 {busy && <LoaderCircle size={17} className="admin-spinning" />}
-                {busy ? 'جاري تنفيذ العملية…' : mutationLabels[pending.action].confirm}
+                {busy ? t('settings.admin.busy') : mutationLabels[pending.action].confirm}
               </button>
               <button
                 className="button secondary"
@@ -534,12 +565,12 @@ export default function AdminPage() {
                 disabled={busy}
                 onClick={closeConfirmation}
               >
-                إلغاء
+                {t('settings.admin.cancel')}
               </button>
             </div>
             {busy && (
               <p className="admin-busy-note" role="status">
-                انتظر إتمام العملية قبل إغلاق النافذة.
+                {t('settings.admin.busyNote')}
               </p>
             )}
           </form>

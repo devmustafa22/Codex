@@ -1,3 +1,6 @@
+import { useLanguage } from '../state/LanguageContext';
+import { localizeMessage } from '../lib/i18n';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import {
@@ -29,6 +32,7 @@ function callbackFailed() {
 
 export function AuthGate({ children }: { children: ReactNode }) {
   const auth = useAuth();
+  const { language, t } = useLanguage();
   const [formMode, setFormMode] = useState<FormMode>('signin');
   const [name, setName] = useState('');
   const [username, setUsername] = useState('');
@@ -39,9 +43,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
   const [visiblePassword, setVisiblePassword] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [notice, setNotice] = useState(() =>
-    callbackFailed() ? 'رابط الدخول منتهي أو غير صالح. اطلب رسالة جديدة وافتحها بنفس المتصفح.' : '',
-  );
+  const [notice, setNotice] = useState(() => (callbackFailed() ? t('auth.callbackExpired') : ''));
   const mode = auth.recovery && auth.session && auth.recoveryVerified ? 'reset' : formMode;
 
   useEffect(() => {
@@ -50,11 +52,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
       setConfirmation('');
       setVisiblePassword(false);
     }
+  }, [auth.mode, auth.recovery]);
+
+  useEffect(() => {
     if (auth.mode === 'signed-out' || auth.recovery) {
       document.documentElement.dataset.theme = 'light';
-      document.title = 'أهلاً في مدار — مساحتك للنمو';
+      document.title = t('auth.documentTitle');
     }
-  }, [auth.mode, auth.recovery]);
+  }, [auth.mode, auth.recovery, language, t]);
 
   const switchForm = (next: FormMode) => {
     setFormMode(next);
@@ -75,31 +80,27 @@ export function AuthGate({ children }: { children: ReactNode }) {
       if (mode === 'signin') {
         await auth.signIn(identifier, password);
       } else if (mode === 'signup') {
-        if (password !== confirmation) throw new Error('تأكيد كلمة المرور غير مطابق.');
+        if (password !== confirmation) throw new Error(t('auth.passwordMismatch'));
         const result = await auth.signUp({ name, username, email, password });
         if (result.confirmationRequired) {
           setFormMode('signin');
           setIdentifier(email.trim());
           setPassword('');
           setConfirmation('');
-          setNotice(
-            'خطوتك الأولى تمت! فعّل بريدك من رسالة التأكيد، وافتح الرابط بنفس المتصفح، ثم سجّل الدخول.',
-          );
+          setNotice(t('auth.signupConfirmation'));
         }
       } else if (mode === 'forgot') {
         await auth.requestPasswordReset(email);
-        setNotice(
-          'إذا كان البريد مسجّلاً، ستوصلك رسالة استرجاع. افتح رابطها بنفس المتصفح خلال مدة صلاحيته.',
-        );
+        setNotice(t('auth.recoveryEmailSent'));
       } else {
-        if (password !== confirmation) throw new Error('تأكيد كلمة المرور غير مطابق.');
+        if (password !== confirmation) throw new Error(t('auth.passwordMismatch'));
         await auth.changePassword(password);
         setPassword('');
         setConfirmation('');
         setFormMode('signin');
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : 'تعذّرت العملية. حاول مجدداً.');
+      setError(cause instanceof Error ? cause.message : t('auth.operationFailed'));
     } finally {
       setBusy(false);
     }
@@ -121,49 +122,48 @@ export function AuthGate({ children }: { children: ReactNode }) {
   }
 
   const title = {
-    signin: 'أهلاً بعودتك.',
-    signup: 'كل رحلة تبدأ بخطوة.',
-    forgot: 'نرجّعك إلى مدارك.',
-    reset: 'بداية جديدة وآمنة.',
+    signin: t('auth.signinTitle'),
+    signup: t('auth.signupTitle'),
+    forgot: t('auth.forgotTitle'),
+    reset: t('auth.resetTitle'),
   }[mode];
   const description = {
-    signin: 'مهامك، مهاراتك، وخطواتك الصغيرة… كلها بمكان واحد.',
-    signup: 'أنشئ حسابك، وخلي تقدّمك وياك على كل أجهزتك.',
-    forgot: 'اكتب بريد حسابك حتى نرسل لك رابط تغيير كلمة المرور.',
-    reset: 'اختَر كلمة مرور جديدة لحسابك حتى تكمل رحلتك.',
+    signin: t('auth.signinDescription'),
+    signup: t('auth.signupDescription'),
+    forgot: t('auth.forgotDescription'),
+    reset: t('auth.resetDescription'),
   }[mode];
   const buttonText = {
-    signin: 'ادخل إلى مساحتك',
-    signup: 'أنشئ حسابي',
-    forgot: 'أرسل رابط الاسترجاع',
-    reset: 'احفظ كلمة المرور',
+    signin: t('auth.signinButton'),
+    signup: t('auth.signupButton'),
+    forgot: t('auth.forgotButton'),
+    reset: t('auth.resetButton'),
   }[mode];
 
   return (
-    <main className="auth-shell" dir="rtl">
+    <main className="auth-shell" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <section className="auth-panel" aria-labelledby="auth-heading">
         <div className="auth-brand-row">
           <Brand />
+          <LanguageSwitcher />
           <span className="auth-cloud-label">
-            <Cloud size={15} /> مساحتك السحابية
+            <Cloud size={15} /> {t('auth.cloudSpace')}
           </span>
         </div>
         {auth.loading ? (
           <div className="auth-loading" role="status">
             <LoaderCircle size={30} className="auth-spinner" />
-            <h1>نجهّز مساحتك…</h1>
-            <p>لحظة ونكمل رحلتك.</p>
+            <h1>{t('auth.loadingTitle')}</h1>
+            <p>{t('auth.loadingDescription')}</p>
           </div>
         ) : (
           <div className="auth-form-wrap">
             <span className="auth-eyebrow">
-              <span /> على وتيرتك، كل يوم
+              <span /> {t('auth.eyebrow')}
             </span>
-            <h1 id="auth-heading">{auth.configured ? title : 'مساحتك جاهزة للنمو.'}</h1>
+            <h1 id="auth-heading">{auth.configured ? title : t('auth.setupTitle')}</h1>
             <p className="auth-description">
-              {auth.configured
-                ? description
-                : 'اربط الحسابات السحابية، أو اكتشف مدار بنسخة تجريبية على هذا المتصفح.'}
+              {auth.configured ? description : t('auth.setupDescription')}
             </p>
 
             {!auth.configured ? (
@@ -171,24 +171,23 @@ export function AuthGate({ children }: { children: ReactNode }) {
                 <span className="auth-setup-icon">
                   <Cloud size={24} />
                 </span>
-                <h2>فعّل الحفظ السحابي</h2>
-                <p>{configurationIssue}</p>
+                <h2>{t('auth.enableCloud')}</h2>
+                <p>{localizeMessage(configurationIssue)}</p>
                 <ol>
-                  <li>أنشئ مشروع Supabase مجاني وطبّق ملف إعداد قاعدة البيانات.</li>
+                  <li>{t('auth.setupCreateProject')}</li>
                   <li>
-                    انسخ <code dir="ltr">.env.example</code> إلى <code dir="ltr">.env.local</code>،
-                    وأضف الرابط والمفتاح العام.
+                    {t('auth.setupCopy')} <code dir="ltr">.env.example</code> {t('auth.setupTo')}{' '}
+                    <code dir="ltr">.env.local</code> {t('auth.setupAddKey')}
                   </li>
                   <li>
-                    أعد تشغيل المشروع. شرح الإعداد الكامل بملف{' '}
-                    <code dir="ltr">docs/deployment.md</code>.
+                    {t('auth.setupRestart')} <code dir="ltr">docs/deployment.md</code>.
                   </li>
                 </ol>
               </div>
             ) : (
               <>
                 {(mode === 'signin' || mode === 'signup') && (
-                  <div className="auth-tabs" aria-label="نوع الدخول">
+                  <div className="auth-tabs" aria-label={t('auth.formType')}>
                     <button
                       type="button"
                       aria-pressed={mode === 'signin'}
@@ -196,7 +195,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
                       disabled={busy}
                       onClick={() => switchForm('signin')}
                     >
-                      تسجيل الدخول
+                      {t('auth.signinTab')}
                     </button>
                     <button
                       type="button"
@@ -205,7 +204,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
                       disabled={busy}
                       onClick={() => switchForm('signup')}
                     >
-                      حساب جديد
+                      {t('auth.signupTab')}
                     </button>
                   </div>
                 )}
@@ -216,14 +215,13 @@ export function AuthGate({ children }: { children: ReactNode }) {
                 >
                   {auth.recovery && !auth.recoveryVerified && (
                     <p className="auth-feedback auth-error" role="alert">
-                      تعذّر فتح جلسة الاسترجاع. اطلب رابطاً جديداً من «نسيت كلمة المرور»، وافتحه
-                      بنفس المتصفح.
+                      {t('auth.recoverySessionFailed')}
                     </p>
                   )}
                   {mode === 'signup' && (
                     <>
                       <label className="auth-field" htmlFor="auth-name">
-                        <span>اسمك</span>
+                        <span>{t('auth.name')}</span>
                         <input
                           id="auth-name"
                           name="name"
@@ -232,12 +230,12 @@ export function AuthGate({ children }: { children: ReactNode }) {
                           onChange={(e) => setName(e.target.value)}
                           maxLength={80}
                           required
-                          placeholder="شنو نحب نناديك؟"
+                          placeholder={t('auth.namePlaceholder')}
                           disabled={busy}
                         />
                       </label>
                       <label className="auth-field" htmlFor="auth-username">
-                        <span>اسم المستخدم</span>
+                        <span>{t('auth.username')}</span>
                         <input
                           id="auth-username"
                           name="username"
@@ -251,19 +249,17 @@ export function AuthGate({ children }: { children: ReactNode }) {
                           maxLength={24}
                           pattern="[a-z0-9_]{3,24}"
                           required
-                          placeholder="your_name"
+                          placeholder={t('auth.usernamePlaceholder')}
                           disabled={busy}
                           aria-describedby="auth-username-help"
                         />
-                        <small id="auth-username-help">
-                          3–24 حرفاً إنكليزياً أو رقماً أو _، بدون مسافات.
-                        </small>
+                        <small id="auth-username-help">{t('auth.usernameHelp')}</small>
                       </label>
                     </>
                   )}
                   {mode === 'signin' && (
                     <label className="auth-field" htmlFor="auth-identifier">
-                      <span>اسم المستخدم أو البريد الإلكتروني</span>
+                      <span>{t('auth.identifier')}</span>
                       <input
                         id="auth-identifier"
                         name="username"
@@ -274,14 +270,14 @@ export function AuthGate({ children }: { children: ReactNode }) {
                         value={identifier}
                         onChange={(e) => setIdentifier(e.target.value)}
                         required
-                        placeholder="your_name / you@example.com"
+                        placeholder={t('auth.identifierPlaceholder')}
                         disabled={busy}
                       />
                     </label>
                   )}
                   {(mode === 'signup' || mode === 'forgot') && (
                     <label className="auth-field" htmlFor="auth-email">
-                      <span>البريد الإلكتروني</span>
+                      <span>{t('auth.email')}</span>
                       <input
                         id="auth-email"
                         name="email"
@@ -294,17 +290,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         required
-                        placeholder="you@example.com"
+                        placeholder={t('auth.emailPlaceholder')}
                         disabled={busy}
                       />
-                      {mode === 'signup' && (
-                        <small>نستخدمه لتأكيد الحساب واسترجاع كلمة المرور.</small>
-                      )}
+                      {mode === 'signup' && <small>{t('auth.emailHelp')}</small>}
                     </label>
                   )}
                   {mode !== 'forgot' && (
                     <label className="auth-field" htmlFor="auth-password">
-                      <span>{mode === 'reset' ? 'كلمة المرور الجديدة' : 'كلمة المرور'}</span>
+                      <span>{mode === 'reset' ? t('auth.newPassword') : t('auth.password')}</span>
                       <span className="auth-password-wrap">
                         <input
                           id="auth-password"
@@ -324,21 +318,21 @@ export function AuthGate({ children }: { children: ReactNode }) {
                           type="button"
                           onClick={() => setVisiblePassword((value) => !value)}
                           disabled={busy}
-                          aria-label={visiblePassword ? 'إخفاء كلمة المرور' : 'إظهار كلمة المرور'}
+                          aria-label={
+                            visiblePassword ? t('auth.hidePassword') : t('auth.showPassword')
+                          }
                         >
                           {visiblePassword ? <EyeOff size={19} /> : <Eye size={19} />}
                         </button>
                       </span>
                       {mode !== 'signin' && (
-                        <small id="auth-password-help">
-                          من 10 إلى 128 حرفاً، تتضمن حرفاً ورقماً.
-                        </small>
+                        <small id="auth-password-help">{t('auth.passwordHelp')}</small>
                       )}
                     </label>
                   )}
                   {(mode === 'signup' || mode === 'reset') && (
                     <label className="auth-field" htmlFor="auth-confirmation">
-                      <span>تأكيد كلمة المرور</span>
+                      <span>{t('auth.confirmPassword')}</span>
                       <input
                         id="auth-confirmation"
                         name="password-confirmation"
@@ -361,29 +355,32 @@ export function AuthGate({ children }: { children: ReactNode }) {
                       onClick={() => switchForm('forgot')}
                       disabled={busy}
                     >
-                      نسيت كلمة المرور؟
+                      {t('auth.forgotPassword')}
                     </button>
                   )}
                   {error && (
                     <p className="auth-feedback auth-error" id="auth-error" role="alert">
-                      {error}
+                      {localizeMessage(error)}
                     </p>
                   )}
                   {notice && (
                     <p className="auth-feedback auth-notice" role="status">
                       <Check size={17} />
-                      {notice}
+                      {localizeMessage(notice)}
                     </p>
                   )}
                   <button type="submit" className="auth-submit" disabled={busy}>
                     {busy ? (
                       <>
-                        <LoaderCircle size={19} className="auth-spinner" /> لحظة…
+                        <LoaderCircle size={19} className="auth-spinner" /> {t('auth.pleaseWait')}
                       </>
                     ) : (
                       <>
                         {buttonText}
-                        <ArrowUpLeft size={18} />
+                        <ArrowUpLeft
+                          size={18}
+                          style={language === 'en' ? { transform: 'scaleX(-1)' } : undefined}
+                        />
                       </>
                     )}
                   </button>
@@ -395,13 +392,15 @@ export function AuthGate({ children }: { children: ReactNode }) {
                     disabled={busy}
                     onClick={() => {
                       if (mode === 'reset') {
-                        void auth
-                          .signOut()
-                          .catch(() => setError('تعذّر إنهاء الجلسة. حاول مجدداً.'));
+                        void auth.signOut().catch(() => setError(t('auth.endSessionFailed')));
                       } else switchForm('signin');
                     }}
                   >
-                    <ChevronLeft size={17} /> العودة إلى تسجيل الدخول
+                    <ChevronLeft
+                      size={17}
+                      style={language === 'ar' ? { transform: 'scaleX(-1)' } : undefined}
+                    />{' '}
+                    {t('auth.backToSignin')}
                   </button>
                 )}
               </>
@@ -410,51 +409,51 @@ export function AuthGate({ children }: { children: ReactNode }) {
             {!auth.recovery && (
               <div className="auth-demo">
                 <button type="button" onClick={auth.enterDemo} disabled={busy}>
-                  جرّب مدار بدون حساب <ArrowUpLeft size={16} />
+                  {t('auth.tryDemo')} <ArrowUpLeft size={16} />
                 </button>
-                <p>بيانات التجربة تبقى على هذا المتصفح. الحفظ السحابي يبدأ مع حسابك.</p>
+                <p>{t('auth.demoPrivacy')}</p>
               </div>
             )}
             <div className="auth-trust">
               <LockKeyhole size={14} />
-              <span>مساحتك خاصة بك. حسابك يحفظ تقدّمك بين أجهزتك.</span>
+              <span>{t('auth.trust')}</span>
             </div>
           </div>
         )}
         <p className="auth-footer">
-          صُنع لرحلتك، على وتيرتك. <span dir="ltr">مدار 2.0</span>
+          {t('auth.footer')} <span dir="ltr">{t('auth.version')}</span>
         </p>
       </section>
 
-      <aside className="auth-story" aria-label="مزايا مدار">
+      <aside className="auth-story" aria-label={t('auth.featuresLabel')}>
         <div className="auth-orbit auth-orbit-one" aria-hidden="true" />
         <div className="auth-orbit auth-orbit-two" aria-hidden="true" />
         <span className="auth-story-tag">
-          <Leaf size={15} /> مساحة تنمو معك
+          <Leaf size={15} /> {t('auth.storyTag')}
         </span>
         <div className="auth-story-heading">
           <h2>
-            كل خطوة صغيرة،
+            {t('auth.storyHeadingStart')}
             <br />
-            <span>تصنع فرقاً كبيراً.</span>
+            <span>{t('auth.storyHeadingEnd')}</span>
           </h2>
-          <p>رتّب يومك، طوّر مهاراتك، وخلّي أثر تعبك واضحاً. مدار يجمع رحلتك بمكان هادئ وواضح.</p>
+          <p>{t('auth.storyDescription')}</p>
         </div>
         <div className="auth-preview" aria-hidden="true">
           <div className="auth-preview-title">
             <span>
-              <Sprout size={19} /> رحلة النمو
+              <Sprout size={19} /> {t('auth.growthJourney')}
             </span>
-            <span>هذا الأسبوع</span>
+            <span>{t('auth.thisWeek')}</span>
           </div>
           <div className="auth-preview-stats">
             <div>
-              <span>وقت التعلّم</span>
+              <span>{t('auth.learningTime')}</span>
               <strong>
-                8.5 <small>ساعة</small>
+                8.5 <small>{t('auth.hours')}</small>
               </strong>
             </div>
-            <span className="auth-preview-growth">↗ خطوة للأمام</span>
+            <span className="auth-preview-growth">{t('auth.stepForward')}</span>
           </div>
           <div className="auth-preview-chart">
             {[36, 59, 48, 82, 65, 92, 73].map((height, index) => (
@@ -463,35 +462,35 @@ export function AuthGate({ children }: { children: ReactNode }) {
           </div>
           <div className="auth-preview-bottom">
             <span>
-              <Check size={14} /> خطّطت
+              <Check size={14} /> {t('auth.planned')}
             </span>
             <span>
-              <Check size={14} /> تعلّمت
+              <Check size={14} /> {t('auth.learned')}
             </span>
             <span>
-              <Check size={14} /> تقدّمت
+              <Check size={14} /> {t('auth.progressed')}
             </span>
           </div>
         </div>
         <div className="auth-story-features">
           <span>
             <CalendarDays size={19} />
-            <strong>يومك تحت سيطرتك</strong>
-            <small>مهام، تقويم، وسجلّ يومي.</small>
+            <strong>{t('auth.featureDayTitle')}</strong>
+            <small>{t('auth.featureDayDescription')}</small>
           </span>
           <span>
             <Cloud size={19} />
-            <strong>تقدّمك وياك دائماً</strong>
-            <small>على الكمبيوتر والهاتف.</small>
+            <strong>{t('auth.featureSyncTitle')}</strong>
+            <small>{t('auth.featureSyncDescription')}</small>
           </span>
           <span>
             <ShieldCheck size={19} />
-            <strong>مساحة باسمك</strong>
-            <small>حساب وبيانات خاصة بك.</small>
+            <strong>{t('auth.featurePrivateTitle')}</strong>
+            <small>{t('auth.featurePrivateDescription')}</small>
           </span>
         </div>
         <div className="auth-story-signature">
-          <span /> تقدّم حقيقي، خطوة بخطوة.
+          <span /> {t('auth.storySignature')}
         </div>
       </aside>
     </main>

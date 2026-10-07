@@ -1,3 +1,6 @@
+import { getLocale, localizeMessage } from './lib/i18n';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
+import { useLanguage } from './state/LanguageContext';
 import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
   LayoutDashboard,
@@ -41,30 +44,32 @@ import InsightsPage from './pages/InsightsPage';
 import SettingsPage from './pages/SettingsPage';
 const AdminPage = lazy(() => import('./pages/AdminPage'));
 const navigation: { id: PageId; label: string; icon: LucideIcon }[] = [
-  { id: 'dashboard', label: 'نظرة عامة', icon: LayoutDashboard },
-  { id: 'tasks', label: 'مهامي', icon: ListTodo },
-  { id: 'skills', label: 'مهاراتي', icon: Sprout },
-  { id: 'calendar', label: 'التقويم', icon: CalendarDays },
-  { id: 'journal', label: 'سجلّ الرحلة', icon: BookOpen },
-  { id: 'insights', label: 'التحليلات', icon: ChartNoAxesCombined },
+  { id: 'dashboard', label: 'shell.nav.dashboard', icon: LayoutDashboard },
+  { id: 'tasks', label: 'shell.nav.tasks', icon: ListTodo },
+  { id: 'skills', label: 'shell.nav.skills', icon: Sprout },
+  { id: 'calendar', label: 'shell.nav.calendar', icon: CalendarDays },
+  { id: 'journal', label: 'shell.nav.journal', icon: BookOpen },
+  { id: 'insights', label: 'shell.nav.insights', icon: ChartNoAxesCombined },
 ];
 const mobileNavigation: { id: PageId; label: string; icon: LucideIcon }[] = [
-  { id: 'dashboard', label: 'الرئيسية', icon: LayoutDashboard },
-  { id: 'tasks', label: 'المهام', icon: ListTodo },
-  { id: 'calendar', label: 'التقويم', icon: CalendarDays },
-  { id: 'journal', label: 'السجلّ', icon: BookOpen },
+  { id: 'dashboard', label: 'shell.mobile.home', icon: LayoutDashboard },
+  { id: 'tasks', label: 'shell.mobile.tasks', icon: ListTodo },
+  { id: 'calendar', label: 'shell.nav.calendar', icon: CalendarDays },
+  { id: 'journal', label: 'shell.mobile.journal', icon: BookOpen },
 ];
 const syncLabels = {
-  loading: 'جارٍ تحميل بياناتك',
-  synced: 'محفوظ في السحابة',
-  saving: 'جارٍ الحفظ في السحابة',
-  offline: 'غير متصل بالسحابة',
-  error: 'تعذرت المزامنة',
-  conflict: 'تعارض يحتاج مراجعتك',
-  local: 'تجربة محلية — على هذا الجهاز',
+  loading: 'shell.sync.loading',
+  synced: 'shell.sync.synced',
+  saving: 'shell.sync.saving',
+  offline: 'shell.sync.offline',
+  error: 'shell.sync.error',
+  conflict: 'shell.sync.conflict',
+  local: 'shell.sync.local',
 };
 export default function App() {
-  const { data, page, setPage, syncStatus, syncError, lastSyncedAt, notify } = useApp();
+  const { t, language } = useLanguage();
+  const { data, page, setPage, syncStatus, syncError, lastSyncedAt, notify, updateProfile } =
+    useApp();
   const { mode, accountAccess, signOut, leaveDemo } = useAuth();
   const isAdmin =
     mode === 'cloud' && accountAccess?.role === 'admin' && accountAccess.status === 'active';
@@ -76,7 +81,7 @@ export default function App() {
   const [confirmSignOut, setConfirmSignOut] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const sidebarRef = useRef<HTMLElement>(null);
-  const syncLabel = syncLabels[syncStatus];
+  const syncLabel = t(syncLabels[syncStatus]);
   const syncPending = ['saving', 'offline', 'error', 'conflict'].includes(syncStatus);
   const SyncIcon =
     syncStatus === 'local'
@@ -115,7 +120,7 @@ export default function App() {
     try {
       await signOut();
     } catch (error) {
-      notify(error instanceof Error ? error.message : 'تعذر تسجيل الخروج. جرّب مرة ثانية.');
+      notify(error instanceof Error ? localizeMessage(error.message) : t('shell.signOut.error'));
     } finally {
       setSigningOut(false);
     }
@@ -172,8 +177,14 @@ export default function App() {
     return () => window.removeEventListener('keydown', listener);
   }, []);
   useEffect(() => {
-    document.title = `${page === 'admin' ? 'إدارة الحسابات' : page === 'settings' ? 'الإعدادات' : (navigation.find((n) => n.id === page)?.label ?? 'مدار')} — مدار`;
-  }, [page]);
+    const titleKey =
+      page === 'admin'
+        ? 'shell.nav.admin'
+        : page === 'settings'
+          ? 'shell.nav.settings'
+          : (navigation.find((item) => item.id === page)?.label ?? 'shell.brand.name');
+    document.title = `${t(titleKey)} — ${t('shell.brand.name')}`;
+  }, [page, language, t]);
   return (
     <div className="app-shell">
       <a
@@ -184,12 +195,12 @@ export default function App() {
           document.getElementById('main-content')?.focus();
         }}
       >
-        انتقل إلى المحتوى
+        {t('shell.nav.skip')}
       </a>
       {sidebarOpen && (
         <button
           className="sidebar-overlay"
-          aria-label="إغلاق القائمة"
+          aria-label={t('shell.nav.close')}
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -200,14 +211,14 @@ export default function App() {
         inert={isMobile && !sidebarOpen}
         role={isMobile && sidebarOpen ? 'dialog' : undefined}
         aria-modal={isMobile && sidebarOpen ? true : undefined}
-        aria-label="التنقل في مدار"
+        aria-label={t('shell.nav.navigation')}
         aria-hidden={isMobile && !sidebarOpen ? true : undefined}
       >
         <div className="sidebar-brand">
           <Brand />
           <button
             className="icon-button mobile-close"
-            aria-label="إغلاق القائمة"
+            aria-label={t('shell.nav.close')}
             onClick={() => setSidebarOpen(false)}
           >
             <PanelRightClose size={20} />
@@ -215,11 +226,11 @@ export default function App() {
         </div>
         <div className="workspace-label">
           <span className="workspace-dot" />
-          مساحتي الشخصية
+          {t('shell.nav.workspace')}
           <ChevronDown size={14} />
         </div>
-        <span className="nav-section-label">في مدارك</span>
-        <nav aria-label="القائمة الرئيسية">
+        <span className="nav-section-label">{t('shell.nav.primarySection')}</span>
+        <nav aria-label={t('shell.nav.primary')}>
           {navigation.map((item) => (
             <button
               key={item.id}
@@ -228,7 +239,7 @@ export default function App() {
               aria-current={page === item.id ? 'page' : undefined}
             >
               <item.icon size={19} />
-              <span>{item.label}</span>
+              <span>{t(item.label)}</span>
               {item.id === 'tasks' && reminders.length > 0 && (
                 <span className="nav-count">{reminders.length}</span>
               )}
@@ -237,7 +248,7 @@ export default function App() {
           ))}
         </nav>
         <div className="sidebar-secondary">
-          <span className="nav-section-label">مساحتك</span>
+          <span className="nav-section-label">{t('shell.nav.secondarySection')}</span>
           {isAdmin && (
             <button
               className={`nav-item ${page === 'admin' ? 'active' : ''}`}
@@ -245,7 +256,7 @@ export default function App() {
               aria-current={page === 'admin' ? 'page' : undefined}
             >
               <ShieldCheck size={19} />
-              <span>إدارة الحسابات</span>
+              <span>{t('shell.nav.admin')}</span>
             </button>
           )}
           <button
@@ -254,7 +265,7 @@ export default function App() {
             aria-current={page === 'settings' ? 'page' : undefined}
           >
             <Settings2 size={19} />
-            <span>الإعدادات</span>
+            <span>{t('shell.nav.settings')}</span>
           </button>
           <button
             className="nav-item"
@@ -264,12 +275,12 @@ export default function App() {
             }}
           >
             <CircleHelp size={19} />
-            <span>دليل البداية</span>
+            <span>{t('shell.nav.help')}</span>
             <ArrowUpLeft size={14} />
           </button>
           <button className="nav-item" onClick={requestSignOut} disabled={signingOut}>
             <LogOut size={19} />
-            <span>{mode === 'demo' ? 'إنهاء التجربة' : 'تسجيل الخروج'}</span>
+            <span>{mode === 'demo' ? t('shell.signOut.demo') : t('shell.signOut.cloud')}</span>
           </button>
         </div>
         <div className="sidebar-bottom">
@@ -279,17 +290,17 @@ export default function App() {
               <Sprout size={23} />
             </span>
             <h3>
-              كل خطوة
+              {t('shell.inspiration.line1')}
               <br />
-              تُحدث فرقاً.
+              {t('shell.inspiration.line2')}
             </h3>
             <p>
-              مو لازم تكون الأسرع،
+              {t('shell.inspiration.description1')}
               <br />
-              المهم تبقى في الطريق.
+              {t('shell.inspiration.description2')}
             </p>
             <button onClick={() => navTo('skills')}>
-              اكتشف تقدّمك
+              {t('shell.inspiration.explore')}
               <ArrowUpLeft size={15} />
             </button>
           </div>
@@ -297,7 +308,7 @@ export default function App() {
             <span className="avatar">{data.profile.name.charAt(0)}</span>
             <div>
               <strong>{data.profile.name}</strong>
-              <span>مساحتك الشخصية</span>
+              <span>{t('shell.profile.workspace')}</span>
             </div>
             <Settings2 size={16} />
           </button>
@@ -311,7 +322,7 @@ export default function App() {
         <header className="topbar">
           <button
             className="icon-button mobile-menu"
-            aria-label="فتح القائمة"
+            aria-label={t('shell.nav.open')}
             aria-expanded={sidebarOpen}
             aria-controls="app-sidebar"
             onClick={() => setSidebarOpen(true)}
@@ -320,18 +331,24 @@ export default function App() {
           </button>
           <button className="global-search" onClick={() => setSearchOpen(true)}>
             <Search size={18} />
-            <span>ابحث عن مهمة، مهارة أو نشاط...</span>
+            <span>{t('shell.search.topbar')}</span>
             <kbd dir="ltr">⌘ K</kbd>
           </button>
           <div className="topbar-actions">
             <button
               className={`sync-indicator sync-${syncStatus}`}
               onClick={() => navTo('settings')}
-              aria-label={`${syncLabel}. افتح إعدادات الحساب والمزامنة`}
+              aria-label={t('shell.sync.openSettings', { status: syncLabel })}
               title={
-                syncError ||
+                (syncError ? localizeMessage(syncError) : null) ||
                 (lastSyncedAt
-                  ? `${syncLabel} · آخر مزامنة ${new Date(lastSyncedAt).toLocaleTimeString('ar-IQ', { hour: '2-digit', minute: '2-digit' })}`
+                  ? t('shell.sync.lastSync', {
+                      status: syncLabel,
+                      time: new Date(lastSyncedAt).toLocaleTimeString(getLocale(), {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      }),
+                    })
                   : syncLabel)
               }
             >
@@ -341,6 +358,7 @@ export default function App() {
               />
               <span>{syncLabel}</span>
             </button>
+            <LanguageSwitcher onChange={(value) => updateProfile({ language: value })} />
             <span className="topbar-date">
               <CalendarDays size={16} />
               {formatDate(today, { day: 'numeric', month: 'long', year: 'numeric' })}
@@ -348,7 +366,7 @@ export default function App() {
             <div className="notification-wrap">
               <button
                 className={`icon-button notification-button ${notificationsOpen ? 'is-active' : ''}`}
-                aria-label="تذكيرات المهام"
+                aria-label={t('shell.notifications.tasks')}
                 aria-expanded={notificationsOpen}
                 onClick={() => setNotificationsOpen((o) => !o)}
               >
@@ -360,22 +378,24 @@ export default function App() {
                   <button
                     className="popover-dismiss"
                     tabIndex={-1}
-                    aria-label="إغلاق التذكيرات"
+                    aria-label={t('shell.notifications.close')}
                     onClick={() => setNotificationsOpen(false)}
                   />
                   <div className="notifications-popover">
                     <div className="card-heading">
-                      <h2>تذكيراتك اليوم</h2>
+                      <h2>{t('shell.notifications.today')}</h2>
                       <span className="badge">{reminders.length}</span>
                     </div>
-                    {reminders.slice(0, 5).map((t) => (
-                      <button key={t.id} onClick={() => navTo('tasks')}>
-                        <span className={`reminder-dot priority-${t.priority}`} />
+                    {reminders.slice(0, 5).map((task) => (
+                      <button key={task.id} onClick={() => navTo('tasks')}>
+                        <span className={`reminder-dot priority-${task.priority}`} />
                         <div>
-                          <strong>{t.title}</strong>
+                          <strong>{task.title}</strong>
                           <span>
-                            {t.dueDate < today ? 'متأخرة · ' : 'اليوم · '}
-                            {formatDate(t.dueDate)}
+                            {task.dueDate < today
+                              ? t('shell.notifications.overdue')
+                              : t('shell.notifications.dueToday')}
+                            {formatDate(task.dueDate)}
                           </span>
                         </div>
                         <ArrowUpLeft size={13} />
@@ -384,7 +404,7 @@ export default function App() {
                     {reminders.length === 0 && (
                       <p className="mini-empty">
                         <Check size={18} />
-                        كل شيء تحت السيطرة، ما عندك مهام متأخرة.
+                        {t('shell.notifications.empty')}
                       </p>
                     )}
                   </div>
@@ -394,13 +414,13 @@ export default function App() {
             <span className="topbar-divider" />
             <button
               className="topbar-profile"
-              aria-label="فتح الملف الشخصي"
+              aria-label={t('shell.profile.open')}
               onClick={() => navTo('settings')}
             >
               <span className="avatar small">{data.profile.name.charAt(0)}</span>
               <div>
                 <strong>{data.profile.name}</strong>
-                <span>أهلاً في مساحتك</span>
+                <span>{t('shell.profile.welcome')}</span>
               </div>
             </button>
           </div>
@@ -419,7 +439,7 @@ export default function App() {
             <Suspense
               fallback={
                 <section className="workspace-loading" role="status">
-                  نحمّل إدارة الحسابات…
+                  {t('shell.admin.loading')}
                 </section>
               }
             >
@@ -427,15 +447,19 @@ export default function App() {
             </Suspense>
           )}
           <footer className="app-footer">
-            <span>صُنع لرحلتك، على وتيرتك.</span>
+            <span>{t('shell.footer.tagline')}</span>
             <span>
               <Sparkles size={12} />
-              مدار <span dir="ltr">2.0</span>
+              {t('shell.brand.name')} <span dir="ltr">2.0</span>
             </span>
           </footer>
         </main>
       </div>
-      <nav className="mobile-bottom-nav" aria-label="التنقل السريع" inert={isMobile && sidebarOpen}>
+      <nav
+        className="mobile-bottom-nav"
+        aria-label={t('shell.nav.quick')}
+        inert={isMobile && sidebarOpen}
+      >
         {mobileNavigation.map((item) => (
           <button
             key={item.id}
@@ -444,7 +468,7 @@ export default function App() {
             onClick={() => navTo(item.id)}
           >
             <item.icon size={21} />
-            <span>{item.label}</span>
+            <span>{t(item.label)}</span>
           </button>
         ))}
         <button
@@ -455,47 +479,40 @@ export default function App() {
           onClick={() => setSidebarOpen(true)}
         >
           <MoreHorizontal size={21} />
-          <span>المزيد</span>
+          <span>{t('shell.mobile.more')}</span>
         </button>
       </nav>
       {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}{' '}
       {confirmSignOut && (
         <ConfirmDialog
-          title="تغييرات بانتظار المزامنة"
-          description="بعض التغييرات لم تصل إلى السحابة بعد. تبقى نسخة استعادة محلية لهذا الحساب على هذا المتصفح. نوصيك بتنزيل نسخة من الإعدادات قبل الخروج، ثم تسجيل الدخول هنا لمتابعة المزامنة. تريد تسجيل الخروج الآن؟"
+          title={t('shell.signOut.pendingTitle')}
+          description={t('shell.signOut.pendingDescription')}
           onConfirm={() => void endSession()}
           onClose={() => setConfirmSignOut(false)}
         />
       )}
       {helpOpen && (
-        <Modal title="أهلاً في مدار 🌿" onClose={() => setHelpOpen(false)}>
+        <Modal title={t('shell.help.title')} onClose={() => setHelpOpen(false)}>
           <p className="form-description">
-            {mode === 'demo'
-              ? 'هذه تجربة محلية ببيانات مثال. تُحفظ تغييرات التجربة على هذا المتصفح. أنشئ حسابك عندما تكون جاهزاً لحفظ رحلتك في السحابة.'
-              : 'هذه مساحتك للنمو. مهامك ومهاراتك وسجلّك مرتبطة بحسابك، وتصل لأجهزتك الأخرى بعد نجاح المزامنة.'}
+            {mode === 'demo' ? t('shell.help.demo') : t('shell.help.cloud')}
           </p>
           <ol className="help-steps">
             <li>
-              <strong>اختَر مهاراتك</strong>
-              <span>حدّد هدفاً بالساعات، ورصيدك السابق إذا عندك خبرة.</span>
+              <strong>{t('shell.help.skillsTitle')}</strong>
+              <span>{t('shell.help.skillsDescription')}</span>
             </li>
             <li>
-              <strong>خطّط لخطواتك</strong>
-              <span>أضف مهاماً ومواعيد، واربطها بالمهارة اللي تريد تطورها.</span>
+              <strong>{t('shell.help.planTitle')}</strong>
+              <span>{t('shell.help.planDescription')}</span>
             </li>
             <li>
-              <strong>سجّل ما أنجزت</strong>
+              <strong>{t('shell.help.logTitle')}</strong>
+              <span>{t('shell.help.logDescription')}</span>
+            </li>
+            <li>
+              <strong>{t('shell.help.reviewTitle')}</strong>
               <span>
-                الأنشطة وجلسات التركيز تزيد وقت المهارة. إكمال مهمة يحدّث الإنجاز، ويُسجّل وقتها من
-                السجل أو المؤقّت.
-              </span>
-            </li>
-            <li>
-              <strong>راجع واحتفظ بنسخة</strong>
-              <span>
-                {mode === 'demo'
-                  ? 'شوف تحليلاتك أسبوعياً، ونزّل نسخة من الإعدادات للاحتفاظ ببيانات هذه التجربة.'
-                  : 'شوف تحليلاتك أسبوعياً، وتابع حالة المزامنة. تقدر تنزّل نسخة إضافية من الإعدادات.'}
+                {mode === 'demo' ? t('shell.help.reviewDemo') : t('shell.help.reviewCloud')}
               </span>
             </li>
           </ol>
@@ -506,7 +523,7 @@ export default function App() {
               navTo('skills');
             }}
           >
-            خلّينا نبدأ
+            {t('shell.help.start')}
             <ArrowUpLeft size={16} />
           </button>
         </Modal>

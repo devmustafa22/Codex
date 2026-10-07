@@ -1,3 +1,4 @@
+import { t } from './i18n';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type ManagedAccount = {
@@ -87,20 +88,14 @@ export function parseAccountList(value: unknown): AccountList {
     value.total < value.accounts.length ||
     !validStats(value.stats)
   ) {
-    throw new AdminError(
-      'تعذّرت قراءة قائمة الحسابات. حدّث الصفحة ثم حاول مجدداً.',
-      'invalid_response',
-    );
+    throw new AdminError(t('auth.adminListInvalid'), 'invalid_response');
   }
   if (
     new Set(value.accounts.map((account) => account.id)).size !== value.accounts.length ||
     (value.stats.active as number) + (value.stats.suspended as number) !== value.stats.total ||
     (value.stats.admins as number) > (value.stats.total as number)
   ) {
-    throw new AdminError(
-      'تعذّرت قراءة قائمة الحسابات. حدّث الصفحة ثم حاول مجدداً.',
-      'invalid_response',
-    );
+    throw new AdminError(t('auth.adminListInvalid'), 'invalid_response');
   }
   return value as AccountList;
 }
@@ -110,54 +105,54 @@ function errorMessage(status: number | null, code: string) {
     status === 401 ||
     ['session_changed', 'unauthorized', 'invalid_session', 'authentication_required'].includes(code)
   ) {
-    return 'انتهت جلسة الدخول أو تغيّر الحساب. سجّل الدخول مجدداً.';
+    return t('auth.adminSessionChanged');
   }
   if (status === 403 || ['forbidden', 'admin_required', 'account_suspended'].includes(code)) {
-    return 'حسابك لا يملك صلاحية إدارة الحسابات أو تم إيقافه.';
+    return t('auth.adminAccessDenied');
   }
   if (
     ['protected_account', 'protected_admin', 'cannot_manage_admin', 'cannot_manage_self'].includes(
       code,
     )
   ) {
-    return 'حسابات الإدارة وحسابك الحالي محمية من الإيقاف والحذف.';
+    return t('auth.adminProtected');
   }
   if (status === 404 || code === 'account_not_found') {
-    return 'هذا الحساب لم يعد موجوداً. حدّث القائمة.';
+    return t('auth.adminAccountMissing');
   }
   if (['confirmation_required', 'confirmation_mismatch', 'invalid_confirmation'].includes(code)) {
-    return 'اكتب اسم المستخدم تماماً كما يظهر قبل تأكيد الحذف.';
+    return t('auth.adminConfirmation');
   }
   if (status === 429 || code === 'rate_limited') {
-    return 'طلبات كثيرة خلال وقت قصير. انتظر قليلاً ثم حاول مجدداً.';
+    return t('auth.adminRateLimit');
   }
   if (code === 'account_suspended_auth_pending') {
-    return 'تم إيقاف الوصول إلى البيانات، لكن إيقاف تسجيل الدخول لم يكتمل. حدّث القائمة وأعد محاولة الإيقاف.';
+    return t('auth.adminSuspendPartial');
   }
   if (code === 'account_reactivation_failed') {
-    return 'تعذّر إعادة تفعيل الحساب. يبقى موقوفاً؛ يمكنك المحاولة مجدداً.';
+    return t('auth.adminReactivateFailed');
   }
   if (code === 'account_delete_failed') {
-    return 'تعذّر إتمام الحذف. تم إيقاف الحساب لحماية بياناته؛ حدّث القائمة قبل المحاولة مجدداً.';
+    return t('auth.adminDeleteFailed');
   }
   if (code === 'account_deleted_audit_pending') {
-    return 'تم حذف الحساب وبياناته، لكن تعذّر إكمال سجل التدقيق. لا حاجة لإعادة الحذف.';
+    return t('auth.adminDeleteAuditPending');
   }
   if (code === 'account_action_pending') {
-    return 'تعذّر تأكيد اكتمال تغيير حالة الحساب. حدّث القائمة وانتظر 15 دقيقة قبل المحاولة مجدداً.';
+    return t('auth.adminActionPending');
   }
   if (code === 'account_status_confirmation_pending') {
-    return 'تعذّر تأكيد الحالة النهائية للحساب. حدّث القائمة للتحقق من حالته، وانتظر 15 دقيقة قبل إجراء تغيير آخر.';
+    return t('auth.adminStatusPending');
   }
   if (code === 'account_delete_unknown' || code === 'delete_in_progress') {
-    return 'تعذّر تأكيد نتيجة حذف الحساب. حدّث القائمة، ولا تكرر العملية قبل التحقق من وجود الحساب داخل Supabase. يحتاج الحذف المعلّق إلى مراجعة مالك الموقع.';
+    return t('auth.adminDeleteUnknown');
   }
   if (status === 409) {
-    return 'تغيّرت حالة الحساب أثناء العملية. حدّث القائمة وتحقق من حالته.';
+    return t('auth.adminStateChanged');
   }
-  if (status === null) return 'تعذّر الاتصال بالخادم. تأكد من الإنترنت ثم حاول مجدداً.';
-  if (status >= 500) return 'تعذّر تنفيذ الطلب الآن. حاول مجدداً بعد قليل.';
-  return 'تعذّر تنفيذ العملية. حدّث القائمة ثم حاول مجدداً.';
+  if (status === null) return t('auth.adminConnectionFailed');
+  if (status >= 500) return t('auth.adminServerError');
+  return t('auth.adminOperationFailed');
 }
 
 async function parseInvocationError(error: unknown): Promise<AdminError> {
@@ -260,10 +255,7 @@ export function createAdminApi(client: SupabaseClient, actorUserId: string) {
             result.account.username === account.username &&
             result.account.status === (action === 'suspend' ? 'suspended' : 'active'));
       if (!successful) {
-        throw new AdminError(
-          'الخادم لم يؤكد إتمام العملية. حدّث القائمة قبل المحاولة مرة أخرى.',
-          'invalid_response',
-        );
+        throw new AdminError(t('auth.adminUnconfirmed'), 'invalid_response');
       }
     },
   };

@@ -1,3 +1,4 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useApp } from '../state/AppContext';
@@ -14,6 +15,7 @@ export function EntryEditor({
   skillId?: string;
   onClose: () => void;
 }) {
+  const { t } = useLanguage();
   const { data, addEntry, updateEntry, notify } = useApp();
   const [title, setTitle] = useState(entry?.title ?? '');
   const [note, setNote] = useState(entry?.note ?? '');
@@ -26,11 +28,11 @@ export function EntryEditor({
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!title.trim()) {
-      setError('اكتب عنواناً للنشاط قبل الحفظ.');
+      setError('shell.entry.titleError');
       return;
     }
     if (!date || date > todayKey() || !Number.isInteger(minutes) || minutes < 0 || minutes > 1440) {
-      setError('تحقّق من التاريخ ومدة النشاط.');
+      setError('shell.entry.detailsError');
       return;
     }
     const input = {
@@ -44,28 +46,28 @@ export function EntryEditor({
     };
     if (entry) {
       updateEntry(entry.id, input);
-      notify('تم تحديث النشاط');
+      notify(t('shell.entry.updated'));
     } else addEntry(input);
     onClose();
   };
   return (
-    <Modal title={entry ? 'تعديل النشاط' : 'سجّل خطوة جديدة'} onClose={onClose}>
-      <p className="form-description">كل تعلّم، عمل، أو فكرة تستحق مكاناً في رحلتك.</p>
+    <Modal title={entry ? t('shell.entry.edit') : t('shell.entry.new')} onClose={onClose}>
+      <p className="form-description">{t('shell.entry.description')}</p>
       <form onSubmit={submit}>
         <div className="form-grid">
           <label className="form-field full">
-            عنوان النشاط
+            {t('shell.entry.title')}
             <input
               required
               maxLength={160}
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="شنو أنجزت اليوم؟"
+              placeholder={t('shell.entry.titlePlaceholder')}
               autoFocus
             />
           </label>
           <label className="form-field">
-            التاريخ
+            {t('shell.editor.date')}
             <input
               required
               type="date"
@@ -75,7 +77,7 @@ export function EntryEditor({
             />
           </label>
           <label className="form-field">
-            الوقت بالدقائق
+            {t('shell.entry.duration')}
             <input
               type="number"
               required
@@ -87,19 +89,19 @@ export function EntryEditor({
             />
           </label>
           <label className="form-field">
-            نوع النشاط
+            {t('shell.entry.kind')}
             <select value={kind} onChange={(e) => setKind(e.target.value as EntryKind)}>
               {Object.entries(kindLabels).map(([value, label]) => (
                 <option key={value} value={value}>
-                  {label}
+                  {t(label)}
                 </option>
               ))}
             </select>
           </label>
           <label className="form-field">
-            المهارة المرتبطة
+            {t('shell.editor.skill')}
             <select value={skill} onChange={(e) => setSkill(e.target.value)}>
-              <option value="">نشاط عام</option>
+              <option value="">{t('shell.entry.general')}</option>
               {data.skills.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
@@ -108,17 +110,17 @@ export function EntryEditor({
             </select>
           </label>
           <label className="form-field full">
-            ملاحظاتك
+            {t('shell.entry.notes')}
             <textarea
               rows={3}
               maxLength={5000}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="شنو تعلّمت؟ شنو صار أفضل؟ احتفظ بأفكارك هنا..."
+              placeholder={t('shell.entry.notesPlaceholder')}
             />
           </label>
           <fieldset className="mood-field full">
-            <legend>كيف كان شعورك؟</legend>
+            <legend>{t('shell.entry.mood')}</legend>
             <div className="mood-options">
               {Object.entries(moodLabels).map(([value, label], i) => (
                 <button
@@ -129,7 +131,7 @@ export function EntryEditor({
                   aria-pressed={mood === value}
                 >
                   <span>{['☀️', '🌿', '☁️', '🌧️'][i]}</span>
-                  {label}
+                  {t(label)}
                 </button>
               ))}
             </div>
@@ -137,15 +139,15 @@ export function EntryEditor({
         </div>
         {error && (
           <p className="form-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="form-actions">
           <button className="button primary" type="submit">
-            {entry ? 'حفظ التعديلات' : 'حفظ النشاط'}
+            {entry ? t('shell.editor.saveChanges') : t('shell.entry.save')}
           </button>
           <button className="button secondary" type="button" onClick={onClose}>
-            إلغاء
+            {t('shell.editor.cancel')}
           </button>
         </div>
       </form>

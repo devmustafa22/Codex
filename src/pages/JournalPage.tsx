@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BookOpen, Clock3, Pencil, Search, Trash2, Sparkles, Plus } from 'lucide-react';
 import { useApp } from '../state/AppContext';
+import { useLanguage } from '../state/LanguageContext';
 import { PageHeader, AddButton, Card, EmptyState, ConfirmDialog } from '../components/ui';
 import { EntryEditor } from '../components/EntryEditor';
 import {
@@ -15,6 +16,7 @@ import type { JournalEntry } from '../lib/types';
 
 export default function JournalPage() {
   const { data, deleteEntry, selectedItem, clearSelectedItem } = useApp();
+  const { t } = useLanguage();
   const [editing, setEditing] = useState<JournalEntry | 'new' | null>(null);
   const [deleting, setDeleting] = useState<JournalEntry | null>(null);
   const [search, setSearch] = useState('');
@@ -44,62 +46,80 @@ export default function JournalPage() {
   return (
     <>
       <PageHeader
-        eyebrow="الأثر الذي تتركه كل يوم"
-        title="سجلّ رحلتك"
-        description="لأن الإنجازات الصغيرة تستحق أن تُحفظ. دوّن، تعلّم، وتذكّر كيف وصلت."
-        action={<AddButton onClick={() => setEditing('new')}>تسجيل نشاط</AddButton>}
+        eyebrow={t('activity.journal.eyebrow')}
+        title={t('activity.journal.title')}
+        description={t('activity.journal.description')}
+        action={
+          <AddButton onClick={() => setEditing('new')}>
+            {t('activity.journal.logActivity')}
+          </AddButton>
+        }
       />
       <div className="journal-intro">
         <div className="journal-quote">
           <Sparkles size={23} />
           <div>
-            <h2>لا تحتاج إلى يوم مثالي، فقط خطوة صغيرة.</h2>
-            <p>هذا سجلّك الشخصي؛ مساحة للأفكار، الإنجازات، وحتى الأيام الصعبة.</p>
+            <h2>{t('activity.journal.quote')}</h2>
+            <p>{t('activity.journal.intro')}</p>
           </div>
           <span className="quote-orbit" aria-hidden="true" />
         </div>
         <div className="journal-stat">
           <BookOpen size={21} />
           <strong>{data.entries.length}</strong>
-          <span>نشاط موثّق</span>
+          <span>{t('activity.journal.recorded')}</span>
         </div>
         <div className="journal-stat">
           <Clock3 size={21} />
           <strong>{formatMinutes(total)}</strong>
-          <span>وقت استثمرته بنفسك</span>
+          <span>{t('activity.journal.invested')}</span>
         </div>
       </div>
       <div className="filter-bar">
         <label className="search-field">
           <Search size={17} />
           <input
-            aria-label="البحث في السجل"
-            placeholder="ابحث في ذكرياتك وإنجازاتك..."
+            aria-label={t('activity.journal.search')}
+            placeholder={t('activity.journal.searchPlaceholder')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </label>
-        <select aria-label="فترة السجل" value={period} onChange={(e) => setPeriod(e.target.value)}>
-          <option value="all">كل الأوقات</option>
-          <option value="today">اليوم</option>
-          <option value="week">هذا الأسبوع</option>
+        <select
+          aria-label={t('activity.journal.period')}
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+        >
+          <option value="all">{t('activity.journal.allTime')}</option>
+          <option value="today">{t('activity.journal.today')}</option>
+          <option value="week">{t('activity.journal.thisWeek')}</option>
         </select>
-        <select aria-label="مهارة السجل" value={skill} onChange={(e) => setSkill(e.target.value)}>
-          <option value="all">كل المهارات</option>
+        <select
+          aria-label={t('activity.journal.skillFilter')}
+          value={skill}
+          onChange={(e) => setSkill(e.target.value)}
+        >
+          <option value="all">{t('activity.journal.allSkills')}</option>
           {data.skills.map((s) => (
             <option value={s.id} key={s.id}>
               {s.name}
             </option>
           ))}
         </select>
-        <span className="filter-count">{filtered.length} نشاط</span>
+        <span className="filter-count">
+          {t('activity.journal.matches', { count: filtered.length })}
+        </span>
       </div>
       {groups.length === 0 ? (
         <Card>
           <EmptyState
-            title="صفحة جديدة تنتظر قصتك"
-            description="سجّل أول نشاط، أو غيّر الفلاتر لعرض سجلاتك."
-            action={<AddButton onClick={() => setEditing('new')}>أضف نشاطاً</AddButton>}
+            title={t('activity.journal.emptyTitle')}
+            description={t('activity.journal.emptyDescription')}
+            action={
+              <AddButton onClick={() => setEditing('new')}>
+                {t('activity.journal.addActivity')}
+              </AddButton>
+            }
           />
         </Card>
       ) : (
@@ -108,7 +128,11 @@ export default function JournalPage() {
             <section className="journal-day" key={date}>
               <div className="journal-date">
                 <span className="timeline-dot" />
-                <h2>{date === todayKey() ? 'اليوم' : formatDate(date, { weekday: 'long' })}</h2>
+                <h2>
+                  {date === todayKey()
+                    ? t('activity.journal.today')
+                    : formatDate(date, { weekday: 'long' })}
+                </h2>
                 <span>{formatDate(date)}</span>
                 <span className="badge">
                   {formatMinutes(
@@ -131,20 +155,22 @@ export default function JournalPage() {
                         </div>
                         <div className="journal-entry-content">
                           <div className="journal-entry-top">
-                            <span className="entry-kind">{kindLabels[entry.kind]}</span>
+                            <span className="entry-kind">{t(kindLabels[entry.kind])}</span>
                             <div className="journal-entry-actions">
                               <button
                                 className="icon-button"
-                                title="تعديل النشاط"
-                                aria-label={`تعديل ${entry.title}`}
+                                title={t('activity.journal.edit')}
+                                aria-label={t('activity.journal.editAria', { title: entry.title })}
                                 onClick={() => setEditing(entry)}
                               >
                                 <Pencil size={15} />
                               </button>
                               <button
                                 className="icon-button"
-                                title="حذف النشاط"
-                                aria-label={`حذف ${entry.title}`}
+                                title={t('activity.journal.delete')}
+                                aria-label={t('activity.journal.deleteAria', {
+                                  title: entry.title,
+                                })}
                                 onClick={() => setDeleting(entry)}
                               >
                                 <Trash2 size={15} />
@@ -164,7 +190,7 @@ export default function JournalPage() {
                                 {s.name}
                               </span>
                             )}
-                            <span>{moodLabels[entry.mood]}</span>
+                            <span>{t(moodLabels[entry.mood])}</span>
                           </div>
                         </div>
                       </article>
@@ -177,8 +203,8 @@ export default function JournalPage() {
       )}
       <button
         className="floating-add"
-        title="تسجيل نشاط"
-        aria-label="تسجيل نشاط"
+        title={t('activity.journal.logActivity')}
+        aria-label={t('activity.journal.logActivity')}
         onClick={() => setEditing('new')}
       >
         <Plus size={23} />
@@ -191,8 +217,8 @@ export default function JournalPage() {
       )}{' '}
       {deleting && (
         <ConfirmDialog
-          title="حذف النشاط؟"
-          description="سيُحذف هذا النشاط ووقته من إحصائياتك وتقدّم المهارة المرتبطة."
+          title={t('activity.journal.deleteTitle')}
+          description={t('activity.journal.deleteDescription')}
           onConfirm={() => deleteEntry(deleting.id)}
           onClose={() => setDeleting(null)}
         />

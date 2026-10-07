@@ -1,3 +1,4 @@
+import { getLanguage, t } from './i18n';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { parseBackup } from './storage';
 import type { AppData } from './types';
@@ -66,7 +67,7 @@ export function createWorkspaceBackend(client: SupabaseClient, userId: string): 
       });
       if (error) throw backendError(error);
       const row = Array.isArray(data) ? data[0] : data;
-      if (!row) throw new WorkspaceError('error', 'لم تؤكد السحابة حفظ البيانات.');
+      if (!row) throw new WorkspaceError('error', t('auth.cloudSaveUnconfirmed'));
       return row as WorkspaceRow;
     },
   };
@@ -77,31 +78,24 @@ function backendError(error: { code?: string; message: string }): WorkspaceError
     return new WorkspaceError('conflict', 'workspace_conflict');
   }
   if (!error.code || error.message.toLowerCase().includes('fetch')) {
-    return new WorkspaceError(
-      'offline',
-      'تعذّر الاتصال بالسحابة. تعديلاتك بانتظار إعادة المحاولة.',
-    );
+    return new WorkspaceError('offline', t('auth.cloudRetryPending'));
   }
-  return new WorkspaceError(
-    'error',
-    'تعذّر تحميل أو حفظ بيانات الحساب. تحقّق من إعداد قاعدة البيانات والجلسة، ثم أعد المحاولة.',
-  );
+  return new WorkspaceError('error', t('auth.cloudDataFailed'));
 }
 
-const CONFLICT_MESSAGE =
-  'تغيّرت بيانات حسابك على جهاز آخر. تعديلات هذا الجهاز محفوظة محلياً؛ اختر تحميل السحابة أو استبدالها من الإعدادات.';
-const CACHE_WARNING =
-  'تعذّر حفظ نسخة الاسترجاع على هذا الجهاز. يبقى الحفظ السحابي فعالاً، لكن التعديلات غير المحفوظة سحابياً قد تضيع عند إغلاق الصفحة.';
+const conflictMessage = () => t('auth.cloudConflict');
+const cacheWarningMessage = () => t('auth.cloudCacheWarning');
 
 export function createEmptyWorkspace(name: string): AppData {
   return {
     version: 1,
     profile: {
-      name: name.trim().slice(0, 160) || 'مساحتي',
-      role: 'رحلة تعلّم، خطوة بخطوة',
+      name: name.trim().slice(0, 160) || t('auth.workspaceName'),
+      role: t('auth.workspaceDescription'),
       weeklyGoalMinutes: 600,
       focusMinutes: 25,
       theme: 'light',
+      language: getLanguage(),
     },
     tasks: [],
     skills: [],
@@ -145,19 +139,19 @@ function validateRow(row: WorkspaceRow, userId: string): WorkspaceRow & { payloa
     typeof row.updated_at !== 'string' ||
     Number.isNaN(Date.parse(row.updated_at))
   ) {
-    throw new WorkspaceError('error', 'استجابة السحابة غير صالحة. لم نستبدل بياناتك المحلية.');
+    throw new WorkspaceError('error', t('auth.cloudResponseInvalid'));
   }
   try {
     return { ...row, payload: parseBackup(JSON.stringify(row.payload)) };
   } catch {
-    throw new WorkspaceError('error', 'بيانات السحابة غير صالحة. لم نستبدل بياناتك المحلية.');
+    throw new WorkspaceError('error', t('auth.cloudPayloadInvalid'));
   }
 }
 
 function friendlyError(error: unknown): WorkspaceError {
   return error instanceof WorkspaceError
     ? error
-    : new WorkspaceError('offline', 'تعذّر الاتصال بالسحابة. احتفظنا بتعديلاتك لإعادة المحاولة.');
+    : new WorkspaceError('offline', t('auth.cloudChangesRetained'));
 }
 
 /**
@@ -192,7 +186,7 @@ export class CloudWorkspaceController {
       if (saved !== null) this.cache = parseWorkspaceCache(saved);
     } catch {
       // An unreadable cache is never mistaken for usable cloud data.
-      this.cacheWarning = 'تعذّر قراءة نسخة الاسترجاع على هذا الجهاز. نحاول تحميل بيانات السحابة.';
+      this.cacheWarning = t('auth.cloudCacheUnreadable');
     }
     this.revision = this.cache?.baseRevision ?? 0;
     this.dirty = this.cache?.dirty ?? false;
@@ -231,8 +225,8 @@ export class CloudWorkspaceController {
       this.cache = cache;
       this.cacheWarning = '';
     } catch {
-      this.cacheWarning = CACHE_WARNING;
-      this.publish({ error: CACHE_WARNING });
+      this.cacheWarning = cacheWarningMessage();
+      this.publish({ error: cacheWarningMessage() });
     }
   }
 
@@ -276,7 +270,7 @@ export class CloudWorkspaceController {
       // Any pending local work must start from the same server revision.
       // A deleted server row is also treated as a conflict for a previously saved account.
       if ((this.dirty && remoteRevision !== this.revision) || (row === null && this.revision > 0)) {
-        this.publish({ ready: true, status: 'conflict', error: CONFLICT_MESSAGE });
+        this.publish({ ready: true, status: 'conflict', error: conflictMessage() });
         return;
       }
 
@@ -323,7 +317,7 @@ export class CloudWorkspaceController {
     this.publish({
       data: value,
       status: conflict ? 'conflict' : 'saving',
-      error: conflict ? CONFLICT_MESSAGE : this.cacheWarning,
+      error: conflict ? conflictMessage() : this.cacheWarning,
     });
     this.persist();
     if (!conflict) this.scheduleSave();
@@ -365,7 +359,7 @@ export class CloudWorkspaceController {
         status: failure.kind,
         error:
           failure.kind === 'conflict'
-            ? CONFLICT_MESSAGE
+            ? conflictMessage()
             : [failure.message, this.cacheWarning].filter(Boolean).join(' '),
       });
       this.persist();
@@ -378,7 +372,7 @@ export class CloudWorkspaceController {
   private acceptSave(raw: WorkspaceRow, editVersion: number, expectedRevision: number): void {
     const saved = validateRow(raw, this.options.userId);
     if (saved.revision !== expectedRevision + 1) {
-      throw new WorkspaceError('error', 'لم تؤكد السحابة إصدار الحفظ المتوقع. أعد المحاولة.');
+      throw new WorkspaceError('error', t('auth.cloudRevisionInvalid'));
     }
     this.revision = saved.revision;
     this.dirty = this.editVersion !== editVersion;
@@ -404,10 +398,7 @@ export class CloudWorkspaceController {
       const row = raw === null ? null : validateRow(raw, this.options.userId);
       if (strategy === 'reload') {
         if (this.editVersion !== beforeRead) {
-          throw new WorkspaceError(
-            'conflict',
-            'أضفت تعديلات أثناء التحميل. أكّد اختيارك مرة أخرى.',
-          );
+          throw new WorkspaceError('conflict', t('auth.cloudEditsDuringLoad'));
         }
         this.revision = row?.revision ?? 0;
         this.dirty = false;
@@ -435,7 +426,7 @@ export class CloudWorkspaceController {
       const failure = friendlyError(error);
       this.publish({
         status: failure.kind,
-        error: failure.kind === 'conflict' ? CONFLICT_MESSAGE : failure.message,
+        error: failure.kind === 'conflict' ? conflictMessage() : failure.message,
       });
       throw failure;
     } finally {

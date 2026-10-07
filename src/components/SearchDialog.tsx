@@ -1,3 +1,4 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useState } from 'react';
 import { Search, ArrowUpLeft, ListTodo, Sprout, BookOpen, CalendarDays } from 'lucide-react';
 import { useApp } from '../state/AppContext';
@@ -5,14 +6,15 @@ import { Modal, EmptyState } from './ui';
 import type { PageId } from '../lib/types';
 
 export function SearchDialog({ onClose }: { onClose: () => void }) {
+  const { t } = useLanguage();
   const { data, openItem } = useApp();
   const [query, setQuery] = useState('');
   const all = [
-    ...data.tasks.map((t) => ({
-      id: t.id,
-      title: t.title,
-      description: t.description,
-      label: 'مهمة',
+    ...data.tasks.map((task) => ({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      label: t('shell.search.task'),
       page: 'tasks' as PageId,
       icon: ListTodo,
     })),
@@ -20,7 +22,7 @@ export function SearchDialog({ onClose }: { onClose: () => void }) {
       id: s.id,
       title: s.name,
       description: s.description,
-      label: 'مهارة',
+      label: t('shell.search.skill'),
       page: 'skills' as PageId,
       icon: Sprout,
     })),
@@ -28,7 +30,7 @@ export function SearchDialog({ onClose }: { onClose: () => void }) {
       id: e.id,
       title: e.title,
       description: e.note,
-      label: 'نشاط',
+      label: t('shell.search.activity'),
       page: 'journal' as PageId,
       icon: BookOpen,
     })),
@@ -36,7 +38,7 @@ export function SearchDialog({ onClose }: { onClose: () => void }) {
       id: e.id,
       title: e.title,
       description: e.note,
-      label: 'موعد',
+      label: t('shell.search.event'),
       page: 'calendar' as PageId,
       icon: CalendarDays,
     })),
@@ -49,15 +51,15 @@ export function SearchDialog({ onClose }: { onClose: () => void }) {
         .slice(0, 12)
     : [];
   return (
-    <Modal title="البحث في مساحتك" onClose={onClose}>
+    <Modal title={t('shell.search.title')} onClose={onClose}>
       <label className="search-field global-search-input">
         <Search size={19} />
         <input
           autoFocus
-          aria-label="كلمات البحث"
+          aria-label={t('shell.search.keywords')}
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="مهمة، مهارة، أو فكرة كتبتها..."
+          placeholder={t('shell.search.placeholder')}
         />
       </label>
       {query.trim() ? (
@@ -76,20 +78,25 @@ export function SearchDialog({ onClose }: { onClose: () => void }) {
                 </span>
                 <div>
                   <strong>{item.title}</strong>
-                  <span>{item.label} · فتح التفاصيل</span>
+                  <span>
+                    {item.label} · {t('shell.search.open')}
+                  </span>
                 </div>
                 <ArrowUpLeft size={16} />
               </button>
             ))}
           </div>
         ) : (
-          <EmptyState title="ما لقينا نتيجة" description="جرّب كلمة أقصر أو عنواناً مختلفاً." />
+          <EmptyState
+            title={t('shell.search.noResults')}
+            description={t('shell.search.tryAgain')}
+          />
         )
       ) : (
         <div className="search-prompt">
           <Search size={26} />
-          <p>كل خطواتك قابلة للعثور عليها.</p>
-          <span>ابحث في المهام، المهارات، المواعيد وسجلّ الرحلة.</span>
+          <p>{t('shell.search.prompt')}</p>
+          <span>{t('shell.search.description')}</span>
         </div>
       )}
     </Modal>

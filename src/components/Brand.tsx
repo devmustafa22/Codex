@@ -1,4 +1,6 @@
+import { useLanguage } from '../state/LanguageContext';
 export function Brand({ compact = false }: { compact?: boolean }) {
+  const { t } = useLanguage();
   return (
     <div className="brand">
       <span className="brand-symbol">
@@ -11,9 +13,10 @@ export function Brand({ compact = false }: { compact?: boolean }) {
       {!compact && (
         <div>
           <strong>
-            مدار<span>.</span>
+            {t('shell.brand.name')}
+            <span>.</span>
           </strong>
-          <span>مساحتك للنمو</span>
+          <span>{t('shell.brand.tagline')}</span>
         </div>
       )}
     </div>

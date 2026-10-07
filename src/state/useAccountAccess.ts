@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import { readAccountAccess } from '../lib/account-access';
@@ -47,8 +48,7 @@ export function useAccountAccess(session: Session | null) {
       setState({
         userId,
         access: null,
-        error:
-          cause instanceof Error ? cause.message : 'تعذّر التحقق من حالة الحساب. أعد المحاولة.',
+        error: cause instanceof Error ? cause.message : t('auth.checkAccessFailed'),
         loading: false,
       });
     } finally {

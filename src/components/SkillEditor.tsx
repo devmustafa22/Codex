@@ -1,3 +1,4 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { Check } from 'lucide-react';
@@ -13,6 +14,7 @@ interface SkillEditorProps {
 }
 
 export function SkillEditor({ skill, onClose }: SkillEditorProps) {
+  const { t } = useLanguage();
   const { addSkill, updateSkill, notify } = useApp();
   const [name, setName] = useState(skill?.name ?? '');
   const [category, setCategory] = useState(skill?.category ?? '');
@@ -29,22 +31,22 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
 
   function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (!name.trim()) return setError('اكتب اسم المهارة قبل الحفظ.');
+    if (!name.trim()) return setError('shell.skill.nameError');
     const target = Number(targetHours),
       baseline = Number(baselineHours),
       weekly = Number(weeklyHours);
     if (!targetHours || !Number.isFinite(target) || target < 0.25 || target > 10000) {
-      return setError('حدد هدفًا بين 0.25 و 10000 ساعة.');
+      return setError('shell.skill.goalError');
     }
     if (!baselineHours || !Number.isFinite(baseline) || baseline < 0 || baseline > 10000) {
-      return setError('الوقت السابق لازم يكون بين 0 و 10000 ساعة.');
+      return setError('shell.skill.baselineError');
     }
     if (!weeklyHours || !Number.isFinite(weekly) || weekly < 0.25 || weekly > 168) {
-      return setError('الهدف الأسبوعي لازم يكون بين 0.25 و 168 ساعة.');
+      return setError('shell.skill.weeklyError');
     }
     const input: NewSkill = {
       name: name.trim(),
-      category: category.trim() || 'مهارة شخصية',
+      category: category.trim() || t('shell.skill.personal'),
       color,
       description: description.trim(),
       targetMinutes: Math.round(target * 60),
@@ -53,7 +55,7 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
     };
     if (skill) {
       updateSkill(skill.id, input);
-      notify('تم حفظ تعديلات المهارة');
+      notify(t('shell.skill.updated'));
     } else {
       addSkill(input);
     }
@@ -61,52 +63,52 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
   }
 
   return (
-    <Modal title={skill ? 'تعديل المهارة' : 'ابدأ مهارة جديدة'} onClose={onClose}>
+    <Modal title={skill ? t('shell.skill.edit') : t('shell.skill.new')} onClose={onClose}>
       <form onSubmit={save}>
         <div className="form-grid">
           <label className="form-field full-width">
             <span>
-              اسم المهارة <span aria-hidden="true">*</span>
+              {t('shell.skill.name')} <span aria-hidden="true">*</span>
             </span>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="مثلاً: تطوير الويب، التصوير، الإنجليزية"
+              placeholder={t('shell.skill.namePlaceholder')}
               required
               maxLength={100}
               autoFocus
             />
           </label>
           <label className="form-field full-width">
-            <span>المجال</span>
+            <span>{t('shell.skill.category')}</span>
             <input
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              placeholder="برمجة، تصميم، لغات، تطوير ذاتي…"
+              placeholder={t('shell.skill.categoryPlaceholder')}
               maxLength={60}
               list="skill-categories"
             />
             <datalist id="skill-categories">
-              <option value="برمجة" />
-              <option value="تصميم" />
-              <option value="لغات" />
-              <option value="تطوير ذاتي" />
-              <option value="عمل" />
-              <option value="صحة ولياقة" />
+              <option value={t('shell.skill.categoryProgramming')} />
+              <option value={t('shell.skill.categoryDesign')} />
+              <option value={t('shell.skill.categoryLanguages')} />
+              <option value={t('shell.skill.categoryGrowth')} />
+              <option value={t('shell.skill.categoryWork')} />
+              <option value={t('shell.skill.categoryFitness')} />
             </datalist>
           </label>
           <label className="form-field full-width">
-            <span>ليش تريد تتعلّمها؟</span>
+            <span>{t('shell.skill.reason')}</span>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
               maxLength={2000}
-              placeholder="خلي هدفك واضح حتى ترجع له كل ما تحتاج دفعة."
+              placeholder={t('shell.skill.reasonPlaceholder')}
             />
           </label>
           <label className="form-field">
-            <span>هدف التعلّم الكلي (ساعات)</span>
+            <span>{t('shell.skill.target')}</span>
             <input
               type="number"
               min={0.25}
@@ -118,7 +120,7 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
             />
           </label>
           <label className="form-field">
-            <span>الهدف الأسبوعي (ساعات)</span>
+            <span>{t('shell.skill.weekly')}</span>
             <input
               type="number"
               min={0.25}
@@ -130,7 +132,7 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
             />
           </label>
           <label className="form-field full-width">
-            <span>وقت تعلّم سابق (ساعات)</span>
+            <span>{t('shell.skill.baseline')}</span>
             <input
               type="number"
               min={0}
@@ -140,10 +142,10 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
               onChange={(e) => setBaselineHours(e.target.value)}
               required
             />
-            <small>اختياري: وقتك قبل استخدام مدار. سجلاتك الجديدة تنضاف له تلقائيًا.</small>
+            <small>{t('shell.skill.baselineHint')}</small>
           </label>
           <div className="form-field full-width">
-            <span>لون المهارة</span>
+            <span>{t('shell.skill.color')}</span>
             <div className="color-options">
               {skillColors.map((option, index) => (
                 <button
@@ -152,7 +154,7 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
                   className={`color-swatch ${color === option ? 'selected' : ''}`}
                   style={{ background: option }}
                   onClick={() => setColor(option)}
-                  aria-label={`لون المهارة ${index + 1}`}
+                  aria-label={t('shell.skill.colorNumber', { number: index + 1 })}
                   aria-pressed={color === option}
                 >
                   {color === option && <Check size={17} />}
@@ -163,25 +165,25 @@ export function SkillEditor({ skill, onClose }: SkillEditorProps) {
                   type="color"
                   value={color}
                   onChange={(e) => setColor(e.target.value)}
-                  aria-label="اختر لونًا مخصصًا"
+                  aria-label={t('shell.skill.customColor')}
                 />
-                <span>لون آخر</span>
+                <span>{t('shell.skill.otherColor')}</span>
               </label>
             </div>
           </div>
         </div>
         {error && (
           <p className="form-error" role="alert">
-            {error}
+            {t(error)}
           </p>
         )}
         <div className="form-actions">
           <button className="button primary" type="submit">
             <Check size={17} />
-            {skill ? 'حفظ التعديلات' : 'إضافة المهارة'}
+            {skill ? t('shell.editor.saveChanges') : t('shell.skill.add')}
           </button>
           <button className="button secondary" type="button" onClick={onClose}>
-            إلغاء
+            {t('shell.editor.cancel')}
           </button>
         </div>
       </form>

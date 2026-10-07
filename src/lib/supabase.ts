@@ -1,3 +1,4 @@
+import { t } from './i18n';
 import { createClient } from '@supabase/supabase-js';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -23,34 +24,33 @@ export function clearRecoveryCallback() {
 }
 
 function inspectConfiguration(): string {
-  if (!url || !key)
-    return 'أضف رابط مشروع Supabase ومفتاحه العام حتى يتفعّل تسجيل الدخول والحفظ السحابي.';
+  if (!url || !key) return t('auth.configMissing');
   if (/YOUR_PROJECT|YOUR_PUBLIC_KEY/i.test(`${url} ${key}`)) {
-    return 'استبدل القيم المثال في .env.local برابط مشروعك ومفتاحه العام، ثم أعد تشغيل المشروع.';
+    return t('auth.configPlaceholders');
   }
   try {
     const parsed = new URL(url);
     const local = ['localhost', '127.0.0.1', '[::1]'].includes(parsed.hostname);
     if (parsed.protocol !== 'https:' && !(local && parsed.protocol === 'http:')) {
-      return 'رابط Supabase يجب أن يبدأ بـ https://.';
+      return t('auth.configHttps');
     }
     if (parsed.username || parsed.password || parsed.search || parsed.hash) {
-      return 'استخدم رابط المشروع من إعدادات Supabase بدون بيانات دخول أو معاملات إضافية.';
+      return t('auth.configCredentials');
     }
     if (key.startsWith('sb_secret_')) {
-      return 'هذا مفتاح سرّي. استخدم Publishable key العام، واحذف المفتاح السرّي من إعدادات الواجهة.';
+      return t('auth.configSecretKey');
     }
     if (!key.startsWith('sb_publishable_')) {
       const payload = key.split('.')[1];
-      if (!payload) return 'المفتاح غير صحيح. استخدم Publishable key أو مفتاح anon العام.';
+      if (!payload) return t('auth.configKeyInvalid');
       const decoded = JSON.parse(atob(payload.replace(/-/g, '+').replace(/_/g, '/')));
       if (decoded.role !== 'anon') {
-        return 'الواجهة تقبل المفتاح العام فقط. لا تستخدم service_role أو أي مفتاح سرّي.';
+        return t('auth.configPublicKeyOnly');
       }
     }
     return '';
   } catch {
-    return 'تعذّر قراءة إعدادات Supabase. تأكد من رابط المشروع ومفتاحه العام.';
+    return t('auth.configUnreadable');
   }
 }
 

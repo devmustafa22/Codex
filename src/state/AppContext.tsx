@@ -18,6 +18,8 @@ import { todayKey } from '../lib/dates';
 import { loadData, parseBackup, STORAGE_KEY } from '../lib/storage';
 import { useAuth } from './AuthContext';
 import { useCloudWorkspace } from './useCloudWorkspace';
+import { useLanguage } from './LanguageContext';
+import { t, localizeMessage } from '../lib/i18n';
 export interface SelectedItem {
   page: PageId;
   id: string;
@@ -71,7 +73,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     <CloudAppProvider
       key={user.id}
       userId={user.id}
-      name={String(user.user_metadata.display_name || 'مساحتي')}
+      name={String(user.user_metadata.display_name || t('common.mySpace'))}
     >
       {children}
     </CloudAppProvider>
@@ -90,9 +92,7 @@ function LocalAppProvider({ children }: { children: ReactNode }) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       setStorageError('');
     } catch {
-      setStorageError(
-        'تعذّر حفظ التغييرات على المتصفح. نزّل نسخة احتياطية من الإعدادات قبل إغلاق الصفحة.',
-      );
+      setStorageError(t('common.localSaveError'));
     }
   }, [data, blocked]);
   const replaceData = (next: AppData) => {
@@ -127,28 +127,33 @@ function CloudAppProvider({
 }) {
   const workspace = useCloudWorkspace({ userId, name });
   const { signOut } = useAuth();
+  const { t } = useLanguage();
   const [signOutError, setSignOutError] = useState('');
   if (!workspace.ready)
     return (
       <main className="workspace-loading" aria-busy={workspace.status === 'loading'}>
-        <h1>{workspace.status === 'loading' ? 'نفتح مساحتك…' : 'تعذّر تحميل مساحتك'}</h1>
+        <h1>
+          {t(
+            workspace.status === 'loading'
+              ? 'common.openingWorkspace'
+              : 'common.workspaceLoadFailed',
+          )}
+        </h1>
         <p role={workspace.error ? 'alert' : undefined}>
-          {workspace.error || 'نحمّل بيانات حسابك من السحابة.'}
+          {localizeMessage(workspace.error) || t('common.loadingWorkspace')}
         </p>
         {workspace.status !== 'loading' && (
           <button className="button primary" onClick={workspace.retry}>
-            إعادة المحاولة
+            {t('common.retry')}
           </button>
         )}
         <button
           className="button secondary"
-          onClick={() =>
-            void signOut().catch(() => setSignOutError('تعذّر تسجيل الخروج. جرّب مجدداً.'))
-          }
+          onClick={() => void signOut().catch(() => setSignOutError(t('common.signOutFailed')))}
         >
-          تسجيل الخروج
+          {t('common.signOut')}
         </button>
-        {signOutError && <p role="alert">{signOutError}</p>}
+        {signOutError && <p role="alert">{localizeMessage(signOutError)}</p>}
       </main>
     );
   return (
@@ -188,6 +193,7 @@ function WorkspaceProvider({
   retrySync,
   resolveSyncConflict,
 }: WorkspaceProviderProps) {
+  const { setLanguage, t } = useLanguage();
   const [toast, setToast] = useState<string>('');
   const [page, updatePage] = useState<PageId>(
     () => pages.find((p) => `#${p}` === window.location.hash) ?? 'dashboard',
@@ -221,6 +227,9 @@ function WorkspaceProvider({
     document.documentElement.dataset.textSize = data.profile.textSize ?? 'normal';
   }, [data.profile.textSize]);
   useEffect(() => {
+    if (data.profile.language) setLanguage(data.profile.language);
+  }, [data.profile.language, setLanguage]);
+  useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(''), 3600);
     return () => clearTimeout(timer);
@@ -239,7 +248,7 @@ function WorkspaceProvider({
         },
       ],
     }));
-    notify('تمت إضافة المهمة');
+    notify(t('common.taskAdded'));
     return id;
   };
   const updateTask = (id: string, patch: Partial<Task>) =>
@@ -262,12 +271,12 @@ function WorkspaceProvider({
     }));
   const deleteTask = (id: string) => {
     setData((d) => ({ ...d, tasks: d.tasks.filter((t) => t.id !== id) }));
-    notify('تم حذف المهمة');
+    notify(t('common.taskDeleted'));
   };
   const addSkill = (input: NewSkill) => {
     const id = crypto.randomUUID();
     setData((d) => ({ ...d, skills: [...d.skills, { ...input, id }] }));
-    notify('تمت إضافة المهارة');
+    notify(t('common.skillAdded'));
     return id;
   };
   const updateSkill = (id: string, patch: Partial<Skill>) =>
@@ -280,12 +289,12 @@ function WorkspaceProvider({
       entries: d.entries.map((e) => (e.skillId === id ? { ...e, skillId: '' } : e)),
       events: d.events.map((e) => (e.skillId === id ? { ...e, skillId: '' } : e)),
     }));
-    notify('تم حذف المهارة مع الاحتفاظ بسجلات النشاط');
+    notify(t('common.skillDeleted'));
   };
   const addEntry = (input: NewEntry) => {
     const id = crypto.randomUUID();
     setData((d) => ({ ...d, entries: [...d.entries, { ...input, id }] }));
-    notify('تم حفظ النشاط، خطوة جديدة في رحلتك');
+    notify(t('common.activitySaved'));
     return id;
   };
   const updateEntry = (id: string, patch: Partial<JournalEntry>) =>
@@ -295,27 +304,27 @@ function WorkspaceProvider({
     }));
   const deleteEntry = (id: string) => {
     setData((d) => ({ ...d, entries: d.entries.filter((e) => e.id !== id) }));
-    notify('تم حذف النشاط');
+    notify(t('common.activityDeleted'));
   };
   const addEvent = (input: NewEvent) => {
     const id = crypto.randomUUID();
     setData((d) => ({ ...d, events: [...d.events, { ...input, id }] }));
-    notify('تمت إضافة الموعد');
+    notify(t('common.eventAdded'));
     return id;
   };
   const updateEvent = (id: string, patch: Partial<CalendarEvent>) =>
     setData((d) => ({ ...d, events: d.events.map((e) => (e.id === id ? { ...e, ...patch } : e)) }));
   const deleteEvent = (id: string) => {
     setData((d) => ({ ...d, events: d.events.filter((e) => e.id !== id) }));
-    notify('تم حذف الموعد');
+    notify(t('common.eventDeleted'));
   };
   const updateProfile = (patch: Partial<Profile>) => {
     setData((d) => ({ ...d, profile: { ...d.profile, ...patch } }));
-    notify('تم حفظ الإعدادات');
+    notify(t('common.settingsSaved'));
   };
   const importBackup = (text: string) => {
     replaceData(parseBackup(text));
-    notify('تم استرجاع النسخة الاحتياطية');
+    notify(t('common.backupRestored'));
   };
   const clearData = () => {
     replaceData({
@@ -326,11 +335,11 @@ function WorkspaceProvider({
       entries: [],
       events: [],
     });
-    notify('مساحتك جاهزة لبداية جديدة');
+    notify(t('common.spaceCleared'));
   };
   const resetDemo = () => {
     replaceData(createDemoData());
-    notify('تمت استعادة البيانات التجريبية');
+    notify(t('common.demoRestored'));
   };
   return (
     <AppContext.Provider
@@ -367,9 +376,9 @@ function WorkspaceProvider({
     >
       {syncError && (
         <div className="storage-warning" role="alert">
-          {syncError}
+          {localizeMessage(syncError)}
           {syncStatus !== 'local' && (
-            <button onClick={() => setPage('settings')}>فتح إعدادات المزامنة</button>
+            <button onClick={() => setPage('settings')}>{t('common.openSyncSettings')}</button>
           )}
         </div>
       )}
@@ -377,7 +386,7 @@ function WorkspaceProvider({
       {toast && (
         <div className="toast" role="status">
           <span className="toast-dot" />
-          {toast}
+          {localizeMessage(toast)}
         </div>
       )}
     </AppContext.Provider>

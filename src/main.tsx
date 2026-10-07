@@ -8,25 +8,31 @@ import './styles.css';
 import { AppProvider } from './state/AppContext';
 import { AuthProvider } from './state/AuthContext';
 import { AuthGate } from './components/AuthGate';
+import { LanguageProvider, useLanguage } from './state/LanguageContext';
 
 const App = lazy(() => import('./App'));
 
+function PreparingWorkspace() {
+  const { t } = useLanguage();
+  return (
+    <main className="workspace-loading" role="status">
+      {t('common.preparingWorkspace')}
+    </main>
+  );
+}
+
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <AuthProvider>
-      <AuthGate>
-        <AppProvider>
-          <Suspense
-            fallback={
-              <main className="workspace-loading" role="status">
-                نجهّز مساحتك…
-              </main>
-            }
-          >
-            <App />
-          </Suspense>
-        </AppProvider>
-      </AuthGate>
-    </AuthProvider>
+    <LanguageProvider>
+      <AuthProvider>
+        <AuthGate>
+          <AppProvider>
+            <Suspense fallback={<PreparingWorkspace />}>
+              <App />
+            </Suspense>
+          </AppProvider>
+        </AuthGate>
+      </AuthProvider>
+    </LanguageProvider>
   </StrictMode>,
 );

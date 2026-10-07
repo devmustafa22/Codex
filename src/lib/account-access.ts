@@ -1,3 +1,4 @@
+import { t } from './i18n';
 import type { Session, SupabaseClient } from '@supabase/supabase-js';
 
 export interface AccountAccess {
@@ -7,14 +8,14 @@ export interface AccountAccess {
 
 export function parseAccountAccess(value: unknown): AccountAccess {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
-    throw new Error('تعذّر تأكيد صلاحيات الحساب. أعد المحاولة.');
+    throw new Error(t('auth.permissionsInvalid'));
   }
   const access = value as Record<string, unknown>;
   if (
     (access.role !== 'admin' && access.role !== 'user') ||
     (access.status !== 'active' && access.status !== 'suspended' && access.status !== 'deleted')
   ) {
-    throw new Error('تعذّر تأكيد صلاحيات الحساب. أعد المحاولة.');
+    throw new Error(t('auth.permissionsInvalid'));
   }
   return {
     role: access.role,
@@ -41,7 +42,7 @@ export async function readAccountAccess(
     ) {
       return { role: 'user', status: 'active' };
     }
-    throw new Error('تعذّر التحقق من حالة حسابك. تأكد من الاتصال ثم أعد المحاولة.');
+    throw new Error(t('auth.accountStatusFailed'));
   }
   return parseAccountAccess(data);
 }

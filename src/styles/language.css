@@ -1,0 +1,49 @@
+/* Shared controls and direction changes for English and Arabic. */
+.language-switcher {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--green);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.language-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+.auth-brand-row {
+  flex-wrap: wrap;
+}
+.auth-brand-row .language-switcher {
+  margin-inline-start: auto;
+}
+[dir='ltr'] .directional-icon {
+  transform: scaleX(-1);
+}
+@media (max-width: 760px) {
+  .sidebar {
+    inset-inline-start: 0;
+    inset-inline-end: auto;
+  }
+  [dir='ltr'] .sidebar {
+    transform: translateX(-100%);
+    box-shadow: 5px 0 40px #0c2b1b16;
+  }
+  [dir='ltr'] .sidebar.is-open {
+    transform: translateX(0);
+  }
+  .topbar .language-switcher {
+    padding-inline: 7px;
+    font-size: 0.75rem;
+  }
+  .topbar .language-switcher svg {
+    display: none;
+  }
+}

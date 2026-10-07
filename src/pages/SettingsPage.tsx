@@ -21,8 +21,11 @@ import { todayKey } from '../lib/dates';
 import { useAuth } from '../state/AuthContext';
 import { STORAGE_KEY } from '../lib/storage';
 import { TEXT_SIZE_OPTIONS } from '../lib/appearance';
+import { useLanguage } from '../state/LanguageContext';
+import { getLocale, localizeMessage } from '../lib/i18n';
 
 export default function SettingsPage() {
+  const { language, setLanguage, t } = useLanguage();
   const {
     data,
     updateProfile,
@@ -43,23 +46,23 @@ export default function SettingsPage() {
   const [accountError, setAccountError] = useState('');
   const [passwordBusy, setPasswordBusy] = useState(false);
   const syncLabels = {
-    local: 'محفوظ على هذا المتصفح',
-    loading: 'تحميل بيانات الحساب',
-    saving: 'التغييرات تنتظر الحفظ السحابي',
-    synced: 'محفوظ في السحابة',
-    offline: 'اتصالك غير متوفر — تغييراتك تنتظر المزامنة',
-    error: 'تعذّر إتمام المزامنة',
-    conflict: 'هناك نسخة أحدث على جهاز آخر',
+    local: t('settings.sync.local'),
+    loading: t('settings.sync.loading'),
+    saving: t('settings.sync.saving'),
+    synced: t('settings.sync.synced'),
+    offline: t('settings.sync.offline'),
+    error: t('settings.sync.error'),
+    conflict: t('settings.sync.conflict'),
   };
   const savePassword = async (e: FormEvent) => {
     e.preventDefault();
     setAccountError('');
     if (password.length < 10 || password.length > 128) {
-      setAccountError('اختر كلمة مرور بين 10 و128 حرفاً.');
+      setAccountError(t('settings.password.lengthError'));
       return;
     }
     if (password !== passwordConfirmation) {
-      setAccountError('كلمتا المرور غير متطابقتين.');
+      setAccountError(t('settings.password.matchError'));
       return;
     }
     setPasswordBusy(true);
@@ -67,9 +70,9 @@ export default function SettingsPage() {
       await changePassword(password);
       setPassword('');
       setPasswordConfirmation('');
-      notify('تم تغيير كلمة المرور');
+      notify(t('settings.password.success'));
     } catch (error) {
-      setAccountError(error instanceof Error ? error.message : 'تعذّر تغيير كلمة المرور.');
+      setAccountError(error instanceof Error ? error.message : t('settings.password.failed'));
     } finally {
       setPasswordBusy(false);
     }
@@ -79,22 +82,22 @@ export default function SettingsPage() {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       if (!saved) {
-        setError(
-          'ماكو بيانات للنسخة القديمة على هذا المتصفح والعنوان. استرجع ملف النسخة الاحتياطية إذا كنت تستخدم عنواناً آخر.',
-        );
+        setError(t('settings.backup.legacyMissing'));
         return;
       }
       setPendingImport(saved);
       setConfirmation('import');
     } catch {
-      setError('تعذّرت قراءة بيانات النسخة القديمة. استخدم ملف النسخة الاحتياطية.');
+      setError(t('settings.backup.legacyFailed'));
     }
   };
   const handleConflict = async (strategy: 'reload' | 'overwrite') => {
     try {
       await resolveSyncConflict(strategy);
     } catch (error) {
-      notify(error instanceof Error ? error.message : 'تعذّرت معالجة التعارض.');
+      notify(
+        error instanceof Error ? localizeMessage(error.message) : t('settings.sync.resolveFailed'),
+      );
     }
   };
   const [name, setName] = useState(data.profile.name);
@@ -122,7 +125,7 @@ export default function SettingsPage() {
   const save = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim()) {
-      setProfileError('اكتب اسمك قبل حفظ الإعدادات.');
+      setProfileError(t('settings.profile.nameError'));
       return;
     }
     if (
@@ -133,7 +136,7 @@ export default function SettingsPage() {
       focus < 1 ||
       focus > 180
     ) {
-      setProfileError('تحقق من هدف الأسبوع ومدة التركيز.');
+      setProfileError(t('settings.profile.goalError'));
       return;
     }
     setProfileError('');
@@ -152,20 +155,20 @@ export default function SettingsPage() {
     anchor.download = `madar-backup-${todayKey()}.json`;
     anchor.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    notify('تم تنزيل نسخة احتياطية من بياناتك');
+    notify(t('settings.backup.downloaded'));
   };
   const loadFile = async (file?: File) => {
     if (!file) return;
     setError('');
     if (file.size > 5 * 1024 * 1024) {
-      setError('الملف أكبر من الحجم المسموح: 5 ميغابايت.');
+      setError(t('settings.backup.tooLarge'));
       return;
     }
     try {
       setPendingImport(await file.text());
       setConfirmation('import');
     } catch {
-      setError('تعذّرت قراءة الملف. جرّب نسخة احتياطية أخرى.');
+      setError(t('settings.backup.readFailed'));
     }
     if (inputRef.current) inputRef.current.value = '';
   };
@@ -174,25 +177,56 @@ export default function SettingsPage() {
       importBackup(pendingImport);
       setPendingImport('');
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'ملف النسخة الاحتياطية غير صالح.');
+      setError(e instanceof Error ? e.message : t('settings.backup.invalid'));
     }
   };
   return (
     <>
       <PageHeader
-        eyebrow="مساحة تشبهك"
-        title="الإعدادات"
-        description="رتّب أهدافك، خصّص تجربتك، واحتفظ بنسخة آمنة من رحلتك."
+        eyebrow={t('settings.eyebrow')}
+        title={t('settings.title')}
+        description={t('settings.description')}
       />
       <div className="settings-layout">
         <div className="settings-main">
-          <Card title="حجم الخط">
+          <Card title={t('settings.language.title')}>
+            <p className="settings-description">{t('settings.language.description')}</p>
+            <fieldset className="text-size-options">
+              <legend className="sr-only">{t('settings.language.choose')}</legend>
+              {(['en', 'ar'] as const).map((value) => (
+                <label
+                  key={value}
+                  className={`text-size-option ${language === value ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="language"
+                    value={value}
+                    checked={language === value}
+                    onChange={() => {
+                      setLanguage(value);
+                      updateProfile({ language: value });
+                    }}
+                  />
+                  <span>
+                    <strong lang={value} dir={value === 'ar' ? 'rtl' : 'ltr'}>
+                      {value === 'en' ? 'English' : 'العربية'}
+                    </strong>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+          </Card>
+          <Card title={t('settings.textSize.title')}>
             <p className="settings-description">
-              كبّر النص بما يناسبك. يتغيّر الحجم مباشرة ويبقى محفوظاً
-              {isCloud ? ' في حسابك على أجهزتك.' : ' على هذا المتصفح.'}
+              {t(
+                isCloud
+                  ? 'settings.textSize.cloudDescription'
+                  : 'settings.textSize.localDescription',
+              )}
             </p>
             <fieldset className="text-size-options">
-              <legend className="sr-only">اختر حجم الخط</legend>
+              <legend className="sr-only">{t('settings.textSize.choose')}</legend>
               {TEXT_SIZE_OPTIONS.map((option) => (
                 <label
                   key={option.value}
@@ -206,16 +240,16 @@ export default function SettingsPage() {
                     onChange={() => updateProfile({ textSize: option.value })}
                   />
                   <span>
-                    <strong>{option.label}</strong>
-                    <small>{option.percentage}%</small>
+                    <strong>{t(option.label)}</strong>
+                    <small>{option.percentage.toLocaleString(getLocale())}%</small>
                   </span>
                 </label>
               ))}
             </fieldset>
-            <p className="text-size-preview">خطوة صغيرة اليوم، تقدّم واضح بكرة.</p>
+            <p className="text-size-preview">{t('settings.textSize.preview')}</p>
           </Card>
           {isCloud && (
-            <Card title="حسابك والحفظ السحابي">
+            <Card title={t('settings.cloud.title')}>
               <div className="account-summary">
                 <UserRound size={24} />
                 <div>
@@ -229,52 +263,47 @@ export default function SettingsPage() {
                   <strong>{syncLabels[syncStatus]}</strong>
                   {lastSyncedAt && (
                     <p>
-                      آخر حفظ:{' '}
-                      {new Intl.DateTimeFormat('ar-IQ', {
-                        dateStyle: 'short',
-                        timeStyle: 'short',
-                        timeZone: 'Asia/Baghdad',
-                      }).format(new Date(lastSyncedAt))}
+                      {t('settings.cloud.lastSaved', {
+                        date: new Intl.DateTimeFormat(getLocale(), {
+                          dateStyle: 'short',
+                          timeStyle: 'short',
+                          timeZone: 'Asia/Baghdad',
+                        }).format(new Date(lastSyncedAt)),
+                      })}
                     </p>
                   )}
                 </div>
               </div>
-              {syncError && <p className="form-error">{syncError}</p>}
-              <p className="settings-description">
-                كل حساب عنده مساحة خاصة. التعديلات تُحفظ تلقائياً عند توفر الاتصال، وتظهر حالة الحفظ
-                هنا. ملفات النسخ الاحتياطية تشمل بيانات مساحتك؛ احفظها بمكان خاص.
-              </p>
+              {syncError && <p className="form-error">{localizeMessage(syncError)}</p>}
+              <p className="settings-description">{t('settings.sync.description')}</p>
               {['offline', 'error'].includes(syncStatus) && (
                 <button className="button secondary" onClick={retrySync}>
                   <RefreshCw size={16} />
-                  إعادة المزامنة
+                  {t('settings.sync.retry')}
                 </button>
               )}
               {syncStatus === 'conflict' && (
                 <div className="conflict-actions">
-                  <p>
-                    نزّل نسخة احتياطية أولاً، ثم اختَر البيانات التي تريد اعتمادها. لن نكتب فوق
-                    النسخة الأحدث تلقائياً.
-                  </p>
+                  <p>{t('settings.sync.conflictDescription')}</p>
                   <button className="button secondary" onClick={() => setConfirmation('reload')}>
-                    تحميل نسخة السحابة
+                    {t('settings.sync.reload')}
                   </button>
                   <button
                     className="button danger-outline"
                     onClick={() => setConfirmation('overwrite')}
                   >
-                    اعتماد النسخة الحالية
+                    {t('settings.sync.overwrite')}
                   </button>
                 </div>
               )}
               <form className="password-settings" onSubmit={(e) => void savePassword(e)}>
                 <h3>
                   <KeyRound size={18} />
-                  تغيير كلمة المرور
+                  {t('settings.password.title')}
                 </h3>
                 <div className="form-grid">
                   <label className="form-field">
-                    كلمة المرور الجديدة
+                    {t('settings.password.new')}
                     <input
                       type="password"
                       autoComplete="new-password"
@@ -286,7 +315,7 @@ export default function SettingsPage() {
                     />
                   </label>
                   <label className="form-field">
-                    تأكيد كلمة المرور الجديدة
+                    {t('settings.password.confirm')}
                     <input
                       type="password"
                       autoComplete="new-password"
@@ -300,28 +329,30 @@ export default function SettingsPage() {
                 </div>
                 {accountError && (
                   <p className="form-error" role="alert">
-                    {accountError}
+                    {localizeMessage(accountError)}
                   </p>
                 )}
                 <button className="button secondary" type="submit" disabled={passwordBusy}>
-                  {passwordBusy ? 'جارٍ التغيير…' : 'تغيير كلمة المرور'}
+                  {passwordBusy ? t('settings.password.busy') : t('settings.password.title')}
                 </button>
               </form>
             </Card>
           )}
 
-          <Card title="ملفك الشخصي">
+          <Card title={t('settings.profile.title')}>
             <form onSubmit={save}>
               <div className="profile-preview">
-                <span className="avatar avatar-large">{name.charAt(0) || 'م'}</span>
+                <span className="avatar avatar-large">
+                  {name.charAt(0) || t('settings.profile.avatarFallback')}
+                </span>
                 <div>
-                  <h3>{name || 'مساحتك الشخصية'}</h3>
+                  <h3>{name || t('settings.profile.space')}</h3>
                   <p>{role}</p>
                 </div>
               </div>
               <div className="form-grid">
                 <label className="form-field">
-                  اسمك
+                  {t('settings.profile.name')}
                   <input
                     required
                     maxLength={50}
@@ -330,11 +361,11 @@ export default function SettingsPage() {
                   />
                 </label>
                 <label className="form-field">
-                  وصف رحلتك
+                  {t('settings.profile.role')}
                   <input maxLength={120} value={role} onChange={(e) => setRole(e.target.value)} />
                 </label>
                 <label className="form-field">
-                  هدف الأسبوع (ساعات)
+                  {t('settings.profile.weekly')}
                   <input
                     type="number"
                     min="0.5"
@@ -346,7 +377,7 @@ export default function SettingsPage() {
                   />
                 </label>
                 <label className="form-field">
-                  مدة جلسة التركيز (دقائق)
+                  {t('settings.profile.focus')}
                   <input
                     type="number"
                     min="1"
@@ -360,19 +391,19 @@ export default function SettingsPage() {
               </div>
               {profileError && (
                 <p className="form-error" role="alert">
-                  {profileError}
+                  {localizeMessage(profileError)}
                 </p>
               )}
               <div className="form-actions">
                 <button className="button primary" type="submit">
-                  حفظ التغييرات
+                  {t('settings.profile.save')}
                 </button>
-                <span className="helper-text">المدة الجديدة تُطبّق عند فتح جلسة جديدة.</span>
+                <span className="helper-text">{t('settings.profile.focusNote')}</span>
               </div>
             </form>
           </Card>
-          <Card title="مظهر مساحتك">
-            <p className="settings-description">اختر الإضاءة التي تناسب وقتك.</p>
+          <Card title={t('settings.appearance.title')}>
+            <p className="settings-description">{t('settings.appearance.description')}</p>
             <div className="theme-options">
               <button
                 className={`theme-option ${data.profile.theme === 'light' ? 'selected' : ''}`}
@@ -380,7 +411,7 @@ export default function SettingsPage() {
                 aria-pressed={data.profile.theme === 'light'}
               >
                 <Sun size={22} />
-                <span>وضع نهاري</span>
+                <span>{t('settings.appearance.light')}</span>
                 <div className="theme-preview light-preview">
                   <i />
                   <i />
@@ -393,7 +424,7 @@ export default function SettingsPage() {
                 aria-pressed={data.profile.theme === 'dark'}
               >
                 <Moon size={22} />
-                <span>وضع ليلي</span>
+                <span>{t('settings.appearance.dark')}</span>
                 <div className="theme-preview dark-preview">
                   <i />
                   <i />
@@ -402,31 +433,31 @@ export default function SettingsPage() {
               </button>
             </div>
           </Card>
-          <Card title="نسختك الاحتياطية">
+          <Card title={t('settings.backup.title')}>
             <div className="backup-description">
               <HardDrive size={25} />
               <div>
-                <h3>بياناتك تستحق أن تحتفظ بها</h3>
+                <h3>{t('settings.backup.heading')}</h3>
                 <p>
                   {isCloud
-                    ? 'الحفظ السحابي يتيح فتح مساحتك من أجهزتك. نزّل نسخة إضافية قبل الاسترجاع أو معالجة تعارض، لأن الاسترجاع يستبدل بيانات الحساب الحالي.'
-                    : 'هذه تجربة محلية محفوظة في هذا المتصفح. نزّل نسخة لاسترجاعها في حسابك السحابي لاحقاً.'}
+                    ? t('settings.backup.cloudDescription')
+                    : t('settings.backup.localDescription')}
                 </p>
               </div>
             </div>
             <div className="backup-actions">
               <button className="button primary" onClick={exportBackup}>
                 <Download size={16} />
-                تنزيل نسخة احتياطية
+                {t('settings.backup.download')}
               </button>
               <button className="button secondary" onClick={() => inputRef.current?.click()}>
                 <Upload size={16} />
-                استرجاع نسخة
+                {t('settings.backup.restore')}
               </button>
               {isCloud && (
                 <button className="button secondary" onClick={importBrowserData}>
                   <Upload size={16} />
-                  نقل بيانات النسخة القديمة
+                  {t('settings.backup.importLegacy')}
                 </button>
               )}
               <input
@@ -439,35 +470,51 @@ export default function SettingsPage() {
             </div>
             {error && (
               <p role="alert" className="form-error">
-                {error}
+                {localizeMessage(error)}
               </p>
             )}
             <div className="data-counts">
-              <span>{data.tasks.length} مهام</span>
-              <span>{data.skills.length} مهارات</span>
-              <span>{data.entries.length} أنشطة</span>
-              <span>{data.events.length} مواعيد</span>
+              <span>
+                {t('settings.backup.tasks', {
+                  count: data.tasks.length.toLocaleString(getLocale()),
+                })}
+              </span>
+              <span>
+                {t('settings.backup.skills', {
+                  count: data.skills.length.toLocaleString(getLocale()),
+                })}
+              </span>
+              <span>
+                {t('settings.backup.activities', {
+                  count: data.entries.length.toLocaleString(getLocale()),
+                })}
+              </span>
+              <span>
+                {t('settings.backup.events', {
+                  count: data.events.length.toLocaleString(getLocale()),
+                })}
+              </span>
             </div>
           </Card>
-          <Card className="danger-zone" title="إدارة بيانات المساحة">
+          <Card className="danger-zone" title={t('settings.data.title')}>
             <div className="settings-action-row">
               <div>
-                <h3>بداية جديدة</h3>
-                <p>مسح المهام والمهارات والسجلات والمواعيد. تبقى إعداداتك كما هي.</p>
+                <h3>{t('settings.data.clearTitle')}</h3>
+                <p>{t('settings.data.clearDescription')}</p>
               </div>
               <button className="button danger-outline" onClick={() => setConfirmation('clear')}>
                 <Trash2 size={15} />
-                مسح البيانات
+                {t('settings.data.clear')}
               </button>
             </div>
             <div className="settings-action-row">
               <div>
-                <h3>استعادة المثال التجريبي</h3>
-                <p>استبدال بياناتك بمثال يساعدك على استكشاف مدار.</p>
+                <h3>{t('settings.data.demoTitle')}</h3>
+                <p>{t('settings.data.demoDescription')}</p>
               </div>
               <button className="button secondary" onClick={() => setConfirmation('demo')}>
                 <RefreshCw size={15} />
-                استعادة المثال
+                {t('settings.data.demo')}
               </button>
             </div>
           </Card>
@@ -475,52 +522,44 @@ export default function SettingsPage() {
         <aside className="settings-aside">
           <div className="privacy-card">
             <ShieldCheck size={31} />
-            <h2>مساحتك، وبياناتك.</h2>
+            <h2>{t('settings.privacy.title')}</h2>
             <p>
               {isCloud
-                ? 'بيانات المساحة محفوظة في قاعدة بيانات Supabase تحت حسابك، وسياسات الوصول تسمح للحساب بقراءة بياناته فقط.'
-                : 'أنت في التجربة المحلية. بياناتها تبقى في هذا المتصفح، ويمكنك استكشاف مدار قبل إنشاء حساب.'}
+                ? t('settings.privacy.cloudDescription')
+                : t('settings.privacy.localDescription')}
             </p>
             <div>
               <UserRound size={15} />
-              {isCloud ? 'حساب بكلمة مرور وجلسة تسجيل دخول' : 'تجربة بدون حساب'}
+              {isCloud ? t('settings.privacy.cloudAccount') : t('settings.privacy.localAccount')}
             </div>
             <div>
               <Cloud size={15} />
-              {isCloud ? 'مزامنة عند توفر الاتصال' : 'التجربة المحلية لا تتزامن'}
+              {isCloud ? t('settings.privacy.cloudSync') : t('settings.privacy.localSync')}
             </div>
             <span>
-              {isCloud
-                ? 'التغييرات المعلّقة لها نسخة مؤقتة خاصة بالحساب على الجهاز. استخدم جهازاً موثوقاً، وصدّر نسخة قبل مسح بيانات المتصفح.'
-                : 'مسح بيانات المتصفح يزيل سجلات التجربة. احتفظ بنسخة احتياطية.'}
+              {isCloud ? t('settings.privacy.cloudNote') : t('settings.privacy.localNote')}
             </span>
           </div>
-          <Card title="وين تستضيف مدار؟">
-            <p className="settings-description">
-              Cloudflare Pages للواجهة مع HTTPS ونشر من GitHub، وSupabase للحسابات والبيانات. كلاهما
-              يوفّر خطة مجانية ضمن حدود الاستخدام.
-            </p>
+          <Card title={t('settings.hosting.title')}>
+            <p className="settings-description">{t('settings.hosting.description')}</p>
             <a
               className="text-link"
               href="https://pages.cloudflare.com/"
               target="_blank"
               rel="noreferrer"
             >
-              زيارة Cloudflare Pages
+              {t('settings.hosting.visit')}
               <ExternalLink size={14} />
             </a>
             <div className="hosting-note">
-              أمر البناء: <code dir="ltr">npm run build</code>
+              {t('settings.hosting.build')} <code dir="ltr">npm run build</code>
               <br />
-              مجلد النشر: <code>dist</code>
+              {t('settings.hosting.output')} <code>dist</code>
             </div>
           </Card>
-          <Card title="فكرة للبداية">
+          <Card title={t('settings.tip.title')}>
             <CircleHelp size={22} />
-            <p className="settings-description">
-              ابدأ بمهارتين أو ثلاث، وحدد هدفاً أسبوعياً واقعياً، ثم سجّل نشاطك بعد كل جلسة. ما
-              تحتاج توثّق كل دقيقة حتى تشوف تقدّمك.
-            </p>
+            <p className="settings-description">{t('settings.tip.description')}</p>
           </Card>
         </aside>
       </div>
@@ -528,23 +567,23 @@ export default function SettingsPage() {
         <ConfirmDialog
           title={
             confirmation === 'overwrite'
-              ? 'اعتماد النسخة الحالية؟'
+              ? t('settings.confirm.overwrite.title')
               : confirmation === 'reload'
-                ? 'تحميل نسخة السحابة؟'
+                ? t('settings.confirm.reload.title')
                 : confirmation === 'import'
-                  ? 'استرجاع النسخة الاحتياطية؟'
+                  ? t('settings.confirm.import.title')
                   : confirmation === 'clear'
-                    ? 'بدء مساحة جديدة؟'
-                    : 'استعادة البيانات التجريبية؟'
+                    ? t('settings.confirm.clear.title')
+                    : t('settings.confirm.demo.title')
           }
           description={
             confirmation === 'overwrite'
-              ? 'سيتم استبدال نسخة السحابة ببيانات هذا الجهاز. نزّل نسخة احتياطية أولاً. إذا حدث تعديل جديد أثناء العملية سيظهر التعارض مجدداً.'
+              ? t('settings.confirm.overwrite.description')
               : confirmation === 'reload'
-                ? 'سيتم تجاهل التعديلات المعلّقة على هذا الجهاز وتحميل بيانات السحابة. نزّل نسخة احتياطية قبل المتابعة.'
+                ? t('settings.confirm.reload.description')
                 : confirmation === 'import'
-                  ? 'سيتم استبدال بيانات المساحة بمحتويات الملف. ننصح بتنزيل نسخة من بياناتك الحالية أولاً.'
-                  : 'سيتم استبدال بياناتك الحالية. نزّل نسخة احتياطية قبل المتابعة، لأن هذه الخطوة لا يمكن التراجع عنها بدون نسخة.'
+                  ? t('settings.confirm.import.description')
+                  : t('settings.confirm.data.description')
           }
           onClose={() => setConfirmation(null)}
           onConfirm={

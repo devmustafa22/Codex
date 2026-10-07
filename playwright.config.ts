@@ -3,7 +3,7 @@ import { existsSync } from 'node:fs';
 
 export default defineConfig({
   testDir: './tests',
-  testMatch: 'dashboard.spec.ts',
+  testMatch: ['dashboard.spec.ts', 'language.spec.ts'],
   fullyParallel: true,
   workers: 2,
   retries: 0,

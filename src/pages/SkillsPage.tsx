@@ -19,6 +19,7 @@ import type { Skill } from '../lib/types';
 import { formatDate, formatMinutes, kindLabels, weekKeys } from '../lib/dates';
 import { skillMinutes, skillProgress } from '../lib/metrics';
 import { useApp } from '../state/AppContext';
+import { useLanguage } from '../state/LanguageContext';
 import {
   AddButton,
   ConfirmDialog,
@@ -60,6 +61,7 @@ function SkillDetail({
   onDelete: () => void;
 }) {
   const { data, setPage } = useApp();
+  const { t } = useLanguage();
   const minutes = skillMinutes(data, skill);
   const progress = skillProgress(data, skill);
   const weekly = weeklySkillMinutes(skill.id, data.entries);
@@ -89,44 +91,50 @@ function SkillDetail({
         </span>
         <div>
           <span className="badge skill-category">{skill.category}</span>
-          <p>{skill.description || 'كل جلسة تعلّم تضيف خطوة جديدة لهذه المهارة.'}</p>
+          <p>{skill.description || t('activity.skills.detailFallback')}</p>
         </div>
       </div>
       <div className="skill-detail-stats">
         <div className="skill-detail-stat">
           <Clock3 size={18} />
           <strong>{formatMinutes(minutes)}</strong>
-          <span>وقت التعلّم الكلي</span>
+          <span>{t('activity.skills.totalLearning')}</span>
         </div>
         <div className="skill-detail-stat">
           <Target size={18} />
           <strong>{progress}%</strong>
-          <span>من هدف {formatMinutes(skill.targetMinutes)}</span>
+          <span>
+            {t('activity.skills.targetTime', { duration: formatMinutes(skill.targetMinutes) })}
+          </span>
         </div>
         <div className="skill-detail-stat">
           <Flame size={18} />
           <strong>{formatMinutes(weekly)}</strong>
-          <span>هذا الأسبوع / {formatMinutes(skill.weeklyGoalMinutes)}</span>
+          <span>
+            {t('activity.skills.weeklyTime', { duration: formatMinutes(skill.weeklyGoalMinutes) })}
+          </span>
         </div>
       </div>
       <div className="skill-detail-progress">
         <div className="skill-progress-heading">
-          <span>تقدّمك نحو الهدف</span>
+          <span>{t('activity.skills.progress')}</span>
           <strong>{progress}%</strong>
         </div>
         <ProgressBar value={progress} color={skill.color} />
         <small>
-          يتضمن {formatMinutes(skill.baselineMinutes)} من وقت التعلّم السابق، و
-          {formatMinutes(minutes - skill.baselineMinutes)} من أنشطتك المسجلة.
+          {t('activity.skills.timeBreakdown', {
+            baseline: formatMinutes(skill.baselineMinutes),
+            recorded: formatMinutes(minutes - skill.baselineMinutes),
+          })}
         </small>
       </div>
       <div className="skill-detail-section">
         <div className="card-heading">
           <h3>
-            آخر جلسات التعلّم <span className="badge">{entries.length}</span>
+            {t('activity.skills.recentSessions')} <span className="badge">{entries.length}</span>
           </h3>
           <button className="text-link" onClick={openJournal}>
-            سجّل نشاط
+            {t('activity.skills.logActivity')}
             <ArrowUpLeft size={14} />
           </button>
         </div>
@@ -140,7 +148,7 @@ function SkillDetail({
                 <strong>{entry.title}</strong>
                 <span className="skill-entry-meta">
                   {formatDate(entry.date, { day: 'numeric', month: 'long', year: 'numeric' })} ·{' '}
-                  {kindLabels[entry.kind]}
+                  {t(kindLabels[entry.kind])}
                 </span>
                 {entry.note && <p>{entry.note}</p>}
               </div>
@@ -148,13 +156,11 @@ function SkillDetail({
             </div>
           ))
         ) : (
-          <p className="skill-detail-empty">
-            ما عندك جلسات مسجلة بعد. سجّل أول نشاط وشوف تقدّمك يكبر.
-          </p>
+          <p className="skill-detail-empty">{t('activity.skills.noSessions')}</p>
         )}
         {entries.length > 5 && (
           <button className="text-link" onClick={openJournal}>
-            عرض سجل الأنشطة بالكامل
+            {t('activity.skills.allActivity')}
             <ArrowUpLeft size={14} />
           </button>
         )}
@@ -162,7 +168,7 @@ function SkillDetail({
       <div className="skill-detail-section">
         <div className="card-heading">
           <h3>
-            المهام المرتبطة <span className="badge">{tasks.length}</span>
+            {t('activity.skills.linkedTasks')} <span className="badge">{tasks.length}</span>
           </h3>
           <button
             className="text-link"
@@ -171,7 +177,7 @@ function SkillDetail({
               setPage('tasks');
             }}
           >
-            إدارة المهام
+            {t('activity.skills.manageTasks')}
             <ArrowUpLeft size={14} />
           </button>
         </div>
@@ -184,39 +190,37 @@ function SkillDetail({
               <div>
                 <strong>{task.title}</strong>
                 <span className="skill-entry-meta">
-                  {task.dueDate ? formatDate(task.dueDate) : 'بدون موعد'} ·{' '}
+                  {task.dueDate ? formatDate(task.dueDate) : t('activity.skills.noDue')} ·{' '}
                   {formatMinutes(task.estimatedMinutes)}
                 </span>
               </div>
               <span className={`badge status-${task.status}`}>
                 {task.status === 'done'
-                  ? 'مكتملة'
+                  ? t('activity.skills.done')
                   : task.status === 'in-progress'
-                    ? 'قيد التنفيذ'
-                    : 'للإنجاز'}
+                    ? t('activity.skills.inProgress')
+                    : t('activity.skills.todo')}
               </span>
             </div>
           ))
         ) : (
-          <p className="skill-detail-empty">
-            اربط مهامك بهذه المهارة حتى يتحوّل هدفك إلى خطوات واضحة.
-          </p>
+          <p className="skill-detail-empty">{t('activity.skills.noTasks')}</p>
         )}
       </div>
       <div className="form-actions skill-detail-actions">
         <button className="button primary" onClick={openJournal}>
           <BookOpen size={17} />
-          سجّل نشاط تعلّم
+          {t('activity.skills.logLearning')}
         </button>
         <button className="button secondary" onClick={onEdit}>
           <Pencil size={16} />
-          تعديل المهارة
+          {t('activity.skills.edit')}
         </button>
         <button
           className="icon-button subtle-danger"
           onClick={onDelete}
-          aria-label="حذف المهارة"
-          title="حذف المهارة"
+          aria-label={t('activity.skills.delete')}
+          title={t('activity.skills.delete')}
         >
           <Trash2 size={18} />
         </button>
@@ -227,6 +231,7 @@ function SkillDetail({
 
 export default function SkillsPage() {
   const { data, deleteSkill, setPage, selectedItem, clearSelectedItem } = useApp();
+  const { t, language } = useLanguage();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('all');
   const [editor, setEditor] = useState<Skill | 'new' | null>(null);
@@ -239,7 +244,7 @@ export default function SkillsPage() {
     clearSelectedItem();
   }, [selectedItem, data.skills, clearSelectedItem]);
   const categories = [...new Set(data.skills.map((skill) => skill.category))].sort((a, b) =>
-    a.localeCompare(b, 'ar'),
+    a.localeCompare(b, language),
   );
   const filtered = useMemo(
     () =>
@@ -261,10 +266,10 @@ export default function SkillsPage() {
   return (
     <>
       <PageHeader
-        eyebrow="استثمر بأهم مشروع: نفسك"
-        title="رحلة مهاراتي"
-        description="كل ساعة تتعلّم بيها تصنع فرق. حدّد أهدافك، وسجّل وقتك، وشوف نموّك."
-        action={<AddButton onClick={openNew}>مهارة جديدة</AddButton>}
+        eyebrow={t('activity.skills.eyebrow')}
+        title={t('activity.skills.title')}
+        description={t('activity.skills.description')}
+        action={<AddButton onClick={openNew}>{t('activity.skills.new')}</AddButton>}
       />
       <div className="skill-summary card">
         <div>
@@ -273,7 +278,7 @@ export default function SkillsPage() {
           </span>
           <div>
             <strong>{data.skills.length}</strong>
-            <span>مهارات في رحلتك</span>
+            <span>{t('activity.skills.skillCount')}</span>
           </div>
         </div>
         <div>
@@ -282,7 +287,7 @@ export default function SkillsPage() {
           </span>
           <div>
             <strong>{formatMinutes(totalMinutes)}</strong>
-            <span>وقت تطوير مهاراتك</span>
+            <span>{t('activity.skills.developmentTime')}</span>
           </div>
         </div>
         <div>
@@ -291,13 +296,13 @@ export default function SkillsPage() {
           </span>
           <div>
             <strong>{completed}</strong>
-            <span>أهداف وصلت لها</span>
+            <span>{t('activity.skills.goalsReached')}</span>
           </div>
         </div>
         <p>
-          الاستمرارية أهم من السرعة.
+          {t('activity.skills.consistency')}
           <br />
-          <b>خطوة صغيرة اليوم، مهارة أقوى باچر.</b>
+          <b>{t('activity.skills.quote')}</b>
         </p>
       </div>
       <div className="filter-bar skill-toolbar">
@@ -306,27 +311,29 @@ export default function SkillsPage() {
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="ابحث عن مهارة…"
-            aria-label="البحث عن مهارة"
+            placeholder={t('activity.skills.searchPlaceholder')}
+            aria-label={t('activity.skills.search')}
           />
         </label>
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value)}
-          aria-label="تصفية حسب مجال المهارة"
+          aria-label={t('activity.skills.filterCategory')}
         >
-          <option value="all">كل المجالات</option>
+          <option value="all">{t('activity.skills.allCategories')}</option>
           {categories.map((item) => (
             <option key={item} value={item}>
               {item}
             </option>
           ))}
         </select>
-        <span className="skill-result-count">{filtered.length} مهارات</span>
+        <span className="skill-result-count">
+          {t('activity.skills.matches', { count: filtered.length })}
+        </span>
       </div>
       {hasFilters && (
         <div className="filter-results">
-          <span>نتائج البحث والتصفية</span>
+          <span>{t('activity.skills.filteredResults')}</span>
           <button
             className="text-link"
             onClick={() => {
@@ -334,18 +341,18 @@ export default function SkillsPage() {
               setCategory('all');
             }}
           >
-            مسح الفلاتر
+            {t('activity.skills.clearFilters')}
           </button>
         </div>
       )}
       {filtered.length === 0 ? (
         <div className="card">
           <EmptyState
-            title={hasFilters ? 'ما لقينا مهارات بهذا البحث' : 'شنو تحب تتعلّم؟'}
+            title={hasFilters ? t('activity.skills.noResults') : t('activity.skills.emptyTitle')}
             description={
               hasFilters
-                ? 'غيّر كلمة البحث أو اختار مجال ثاني.'
-                : 'أضف مهارتك الأولى، وحدّد هدفًا مناسبًا إلك. نموّك يبدأ من هنا.'
+                ? t('activity.skills.noResultsDescription')
+                : t('activity.skills.emptyDescription')
             }
             action={
               hasFilters ? (
@@ -356,10 +363,10 @@ export default function SkillsPage() {
                     setCategory('all');
                   }}
                 >
-                  إظهار كل المهارات
+                  {t('activity.skills.showAll')}
                 </button>
               ) : (
-                <AddButton onClick={openNew}>أضف أول مهارة</AddButton>
+                <AddButton onClick={openNew}>{t('activity.skills.addFirst')}</AddButton>
               )
             }
           />
@@ -394,16 +401,16 @@ export default function SkillsPage() {
                     <button
                       className="icon-button"
                       onClick={() => setEditor(skill)}
-                      aria-label={`تعديل مهارة ${skill.name}`}
-                      title="تعديل المهارة"
+                      aria-label={t('activity.skills.editAria', { name: skill.name })}
+                      title={t('activity.skills.edit')}
                     >
                       <Pencil size={15} />
                     </button>
                     <button
                       className="icon-button subtle-danger"
                       onClick={() => setDeleting(skill)}
-                      aria-label={`حذف مهارة ${skill.name}`}
-                      title="حذف المهارة"
+                      aria-label={t('activity.skills.deleteAria', { name: skill.name })}
+                      title={t('activity.skills.delete')}
                     >
                       <Trash2 size={15} />
                     </button>
@@ -414,7 +421,7 @@ export default function SkillsPage() {
                   {skill.name}
                 </button>
                 <p className="skill-card-description">
-                  {skill.description || 'خطوات يومية صغيرة نحو هدف كبير.'}
+                  {skill.description || t('activity.skills.cardFallback')}
                 </p>
                 <div className="skill-progress-heading">
                   <span>
@@ -427,7 +434,7 @@ export default function SkillsPage() {
                   <div className="skill-weekly-line">
                     <span>
                       <Flame size={14} />
-                      هدف هذا الأسبوع
+                      {t('activity.skills.weekGoal')}
                     </span>
                     <b>
                       {formatMinutes(weekly)} / {formatMinutes(skill.weeklyGoalMinutes)}
@@ -437,17 +444,17 @@ export default function SkillsPage() {
                   {weeklyPercent >= 100 && (
                     <small className="skill-goal-reached">
                       <CheckCheck size={13} />
-                      أحسنت! وصلت لهدفك الأسبوعي
+                      {t('activity.skills.weekGoalReached')}
                     </small>
                   )}
                 </div>
                 <div className="skill-card-footer">
                   <span>
                     <CheckCheck size={15} />
-                    {linkedTasks} مهام مفتوحة
+                    {t('activity.skills.openTasks', { count: linkedTasks })}
                   </span>
                   <button className="text-link" onClick={() => setDetailId(skill.id)}>
-                    تفاصيل المهارة
+                    {t('activity.skills.details')}
                     <ArrowUpLeft size={15} />
                   </button>
                 </div>
@@ -459,9 +466,9 @@ export default function SkillsPage() {
       {data.skills.length > 0 && (
         <div className="skill-journal-prompt">
           <BookOpen size={19} />
-          <p>تعلّمت شي جديد اليوم؟ سجّله حتى تنحسب خطواتك وتكبر مهاراتك.</p>
+          <p>{t('activity.skills.journalPrompt')}</p>
           <button className="button secondary" onClick={() => setPage('journal')}>
-            افتح سجل يومي
+            {t('activity.skills.openJournal')}
             <ArrowUpLeft size={16} />
           </button>
         </div>
@@ -488,8 +495,8 @@ export default function SkillsPage() {
       )}
       {deleting && (
         <ConfirmDialog
-          title="حذف المهارة؟"
-          description={`راح تنحذف مهارة «${deleting.name}» وأهدافها. أنشطتك ومهامك ومواعيدك تبقى محفوظة بدون الارتباط بهذه المهارة.`}
+          title={t('activity.skills.deleteTitle')}
+          description={t('activity.skills.deleteDescription', { name: deleting.name })}
           onConfirm={() => deleteSkill(deleting.id)}
           onClose={() => setDeleting(null)}
         />

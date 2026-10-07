@@ -1,3 +1,4 @@
+import { t } from '../lib/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase';
 import {
@@ -12,7 +13,7 @@ import type { AppData } from '../lib/types';
 function createBackend(userId: string) {
   const client = supabase;
   if (!client) {
-    throw new WorkspaceError('error', 'إعداد الاتصال بـ Supabase غير مكتمل.');
+    throw new WorkspaceError('error', t('auth.supabaseIncomplete'));
   }
   return createWorkspaceBackend(client, userId);
 }
@@ -45,7 +46,7 @@ export function useCloudWorkspace({ userId, name }: { userId: string; name: stri
         ...previous,
         ready: false,
         status: 'error',
-        error: 'إعداد الاتصال بالسحابة غير مكتمل. تحقّق من متغيرات البيئة.',
+        error: t('auth.cloudConfigIncomplete'),
       }));
       return;
     }

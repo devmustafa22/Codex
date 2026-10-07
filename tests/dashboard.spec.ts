@@ -20,7 +20,10 @@ const test = base.extend<{ appErrors: string[] }>({
 
 test.beforeEach(async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-06T10:00:00Z') });
-  await page.addInitScript(() => sessionStorage.setItem('madar:demo', '1'));
+  await page.addInitScript(() => {
+    sessionStorage.setItem('madar:demo', '1');
+    localStorage.setItem('madar:language', 'ar');
+  });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 });

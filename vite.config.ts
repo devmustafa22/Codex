@@ -23,7 +23,7 @@ export default defineConfig(({ command, mode }) => {
   }
   return {
     plugins: [react()],
-    test: { include: ['src/**/*.test.ts'] },
+    test: { include: ['src/**/*.test.ts'], setupFiles: ['./src/test-setup.ts'] },
     build: {
       rollupOptions: {
         output: {

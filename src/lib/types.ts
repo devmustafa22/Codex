@@ -1,4 +1,5 @@
 import type { TextSize } from './appearance';
+import type { Language } from './i18n';
 
 export type PageId =
   'dashboard' | 'tasks' | 'skills' | 'calendar' | 'journal' | 'insights' | 'settings' | 'admin';
@@ -56,6 +57,7 @@ export interface Profile {
   theme: 'light' | 'dark';
   /** Older workspaces and backups default to the original text size. */
   textSize?: TextSize;
+  language?: Language;
 }
 export interface AppData {
   version: 1;

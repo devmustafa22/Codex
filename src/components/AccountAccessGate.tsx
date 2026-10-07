@@ -1,3 +1,6 @@
+import { useLanguage } from '../state/LanguageContext';
+import { localizeMessage } from '../lib/i18n';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useState } from 'react';
 import { LoaderCircle, LockKeyhole, ShieldAlert } from 'lucide-react';
 import { useAuth } from '../state/AuthContext';
@@ -5,23 +8,24 @@ import { Brand } from './Brand';
 
 export function AccountAccessGate() {
   const auth = useAuth();
+  const { language, t } = useLanguage();
   const [busy, setBusy] = useState(false);
   const [signOutError, setSignOutError] = useState('');
   const status = auth.accountAccess?.status;
   const title = auth.accessLoading
-    ? 'نتحقق من حسابك…'
+    ? t('auth.checkingAccount')
     : status === 'suspended'
-      ? 'حسابك موقوف'
+      ? t('auth.suspendedTitle')
       : status === 'deleted'
-        ? 'حسابك محذوف'
-        : 'تعذّر تأكيد حالة الحساب';
+        ? t('auth.deletedTitle')
+        : t('auth.accessUnavailable');
   const description = auth.accessLoading
-    ? 'نحمّل حالة الحساب والصلاحيات من السحابة.'
+    ? t('auth.checkingAccessDescription')
     : status === 'suspended'
-      ? 'أوقفت الإدارة حسابك. تواصل مع إدارة الموقع لإعادة تفعيله.'
+      ? t('auth.suspendedDescription')
       : status === 'deleted'
-        ? 'حُذف هذا الحساب من الموقع. سجّل الخروج للعودة إلى صفحة الدخول.'
-        : auth.accessError || 'تأكد من الاتصال بالإنترنت ثم أعد المحاولة.';
+        ? t('auth.deletedDescription')
+        : localizeMessage(auth.accessError) || t('auth.checkConnection');
 
   async function leave() {
     setBusy(true);
@@ -29,16 +33,17 @@ export function AccountAccessGate() {
     try {
       await auth.signOut();
     } catch (cause) {
-      setSignOutError(cause instanceof Error ? cause.message : 'تعذّر تسجيل الخروج. أعد المحاولة.');
+      setSignOutError(cause instanceof Error ? cause.message : t('auth.signOutRetry'));
     } finally {
       setBusy(false);
     }
   }
 
   return (
-    <main className="account-access-screen" dir="rtl">
+    <main className="account-access-screen" dir={language === 'ar' ? 'rtl' : 'ltr'}>
       <section className="account-access-card" aria-labelledby="account-access-heading">
         <Brand />
+        <LanguageSwitcher />
         <span className="account-access-icon" aria-hidden="true">
           {auth.accessLoading ? (
             <LoaderCircle className="auth-spinner" size={30} />
@@ -58,17 +63,17 @@ export function AccountAccessGate() {
                 onClick={() => void auth.refreshAccountAccess()}
                 disabled={busy}
               >
-                إعادة التحقق
+                {t('auth.recheckAccess')}
               </button>
             )}
             <button className="button secondary" onClick={() => void leave()} disabled={busy}>
-              {busy ? 'جارٍ تسجيل الخروج…' : 'تسجيل الخروج'}
+              {busy ? t('auth.signingOut') : t('auth.signOut')}
             </button>
           </div>
         )}
         {signOutError && (
           <p className="auth-feedback auth-error" role="alert">
-            {signOutError}
+            {localizeMessage(signOutError)}
           </p>
         )}
       </section>

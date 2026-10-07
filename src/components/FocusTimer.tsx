@@ -1,9 +1,11 @@
+import { useLanguage } from '../state/LanguageContext';
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, RotateCcw, Target, ArrowUpLeft, Check } from 'lucide-react';
 import { useApp } from '../state/AppContext';
 import { todayKey } from '../lib/dates';
 
 export function FocusTimer() {
+  const { t } = useLanguage();
   const { data, addEntry, notify } = useApp();
   const [duration, setDuration] = useState(data.profile.focusMinutes);
   const [remaining, setRemaining] = useState(duration * 60);
@@ -32,13 +34,15 @@ export function FocusTimer() {
   const saveSession = (seconds: number) => {
     if (saved.current) return;
     if (seconds < 60) {
-      notify('أكمل دقيقة واحدة على الأقل حتى تسجّل جلسة التركيز');
+      notify(t('shell.focus.minimum'));
       return;
     }
     const selected = data.tasks.find((t) => t.id === task);
     addEntry({
-      title: selected ? `جلسة تركيز: ${selected.title}` : 'جلسة تركيز',
-      note: 'تم تسجيل الوقت من مؤقّت التركيز.',
+      title: selected
+        ? t('shell.focus.sessionTask', { title: selected.title })
+        : t('shell.focus.session'),
+      note: t('shell.focus.loggedNote'),
       date: todayKey(),
       minutes: Math.floor(seconds / 60),
       skillId: data.skills.some((s) => s.id === (selected?.skillId || skill))
@@ -100,15 +104,18 @@ export function FocusTimer() {
       <div className="focus-heading">
         <span>
           <Target size={17} />
-          مساحة التركيز
+          {t('shell.focus.title')}
         </span>
         <ArrowUpLeft size={17} />
       </div>
-      <p>شيء واحد. اهتمام كامل.</p>
+      <p>{t('shell.focus.subtitle')}</p>
       <div
         className="timer-value"
         role="timer"
-        aria-label={`متبقي ${Math.floor(remaining / 60)} دقيقة و ${remaining % 60} ثانية`}
+        aria-label={t('shell.focus.remaining', {
+          minutes: Math.floor(remaining / 60),
+          seconds: remaining % 60,
+        })}
         dir="ltr"
       >
         {String(Math.floor(remaining / 60)).padStart(2, '0')}
@@ -118,23 +125,23 @@ export function FocusTimer() {
       <div className="focus-options">
         <select
           disabled={running || elapsed > 0}
-          aria-label="مدة جلسة التركيز"
+          aria-label={t('shell.focus.duration')}
           value={duration}
           onChange={(e) => changeDuration(Number(e.target.value))}
         >
           {[15, 25, 45, 60, ...([15, 25, 45, 60].includes(duration) ? [] : [duration])].map((m) => (
             <option value={m} key={m}>
-              {m} دقيقة
+              {t('shell.focus.minutes', { count: m })}
             </option>
           ))}
         </select>
         <select
           disabled={running || elapsed > 0}
-          aria-label="مهمة جلسة التركيز"
+          aria-label={t('shell.focus.task')}
           value={task}
           onChange={(e) => setTask(e.target.value)}
         >
-          <option value="">جلسة حرة</option>
+          <option value="">{t('shell.focus.free')}</option>
           {pending.map((t) => (
             <option value={t.id} key={t.id}>
               {t.title}
@@ -146,11 +153,11 @@ export function FocusTimer() {
         <select
           className="focus-skill"
           disabled={running || elapsed > 0}
-          aria-label="مهارة جلسة التركيز"
+          aria-label={t('shell.focus.skill')}
           value={skill}
           onChange={(e) => setSkill(e.target.value)}
         >
-          <option value="">بدون مهارة مرتبطة</option>
+          <option value="">{t('shell.focus.noSkill')}</option>
           {data.skills.map((s) => (
             <option value={s.id} key={s.id}>
               {s.name}
@@ -162,23 +169,27 @@ export function FocusTimer() {
         <button
           className="timer-play"
           onClick={toggle}
-          aria-label={running ? 'إيقاف مؤقت' : 'ابدأ التركيز'}
+          aria-label={running ? t('shell.focus.pause') : t('shell.focus.start')}
         >
           {running ? (
             <Pause size={17} fill="currentColor" />
           ) : (
             <Play size={17} fill="currentColor" />
           )}
-          {running ? 'استراحة' : elapsed > 0 ? 'متابعة' : 'ابدأ التركيز'}
+          {running
+            ? t('shell.focus.break')
+            : elapsed > 0
+              ? t('shell.focus.resume')
+              : t('shell.focus.start')}
         </button>
-        <button className="timer-reset" aria-label="إعادة ضبط المؤقّت" onClick={reset}>
+        <button className="timer-reset" aria-label={t('shell.focus.reset')} onClick={reset}>
           <RotateCcw size={16} />
         </button>
         {elapsed >= 60 && (
           <button
             className="timer-reset"
-            title="إنهاء وحفظ الجلسة"
-            aria-label="إنهاء وحفظ الجلسة"
+            title={t('shell.focus.finish')}
+            aria-label={t('shell.focus.finish')}
             onClick={() => {
               const left = running
                 ? Math.max(0, Math.ceil((deadline.current - Date.now()) / 1000))
@@ -193,10 +204,10 @@ export function FocusTimer() {
       <span className="focus-note">
         <span />
         {running
-          ? 'وقت لك، بعيداً عن المشتتات'
+          ? t('shell.focus.runningNote')
           : elapsed
-            ? 'وقت الجلسة يُحفظ عند الإنهاء'
-            : 'يُسجّل الوقت تلقائياً عند انتهاء الجلسة'}
+            ? t('shell.focus.pausedNote')
+            : t('shell.focus.readyNote')}
       </span>
     </section>
   );
