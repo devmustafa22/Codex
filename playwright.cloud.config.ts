@@ -5,7 +5,7 @@ import { existsSync } from 'node:fs';
 // It needs a separate server because Vite embeds these public settings at startup.
 export default defineConfig({
   testDir: './tests',
-  testMatch: 'cloud.spec.ts',
+  testMatch: ['cloud.spec.ts', 'admin.spec.ts'],
   fullyParallel: true,
   workers: 2,
   retries: 0,

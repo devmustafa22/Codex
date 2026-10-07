@@ -1,5 +1,5 @@
 export type PageId =
-  'dashboard' | 'tasks' | 'skills' | 'calendar' | 'journal' | 'insights' | 'settings';
+  'dashboard' | 'tasks' | 'skills' | 'calendar' | 'journal' | 'insights' | 'settings' | 'admin';
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
 export type Priority = 'low' | 'medium' | 'high';
 export type EntryKind = 'learning' | 'work' | 'personal' | 'focus';

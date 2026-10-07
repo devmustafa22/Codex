@@ -1,3 +1,8 @@
 # The caller has no session yet. Password verification happens inside this function.
 [functions.username-login]
 verify_jwt = false
+
+# This endpoint validates a fresh user token with Auth and checks the active
+# administrator role in service-only SQL functions for every management action.
+[functions.account-admin]
+verify_jwt = false

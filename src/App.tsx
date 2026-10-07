@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import {
   LayoutDashboard,
   ListTodo,
@@ -22,6 +22,7 @@ import {
   LoaderCircle,
   LogOut,
   HardDrive,
+  ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import { useApp } from './state/AppContext';
@@ -38,6 +39,7 @@ import CalendarPage from './pages/CalendarPage';
 import JournalPage from './pages/JournalPage';
 import InsightsPage from './pages/InsightsPage';
 import SettingsPage from './pages/SettingsPage';
+const AdminPage = lazy(() => import('./pages/AdminPage'));
 const navigation: { id: PageId; label: string; icon: LucideIcon }[] = [
   { id: 'dashboard', label: 'نظرة عامة', icon: LayoutDashboard },
   { id: 'tasks', label: 'مهامي', icon: ListTodo },
@@ -63,7 +65,9 @@ const syncLabels = {
 };
 export default function App() {
   const { data, page, setPage, syncStatus, syncError, lastSyncedAt, notify } = useApp();
-  const { mode, signOut, leaveDemo } = useAuth();
+  const { mode, accountAccess, signOut, leaveDemo } = useAuth();
+  const isAdmin =
+    mode === 'cloud' && accountAccess?.role === 'admin' && accountAccess.status === 'active';
   const [searchOpen, setSearchOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.matchMedia('(max-width: 760px)').matches);
@@ -83,6 +87,9 @@ export default function App() {
           ? CloudOff
           : Cloud;
   const today = todayKey();
+  useEffect(() => {
+    if (page === 'admin' && !isAdmin) setPage('dashboard');
+  }, [page, isAdmin, setPage]);
   useEffect(() => {
     const media = window.matchMedia('(max-width: 760px)');
     const update = () => {
@@ -165,7 +172,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', listener);
   }, []);
   useEffect(() => {
-    document.title = `${page === 'settings' ? 'الإعدادات' : (navigation.find((n) => n.id === page)?.label ?? 'مدار')} — مدار`;
+    document.title = `${page === 'admin' ? 'إدارة الحسابات' : page === 'settings' ? 'الإعدادات' : (navigation.find((n) => n.id === page)?.label ?? 'مدار')} — مدار`;
   }, [page]);
   return (
     <div className="app-shell">
@@ -231,6 +238,16 @@ export default function App() {
         </nav>
         <div className="sidebar-secondary">
           <span className="nav-section-label">مساحتك</span>
+          {isAdmin && (
+            <button
+              className={`nav-item ${page === 'admin' ? 'active' : ''}`}
+              onClick={() => navTo('admin')}
+              aria-current={page === 'admin' ? 'page' : undefined}
+            >
+              <ShieldCheck size={19} />
+              <span>إدارة الحسابات</span>
+            </button>
+          )}
           <button
             className={`nav-item ${page === 'settings' ? 'active' : ''}`}
             onClick={() => navTo('settings')}
@@ -398,6 +415,17 @@ export default function App() {
           {page === 'journal' && <JournalPage />}
           {page === 'insights' && <InsightsPage />}
           {page === 'settings' && <SettingsPage />}
+          {page === 'admin' && isAdmin && (
+            <Suspense
+              fallback={
+                <section className="workspace-loading" role="status">
+                  نحمّل إدارة الحسابات…
+                </section>
+              }
+            >
+              <AdminPage />
+            </Suspense>
+          )}
           <footer className="app-footer">
             <span>صُنع لرحلتك، على وتيرتك.</span>
             <span>

@@ -171,6 +171,11 @@ class MockSupabase {
         this.recoveryEmails.push(body.email);
         return this.respond(route, 200, {});
       }
+      if (url.pathname === '/rest/v1/rpc/get_account_access') {
+        return authenticated
+          ? this.respond(route, 200, { role: 'user', status: 'active' })
+          : this.respond(route, 401, { code: '42501', message: 'Not authenticated' });
+      }
       if (url.pathname === '/rest/v1/user_workspaces') {
         if (this.failReads) {
           return this.respond(route, 503, {

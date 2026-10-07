@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { Session, User } from '@supabase/supabase-js';
 import { clearRecoveryCallback, recoveryCallbackState, supabase } from '../lib/supabase';
+import type { AccountAccess } from '../lib/account-access';
+import { useAccountAccess } from './useAccountAccess';
 
 type SignupInput = { username: string; email: string; password: string; name: string };
 type AuthContextValue = {
@@ -12,6 +14,10 @@ type AuthContextValue = {
   configured: boolean;
   recovery: boolean;
   recoveryVerified: boolean;
+  accountAccess: AccountAccess | null;
+  accessLoading: boolean;
+  accessError: string;
+  refreshAccountAccess: () => Promise<void>;
   enterDemo: () => void;
   leaveDemo: () => void;
   signIn: (identifier: string, password: string) => Promise<void>;
@@ -58,6 +64,9 @@ function authError(error: { message?: string; code?: string } | null, fallback: 
   }
   if (code === 'email_not_confirmed' || /email not confirmed/i.test(message)) {
     return new Error('فعّل بريدك الإلكتروني من رسالة التأكيد قبل تسجيل الدخول.');
+  }
+  if (code === 'user_banned' || /user.*banned/i.test(message)) {
+    return new Error('حسابك موقوف. تواصل مع إدارة الموقع لإعادة تفعيله.');
   }
   if (code === 'user_already_exists' || /already registered/i.test(message)) {
     return new Error('هذا البريد مسجّل مسبقاً. سجّل الدخول أو استرجع كلمة المرور.');
@@ -108,6 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [demo, setDemo] = useState(initialDemo);
   const [recovery, setRecovery] = useState(() => recoveryCallbackState().requested);
   const [recoveryVerified, setRecoveryVerified] = useState(false);
+  const { accountAccess, accessLoading, accessError, refreshAccountAccess } =
+    useAccountAccess(session);
 
   useEffect(() => {
     if (!supabase) return;
@@ -160,6 +171,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       configured: !!supabase,
       recovery,
       recoveryVerified,
+      accountAccess,
+      accessLoading,
+      accessError,
+      refreshAccountAccess,
       enterDemo() {
         if (session) return;
         rememberDemo(true);
@@ -275,7 +290,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         clearRecoveryLocation();
       },
     }),
-    [session, demo, loading, recovery, recoveryVerified],
+    [
+      session,
+      demo,
+      loading,
+      recovery,
+      recoveryVerified,
+      accountAccess,
+      accessLoading,
+      accessError,
+      refreshAccountAccess,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,0 +1,437 @@
+.admin-page {
+  min-width: 0;
+}
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 20px;
+}
+.admin-stat {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  min-width: 0;
+  padding: 22px;
+}
+.admin-stat-icon {
+  height: 46px;
+  width: 46px;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+.admin-tone-green {
+  background: var(--green-pale);
+  color: var(--green);
+}
+.admin-tone-amber {
+  background: #dca25716;
+  color: #ae7a39;
+}
+.admin-tone-purple {
+  background: #9b83bb16;
+  color: #9175b0;
+}
+.admin-stat p {
+  font-size: 12px;
+  color: var(--muted);
+}
+.admin-stat strong {
+  display: block;
+  font-size: 30px;
+  margin-top: 3px;
+  line-height: 1.5;
+}
+.admin-access-note,
+.admin-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 18px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  font-size: 12px;
+  line-height: 1.9;
+  background: var(--green-pale);
+  color: var(--green-dark);
+}
+.admin-notice {
+  border: 1px solid #8baa8435;
+}
+.admin-accounts {
+  min-width: 0;
+}
+.admin-filters {
+  display: flex;
+  align-items: end;
+  gap: 16px;
+  margin: 8px 0 24px;
+}
+.admin-search {
+  min-height: 46px;
+  max-width: 500px;
+}
+.admin-search input {
+  font-size: 13px;
+}
+.admin-search input::placeholder {
+  font-size: 12px;
+}
+.admin-status-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+.admin-status-filter > span {
+  font-size: 11px;
+  color: var(--muted);
+}
+.admin-status-filter select {
+  color: var(--ink);
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  min-height: 46px;
+  padding: 9px 12px;
+  font-size: 12px;
+  min-width: 0;
+}
+.admin-table-head,
+.admin-account {
+  display: grid;
+  grid-template-columns: minmax(190px, 1.6fr) minmax(95px, 0.7fr) minmax(155px, 1fr) minmax(
+      150px,
+      0.95fr
+    );
+  gap: 15px;
+  align-items: center;
+}
+.admin-table-head {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+.admin-account {
+  padding: 22px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+}
+.admin-account:last-child {
+  border-bottom: none;
+}
+.admin-account-identity {
+  display: flex;
+  gap: 12px;
+  min-width: 0;
+  align-items: start;
+}
+.admin-avatar {
+  height: 42px;
+  width: 42px;
+  display: grid;
+  place-items: center;
+  background: var(--green-pale);
+  color: var(--green);
+  border-radius: 13px;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.admin-account-identity > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+.admin-account-identity strong,
+.admin-username,
+.admin-email {
+  overflow-wrap: anywhere;
+  text-align: start;
+}
+.admin-account-identity strong {
+  font-size: 13px;
+}
+.admin-username {
+  color: var(--green);
+  font-size: 11px;
+}
+.admin-email,
+.admin-email-state {
+  font-size: 10px;
+  color: var(--muted);
+}
+.admin-account-badges {
+  display: flex;
+  align-items: start;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+.admin-account-badges > small {
+  font-size: 10px;
+  color: var(--muted);
+  width: 100%;
+}
+.admin-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  white-space: nowrap;
+}
+.admin-state-active {
+  color: var(--green);
+  background: var(--green-pale);
+}
+.admin-state-suspended {
+  color: #a26a36;
+  background: #cf8b3a15;
+}
+.admin-role-admin {
+  color: #9275b1;
+  background: #9b83bb12;
+}
+.admin-role-user {
+  color: var(--muted);
+  background: var(--surface-soft);
+}
+.admin-account-dates {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  min-width: 0;
+}
+.admin-account-dates > div {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.admin-account-dates span {
+  font-size: 9px;
+  color: var(--muted);
+}
+.admin-account-dates time,
+.admin-account-dates p {
+  font-size: 10px;
+}
+.admin-account-actions {
+  display: flex;
+  gap: 7px;
+  align-items: stretch;
+  flex-direction: column;
+  min-width: 0;
+}
+.admin-account-actions .button {
+  padding: 8px;
+  font-size: 10px;
+  min-height: 38px;
+  justify-content: center;
+  white-space: normal;
+}
+.admin-delete {
+  color: #b4625d;
+  background: #b4625d08;
+  border: 1px solid #b4625d20;
+}
+.admin-delete:hover {
+  background: #b4625d15;
+}
+.admin-protected {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+.admin-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid var(--border);
+  gap: 15px;
+  padding-top: 20px;
+  margin-top: 10px;
+}
+.admin-pagination > p {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.8;
+}
+.admin-pagination > div {
+  display: flex;
+  gap: 8px;
+}
+.admin-pagination .button {
+  min-height: 44px;
+  padding: 9px 12px;
+}
+.admin-loading,
+.admin-load-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 16px;
+  padding: 55px 20px;
+  font-size: 13px;
+  text-align: center;
+  line-height: 1.9;
+  color: var(--muted);
+}
+.admin-load-error > p {
+  color: #b4625d;
+}
+.admin-spinning {
+  animation: admin-spin 1s linear infinite;
+}
+.admin-confirm-account {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 15px;
+  padding: 14px;
+  background: var(--surface-soft);
+  border-radius: 10px;
+}
+.admin-confirm-account strong {
+  font-size: 14px;
+}
+.admin-confirm-account span {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+.admin-delete-confirm {
+  margin-top: 20px;
+}
+.admin-delete-confirm input {
+  font-size: 16px;
+  min-height: 46px;
+}
+.admin-busy-note {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.9;
+  margin-top: 15px;
+}
+@keyframes admin-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 1250px) {
+  .admin-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .admin-table-head {
+    display: none;
+  }
+  .admin-account {
+    grid-template-columns: minmax(0, 1.8fr) minmax(0, 1fr);
+    gap: 20px;
+  }
+  .admin-account-badges {
+    justify-content: end;
+  }
+  .admin-account-badges > small {
+    text-align: end;
+  }
+  .admin-account-actions {
+    flex-direction: row;
+  }
+  .admin-account-actions .button {
+    flex: 1;
+    min-height: 44px;
+  }
+}
+@media (max-width: 600px) {
+  .admin-stats {
+    gap: 10px;
+  }
+  .admin-stat {
+    gap: 10px;
+    padding: 15px 12px;
+    flex-direction: column;
+    align-items: start;
+  }
+  .admin-stat-icon {
+    width: 38px;
+    height: 38px;
+  }
+  .admin-stat p {
+    font-size: 11px;
+  }
+  .admin-stat strong {
+    font-size: 26px;
+  }
+  .admin-access-note {
+    align-items: start;
+    padding: 13px;
+    font-size: 11px;
+  }
+  .admin-access-note svg {
+    margin-top: 3px;
+  }
+  .admin-filters {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+  }
+  .admin-search {
+    width: 100%;
+    max-width: none;
+  }
+  .admin-search input,
+  .admin-status-filter select {
+    font-size: 16px;
+  }
+  .admin-account {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 15px;
+    padding: 20px 0;
+  }
+  .admin-account-badges {
+    justify-content: start;
+  }
+  .admin-account-badges > small {
+    width: auto;
+    text-align: start;
+  }
+  .admin-account-dates {
+    flex-direction: row;
+    gap: 20px;
+  }
+  .admin-account-dates > div {
+    flex: 1;
+    min-width: 0;
+  }
+  .admin-account-actions .button {
+    font-size: 11px;
+  }
+  .admin-pagination {
+    flex-direction: column;
+    align-items: start;
+  }
+  .admin-pagination > div {
+    width: 100%;
+  }
+  .admin-pagination .button {
+    flex: 1;
+    justify-content: center;
+  }
+  .admin-confirmation .form-actions .button {
+    min-height: 44px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-spinning {
+    animation: none;
+  }
+}

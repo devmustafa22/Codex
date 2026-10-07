@@ -63,6 +63,7 @@ const pages: PageId[] = [
   'journal',
   'insights',
   'settings',
+  'admin',
 ];
 export function AppProvider({ children }: { children: ReactNode }) {
   const { mode, user } = useAuth();

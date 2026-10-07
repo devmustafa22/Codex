@@ -17,6 +17,7 @@ import {
 import { useAuth } from '../state/AuthContext';
 import { configurationIssue } from '../lib/supabase';
 import { Brand } from './Brand';
+import { AccountAccessGate } from './AccountAccessGate';
 
 type FormMode = 'signin' | 'signup' | 'forgot' | 'reset';
 
@@ -103,6 +104,17 @@ export function AuthGate({ children }: { children: ReactNode }) {
       setBusy(false);
     }
   };
+
+  if (
+    !auth.loading &&
+    auth.mode === 'cloud' &&
+    (auth.accessLoading ||
+      auth.accessError ||
+      !auth.accountAccess ||
+      auth.accountAccess.status !== 'active')
+  ) {
+    return <AccountAccessGate />;
+  }
 
   if (!auth.loading && !auth.recovery && (auth.mode === 'cloud' || auth.mode === 'demo')) {
     return <>{children}</>;

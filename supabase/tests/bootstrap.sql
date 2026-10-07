@@ -7,6 +7,9 @@ create schema auth;
 create table auth.users (
   id uuid primary key,
   email text,
+  created_at timestamptz not null default now(),
+  last_sign_in_at timestamptz,
+  email_confirmed_at timestamptz,
   raw_user_meta_data jsonb not null default '{}'::jsonb
 );
 create function auth.uid() returns uuid
