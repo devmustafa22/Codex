@@ -1,4 +1,65 @@
 /* Preferences, portable backup and privacy explanations. */
+.text-size-options {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.text-size-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 0.8125rem;
+  overflow-wrap: anywhere;
+}
+.text-size-option.selected {
+  background: var(--green-pale);
+  border-color: var(--green);
+  color: var(--green);
+}
+.text-size-option:focus-within {
+  outline: 3px solid #9bc59e;
+  outline-offset: 3px;
+}
+.text-size-option input {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--green);
+}
+.text-size-option > span {
+  min-width: 0;
+}
+.text-size-option small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+.text-size-preview {
+  padding: 16px;
+  margin-top: 18px;
+  border-radius: 12px;
+  background: var(--surface-soft);
+  font-size: 1rem;
+  line-height: 1.9;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 1100px) {
+  .text-size-options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
 .settings-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.8fr) minmax(260px, 1fr);
@@ -21,19 +82,19 @@
   width: 55px;
   height: 55px;
   border-radius: 16px;
-  font-size: 23px;
+  font-size: 1.4375rem;
 }
 .profile-preview h3 {
-  font-size: 15px;
+  font-size: 0.9375rem;
 }
 .profile-preview p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin-top: 7px;
 }
 .settings-description {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 2;
   margin-bottom: 18px;
 }
@@ -44,6 +105,7 @@
 .theme-option {
   position: relative;
   flex: 1;
+  min-width: 0;
   text-align: start;
   display: flex;
   flex-wrap: wrap;
@@ -53,7 +115,7 @@
   border: 1px solid var(--border);
   border-radius: 12px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .theme-option.selected {
   border-color: #95b484;
@@ -101,12 +163,12 @@
   color: #8fa27f;
 }
 .backup-description h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin-bottom: 8px;
 }
 .backup-description p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 2;
 }
 .backup-actions {
@@ -116,8 +178,9 @@
 }
 .data-counts {
   display: flex;
+  flex-wrap: wrap;
   gap: 18px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   margin-top: 20px;
   padding-top: 16px;
@@ -140,16 +203,16 @@
   flex: 1;
 }
 .settings-action-row h3 {
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 7px;
 }
 .settings-action-row p {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 1.9;
 }
 .settings-action-row .button {
-  font-size: 9px;
+  font-size: 0.5625rem;
   padding: 9px 12px;
 }
 .privacy-card {
@@ -160,13 +223,13 @@
   color: #719366;
 }
 .privacy-card h2 {
-  font-size: 20px;
+  font-size: 1.25rem;
   color: #507847;
   margin: 15px 0 12px;
 }
 .privacy-card p {
   color: #8b9e7d;
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 2.1;
   margin-bottom: 24px;
 }
@@ -174,7 +237,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 10px;
+  font-size: 0.625rem;
   margin-top: 13px;
 }
 .privacy-card > span {
@@ -182,7 +245,7 @@
   padding-top: 17px;
   margin-top: 22px;
   border-top: 1px solid #dbe6ce;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #8a9b7d;
   line-height: 2;
 }
@@ -191,12 +254,12 @@
   border-radius: 8px;
   margin-top: 17px;
   background: var(--surface-soft);
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 2.3;
 }
 .hosting-note code {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #729760;
   font-family: monospace;
 }
@@ -213,14 +276,14 @@
 .account-summary p,
 .sync-summary p {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-top: 6px;
 }
 .sync-summary {
   background: var(--green-pale);
   padding: 16px;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .sync-error,
 .sync-offline,
@@ -238,7 +301,7 @@
   align-items: center;
   gap: 8px;
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .password-settings > button {
   margin-top: 18px;
@@ -251,7 +314,7 @@
 .conflict-actions > p {
   flex-basis: 100%;
   line-height: 1.9;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .workspace-loading {
   min-height: 100dvh;
@@ -266,7 +329,7 @@
   gap: 20px;
 }
 .workspace-loading h1 {
-  font-size: 25px;
+  font-size: 1.5625rem;
 }
 .workspace-loading p {
   line-height: 2;

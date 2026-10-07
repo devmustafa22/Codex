@@ -1,5 +1,6 @@
 import type { AppData } from './types';
 import { createDemoData } from './seed';
+import { TEXT_SIZE_OPTIONS } from './appearance';
 
 export const STORAGE_KEY = 'madar:data:v1';
 
@@ -104,6 +105,13 @@ export function parseBackup(text: string): AppData {
   minutes(profile.weeklyGoalMinutes, 'هدف الأسبوع', true);
   minutes(profile.focusMinutes, 'مدة التركيز', true);
   choice(profile.theme, ['light', 'dark'], 'المظهر');
+  if (profile.textSize !== undefined) {
+    choice(
+      profile.textSize,
+      TEXT_SIZE_OPTIONS.map((option) => option.value),
+      'حجم الخط',
+    );
+  }
 
   const skills = collection(data.skills, 'المهارات', MAX_SKILLS);
   for (const skill of skills) {

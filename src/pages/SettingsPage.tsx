@@ -20,6 +20,7 @@ import { PageHeader, Card, ConfirmDialog } from '../components/ui';
 import { todayKey } from '../lib/dates';
 import { useAuth } from '../state/AuthContext';
 import { STORAGE_KEY } from '../lib/storage';
+import { TEXT_SIZE_OPTIONS } from '../lib/appearance';
 
 export default function SettingsPage() {
   const {
@@ -185,6 +186,34 @@ export default function SettingsPage() {
       />
       <div className="settings-layout">
         <div className="settings-main">
+          <Card title="حجم الخط">
+            <p className="settings-description">
+              كبّر النص بما يناسبك. يتغيّر الحجم مباشرة ويبقى محفوظاً
+              {isCloud ? ' في حسابك على أجهزتك.' : ' على هذا المتصفح.'}
+            </p>
+            <fieldset className="text-size-options">
+              <legend className="sr-only">اختر حجم الخط</legend>
+              {TEXT_SIZE_OPTIONS.map((option) => (
+                <label
+                  key={option.value}
+                  className={`text-size-option ${(data.profile.textSize ?? 'normal') === option.value ? 'selected' : ''}`}
+                >
+                  <input
+                    type="radio"
+                    name="textSize"
+                    value={option.value}
+                    checked={(data.profile.textSize ?? 'normal') === option.value}
+                    onChange={() => updateProfile({ textSize: option.value })}
+                  />
+                  <span>
+                    <strong>{option.label}</strong>
+                    <small>{option.percentage}%</small>
+                  </span>
+                </label>
+              ))}
+            </fieldset>
+            <p className="text-size-preview">خطوة صغيرة اليوم، تقدّم واضح بكرة.</p>
+          </Card>
           {isCloud && (
             <Card title="حسابك والحفظ السحابي">
               <div className="account-summary">

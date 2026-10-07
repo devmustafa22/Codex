@@ -1,3 +1,5 @@
+import type { TextSize } from './appearance';
+
 export type PageId =
   'dashboard' | 'tasks' | 'skills' | 'calendar' | 'journal' | 'insights' | 'settings' | 'admin';
 export type TaskStatus = 'todo' | 'in-progress' | 'done';
@@ -52,6 +54,8 @@ export interface Profile {
   weeklyGoalMinutes: number;
   focusMinutes: number;
   theme: 'light' | 'dark';
+  /** Older workspaces and backups default to the original text size. */
+  textSize?: TextSize;
 }
 export interface AppData {
   version: 1;

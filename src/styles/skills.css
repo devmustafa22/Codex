@@ -27,16 +27,16 @@
   gap: 4px;
 }
 .skill-summary strong {
-  font-size: 23px;
+  font-size: 1.4375rem;
   font-weight: 500;
 }
 .skill-summary div > span:not(.skill-summary-icon) {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .skill-summary > p {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 2;
   border-inline-start: 1px solid var(--border);
   padding-inline-start: 25px;
@@ -86,13 +86,13 @@
 }
 .skill-category {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .skill-title-button {
   display: block;
   padding: 0;
   text-align: start;
-  font-size: 18px;
+  font-size: 1.125rem;
   font-weight: 500;
   margin-top: 7px;
 }
@@ -101,7 +101,7 @@
 }
 .skill-card-description {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.9;
   margin-top: 10px;
   min-height: 42px;
@@ -110,7 +110,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   gap: 12px;
   margin-top: 23px;
   margin-bottom: 12px;
@@ -121,7 +121,7 @@
 }
 .skill-progress-heading small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .skill-weekly {
   background: var(--surface-soft);
@@ -134,7 +134,7 @@
   justify-content: space-between;
   gap: 8px;
   margin-bottom: 11px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .skill-weekly-line > span {
@@ -144,7 +144,7 @@
 }
 .skill-weekly-line b {
   font-weight: 400;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #819477;
 }
 .skill-weekly .progress-track {
@@ -156,7 +156,7 @@
   align-items: center;
   gap: 4px;
   color: #7a9a6a;
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-top: 10px;
 }
 .skill-card-footer {
@@ -171,7 +171,7 @@
   gap: 5px;
   align-items: center;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .skill-journal-prompt {
   margin-top: 26px;
@@ -185,7 +185,7 @@
   color: #7d976e;
 }
 .skill-journal-prompt p {
-  font-size: 11px;
+  font-size: 0.6875rem;
   flex: 1;
 }
 .skill-detail-intro {
@@ -194,7 +194,7 @@
   align-items: center;
 }
 .skill-detail-intro p {
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.9;
   color: var(--muted);
   margin-top: 8px;
@@ -218,16 +218,16 @@
 }
 .skill-detail-stat strong {
   color: var(--ink);
-  font-size: 20px;
+  font-size: 1.25rem;
   font-weight: 500;
 }
 .skill-detail-stat span {
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .skill-detail-progress > small {
   display: block;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-top: 8px;
   line-height: 1.9;
 }
@@ -266,20 +266,20 @@
   gap: 6px;
 }
 .skill-related-row strong {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
 }
 .skill-entry-meta {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .skill-related-row p {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 1.9;
 }
 .skill-detail-empty {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   padding: 20px 0;
   line-height: 2;
@@ -316,7 +316,7 @@
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   margin-inline-start: 5px;
 }
 .color-picker input {

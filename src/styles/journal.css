@@ -19,11 +19,11 @@
 }
 .journal-quote h2 {
   color: #5b7950;
-  font-size: 15px;
+  font-size: 0.9375rem;
   position: relative;
 }
 .journal-quote p {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #8c9e81;
   margin-top: 9px;
   line-height: 1.9;
@@ -55,12 +55,12 @@
   color: #8ea27c;
 }
 .journal-stat strong {
-  font-size: 25px;
+  font-size: 1.5625rem;
   font-weight: 500;
 }
 .journal-stat > span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .journal-timeline {
   max-width: 1000px;
@@ -83,11 +83,11 @@
   box-shadow: 0 0 0 5px #809f6f0c;
 }
 .journal-date h2 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .journal-date > span:not(.timeline-dot):not(.badge) {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .journal-date > .badge {
   margin-inline-start: auto;
@@ -126,7 +126,7 @@
   justify-content: space-between;
 }
 .entry-kind {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .journal-entry-actions {
@@ -134,12 +134,12 @@
   gap: 4px;
 }
 .journal-entry h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
   margin: 4px 0 9px;
 }
 .journal-entry p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 2;
   white-space: pre-wrap;
 }
@@ -150,7 +150,7 @@
   flex-wrap: wrap;
   margin-top: 14px;
   color: #8b9e7a;
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .journal-entry-meta > span {
   display: flex;

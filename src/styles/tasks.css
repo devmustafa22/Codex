@@ -37,15 +37,15 @@
   gap: 4px;
 }
 .task-summary > div > span {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 .task-summary strong {
-  font-size: 26px;
+  font-size: 1.625rem;
   font-weight: 500;
 }
 .task-summary > small {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   margin-inline-start: auto;
   align-self: flex-end;
@@ -94,7 +94,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .status-dot {
   width: 7px;
@@ -112,7 +112,7 @@
   background: #dde4d7;
   border-radius: 5px;
   padding: 2px 6px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #849279;
   margin-inline-start: 3px;
 }
@@ -181,7 +181,7 @@
 }
 .task-title-button {
   padding: 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
   text-align: start;
   line-height: 1.8;
@@ -190,7 +190,7 @@
   color: var(--green);
 }
 .task-card-description {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 1.9;
   margin-top: 9px;
@@ -208,7 +208,7 @@
   align-items: center;
   gap: 5px;
   color: #8f9a85;
-  font-size: 8px;
+  font-size: 0.5rem;
   white-space: nowrap;
 }
 .skill-dot {
@@ -230,7 +230,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -243,7 +243,7 @@
   color: var(--muted);
   border: 1px solid var(--border);
   border-radius: 6px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   padding: 6px;
 }
 .task-status-select.done {
@@ -257,7 +257,7 @@
   color: #9aa58f;
 }
 .task-column-empty {
-  font-size: 11px;
+  font-size: 0.6875rem;
   padding: 35px 5px;
   text-align: center;
   color: #9ea792;
@@ -278,7 +278,7 @@
 .task-list-head {
   background: var(--surface-soft);
   border-radius: 18px 18px 0 0;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   padding-block: 13px;
 }
@@ -298,7 +298,7 @@
   min-width: 0;
 }
 .task-list-description {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   overflow: hidden;
   white-space: nowrap;

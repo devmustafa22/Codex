@@ -23,11 +23,11 @@
   margin-top: 12px;
 }
 .account-access-card h1 {
-  font-size: clamp(23px, 5vw, 29px);
+  font-size: clamp(1.4375rem, 5vw, 1.8125rem);
 }
 .account-access-card p {
   line-height: 1.9;
-  font-size: 14px;
+  font-size: 0.875rem;
   overflow-wrap: anywhere;
 }
 .account-access-actions {
@@ -65,7 +65,7 @@
   align-items: center;
   gap: 6px;
   color: #718273;
-  font-size: 12px;
+  font-size: 0.75rem;
   white-space: nowrap;
 }
 .auth-form-wrap {
@@ -79,7 +79,7 @@
   align-items: center;
   gap: 8px;
   color: #6c806d;
-  font-size: 12px;
+  font-size: 0.75rem;
   margin-bottom: 12px;
 }
 .auth-eyebrow > span {
@@ -89,13 +89,13 @@
   background: #659e70;
 }
 .auth-form-wrap h1 {
-  font-size: clamp(25px, 2.3vw, 33px);
+  font-size: clamp(1.5625rem, 2.3vw, 2.0625rem);
   letter-spacing: -0.8px;
   line-height: 1.65;
   color: #243d2f;
 }
 .auth-description {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #788779;
   line-height: 1.9;
   margin-top: 5px;
@@ -113,7 +113,7 @@
 .auth-tabs button {
   min-height: 44px;
   border-radius: 9px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #748272;
 }
 .auth-tabs button.active {
@@ -129,7 +129,7 @@
 .auth-field {
   display: grid;
   gap: 7px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #3c5140;
 }
 .auth-field > span:first-child {
@@ -140,7 +140,7 @@
   min-height: 50px;
   padding: 10px 14px;
   color: #283e30;
-  font-size: 16px;
+  font-size: 1rem;
   background: #fff;
   border: 1px solid #dfe6da;
   border-radius: 11px;
@@ -150,7 +150,7 @@
 }
 .auth-field input::placeholder {
   color: #a1aa9d;
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .auth-field input:focus {
   border-color: #7aab84;
@@ -160,7 +160,7 @@
   background: #f1f4ed;
 }
 .auth-field small {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #7d8b78;
   line-height: 1.8;
 }
@@ -190,7 +190,7 @@
   padding: 2px 0;
   min-height: 44px;
   margin-top: -9px;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #42734e;
 }
 .auth-submit {
@@ -204,7 +204,7 @@
   color: #fff;
   background: linear-gradient(115deg, #255f42, #174e37);
   box-shadow: 0 5px 13px #235b3c13;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 .auth-submit:hover {
@@ -216,7 +216,7 @@
   gap: 8px;
   border-radius: 10px;
   padding: 11px 13px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.9;
 }
 .auth-feedback svg {
@@ -241,7 +241,7 @@
   width: 100%;
   margin-top: 10px;
   color: #6f806d;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .auth-demo {
   margin-top: 25px;
@@ -260,13 +260,13 @@
   border-radius: 10px;
   color: #4a6d46;
   background: #f9fbf6;
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .auth-demo button:hover {
   background: #edf3e6;
 }
 .auth-demo p {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #7d8b77;
   line-height: 1.85;
   margin-top: 10px;
@@ -277,7 +277,7 @@
   justify-content: center;
   gap: 7px;
   color: #929d8a;
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 1.8;
   margin-top: 20px;
 }
@@ -286,7 +286,7 @@
   justify-content: space-between;
   gap: 12px;
   color: #99a38f;
-  font-size: 10px;
+  font-size: 0.625rem;
   padding-top: 20px;
   margin-top: auto;
 }
@@ -307,12 +307,12 @@
   margin-bottom: 11px;
 }
 .auth-setup h2 {
-  font-size: 16px;
+  font-size: 1rem;
   margin-bottom: 8px;
 }
 .auth-setup p,
 .auth-setup li {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #72816c;
   line-height: 1.95;
 }
@@ -324,7 +324,7 @@
   margin-top: 8px;
 }
 .auth-setup code {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #375e41;
   overflow-wrap: anywhere;
 }
@@ -339,10 +339,10 @@
   color: #45704c;
 }
 .auth-loading h1 {
-  font-size: 23px;
+  font-size: 1.4375rem;
 }
 .auth-loading p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #8b9984;
 }
 .auth-spinner {
@@ -374,11 +374,11 @@
   border: 1px solid #ffffff24;
   border-radius: 20px;
   padding: 6px 12px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #c5deba;
 }
 .auth-story-heading h2 {
-  font-size: clamp(27px, 3vw, 43px);
+  font-size: clamp(1.6875rem, 3vw, 2.6875rem);
   font-weight: 500;
   line-height: 1.7;
   letter-spacing: -0.6px;
@@ -387,7 +387,7 @@
   color: #b7d59f;
 }
 .auth-story-heading p {
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 2;
   color: #abc6a7;
   max-width: 360px;
@@ -406,14 +406,14 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #a9c9a5;
 }
 .auth-preview-title > span:first-child {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   color: #e9f2e3;
 }
 .auth-preview-stats {
@@ -428,16 +428,16 @@
   gap: 3px;
 }
 .auth-preview-stats > div > span {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #b0c7a7;
 }
 .auth-preview-stats strong {
-  font-size: 33px;
+  font-size: 2.0625rem;
   line-height: 1.4;
   font-weight: 500;
 }
 .auth-preview-stats strong small {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 400;
   color: #c7d8c0;
 }
@@ -446,7 +446,7 @@
   padding: 5px 8px;
   background: #a9d8961c;
   color: #b3db9d;
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .auth-preview-chart {
   display: flex;
@@ -474,7 +474,7 @@
   justify-content: space-between;
   gap: 8px;
   margin-top: 16px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #b4cfa8;
 }
 .auth-preview-bottom > span {
@@ -498,18 +498,18 @@
   color: #a7cb94;
 }
 .auth-story-features strong {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 .auth-story-features small {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #9fbb98;
 }
 .auth-story-signature {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #99b58f;
   padding-top: 8px;
 }
@@ -585,13 +585,13 @@
   }
   .auth-cloud-label {
     display: flex;
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .auth-form-wrap h1 {
-    font-size: 27px;
+    font-size: 1.6875rem;
   }
   .auth-description {
-    font-size: 13px;
+    font-size: 0.8125rem;
     margin-bottom: 23px;
   }
   .auth-story {
@@ -604,16 +604,16 @@
   }
   .auth-demo p,
   .auth-trust {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .auth-field small {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .auth-setup {
     padding: 20px;
   }
   .auth-feedback {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .auth-demo {
     margin-top: 22px;
@@ -627,7 +627,7 @@
     display: none;
   }
   .auth-form-wrap h1 {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

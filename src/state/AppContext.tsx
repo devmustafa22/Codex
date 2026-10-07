@@ -218,6 +218,9 @@ function WorkspaceProvider({
     document.documentElement.dataset.theme = data.profile.theme;
   }, [data.profile.theme]);
   useEffect(() => {
+    document.documentElement.dataset.textSize = data.profile.textSize ?? 'normal';
+  }, [data.profile.textSize]);
+  useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => setToast(''), 3600);
     return () => clearTimeout(timer);

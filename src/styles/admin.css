@@ -35,12 +35,12 @@
   color: #9175b0;
 }
 .admin-stat p {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 .admin-stat strong {
   display: block;
-  font-size: 30px;
+  font-size: 1.875rem;
   margin-top: 3px;
   line-height: 1.5;
 }
@@ -52,7 +52,7 @@
   padding: 15px 18px;
   margin-bottom: 20px;
   border-radius: 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1.9;
   background: var(--green-pale);
   color: var(--green-dark);
@@ -74,10 +74,10 @@
   max-width: 500px;
 }
 .admin-search input {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .admin-search input::placeholder {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .admin-status-filter {
   display: flex;
@@ -86,7 +86,7 @@
   min-width: 150px;
 }
 .admin-status-filter > span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 .admin-status-filter select {
@@ -96,7 +96,7 @@
   border-radius: 9px;
   min-height: 46px;
   padding: 9px 12px;
-  font-size: 12px;
+  font-size: 0.75rem;
   min-width: 0;
 }
 .admin-table-head,
@@ -112,13 +112,13 @@
 .admin-table-head {
   border-bottom: 1px solid var(--border);
   padding: 12px 0;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
 }
 .admin-account {
   padding: 22px 0;
   border-bottom: 1px solid var(--border);
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .admin-account:last-child {
   border-bottom: none;
@@ -137,7 +137,7 @@
   background: var(--green-pale);
   color: var(--green);
   border-radius: 13px;
-  font-size: 18px;
+  font-size: 1.125rem;
   flex-shrink: 0;
 }
 .admin-account-identity > div {
@@ -153,15 +153,15 @@
   text-align: start;
 }
 .admin-account-identity strong {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .admin-username {
   color: var(--green);
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .admin-email,
 .admin-email-state {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 .admin-account-badges {
@@ -171,7 +171,7 @@
   gap: 7px;
 }
 .admin-account-badges > small {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   width: 100%;
 }
@@ -179,7 +179,7 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 0.625rem;
   padding: 4px 8px;
   border-radius: 7px;
   white-space: nowrap;
@@ -212,12 +212,12 @@
   gap: 3px;
 }
 .admin-account-dates span {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .admin-account-dates time,
 .admin-account-dates p {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .admin-account-actions {
   display: flex;
@@ -228,7 +228,7 @@
 }
 .admin-account-actions .button {
   padding: 8px;
-  font-size: 10px;
+  font-size: 0.625rem;
   min-height: 38px;
   justify-content: center;
   white-space: normal;
@@ -245,7 +245,7 @@
   display: flex;
   gap: 6px;
   align-items: center;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 1.8;
 }
@@ -260,7 +260,7 @@
 }
 .admin-pagination > p {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.8;
 }
 .admin-pagination > div {
@@ -279,7 +279,7 @@
   flex-direction: column;
   gap: 16px;
   padding: 55px 20px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   text-align: center;
   line-height: 1.9;
   color: var(--muted);
@@ -300,10 +300,10 @@
   border-radius: 10px;
 }
 .admin-confirm-account strong {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .admin-confirm-account span {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--muted);
   text-align: start;
   overflow-wrap: anywhere;
@@ -312,12 +312,12 @@
   margin-top: 20px;
 }
 .admin-delete-confirm input {
-  font-size: 16px;
+  font-size: 1rem;
   min-height: 46px;
 }
 .admin-busy-note {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 0.6875rem;
   line-height: 1.9;
   margin-top: 15px;
 }
@@ -366,15 +366,15 @@
     height: 38px;
   }
   .admin-stat p {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .admin-stat strong {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .admin-access-note {
     align-items: start;
     padding: 13px;
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .admin-access-note svg {
     margin-top: 3px;
@@ -390,7 +390,7 @@
   }
   .admin-search input,
   .admin-status-filter select {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .admin-account {
     grid-template-columns: minmax(0, 1fr);
@@ -413,7 +413,7 @@
     min-width: 0;
   }
   .admin-account-actions .button {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .admin-pagination {
     flex-direction: column;

@@ -57,7 +57,7 @@
   flex-direction: column;
 }
 .brand strong {
-  font-size: 29px;
+  font-size: 1.8125rem;
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: -1.2px;
@@ -66,7 +66,7 @@
   color: var(--green);
 }
 .brand > div > span {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   margin-top: 4px;
   letter-spacing: 0.4px;
@@ -79,7 +79,7 @@
   border-radius: 9px;
   padding: 9px 10px;
   margin-bottom: 28px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: #637469;
 }
 .workspace-label svg {
@@ -95,7 +95,7 @@
 }
 .nav-section-label {
   display: block;
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 500;
   color: var(--muted);
   padding: 0 13px 10px;
@@ -113,7 +113,7 @@
   padding: 12px 13px;
   border-radius: 9px;
   color: #7d8980;
-  font-size: 12px;
+  font-size: 0.75rem;
   position: relative;
   text-align: start;
 }
@@ -141,7 +141,7 @@
   background: var(--green-pale);
 }
 .nav-count {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 600;
   margin-inline-start: auto;
   color: var(--green);
@@ -180,12 +180,12 @@
   margin-bottom: 8px;
 }
 .sidebar-inspiration h3 {
-  font-size: 21px;
+  font-size: 1.3125rem;
   line-height: 1.5;
   color: #35523c;
 }
 .sidebar-inspiration p {
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 1.8;
   color: #83927c;
   margin-top: 8px;
@@ -193,7 +193,7 @@
 .sidebar-inspiration button {
   position: relative;
   margin-top: 14px;
-  font-size: 10px;
+  font-size: 0.625rem;
   display: flex;
   gap: 12px;
   color: #456649;
@@ -240,13 +240,13 @@
   border-radius: 50%;
   background: #e8eee2;
   color: #577553;
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 600;
 }
 .avatar.small {
   width: 35px;
   height: 35px;
-  font-size: 15px;
+  font-size: 0.9375rem;
   background: #eee9db;
   color: #9b8860;
 }
@@ -257,17 +257,17 @@
   gap: 4px;
 }
 .sidebar-profile strong {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .sidebar-profile div span {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .sidebar-profile > svg {
   color: var(--muted);
 }
 .local-save {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   display: flex;
   justify-content: center;
@@ -303,14 +303,14 @@
   color: #95a095;
   min-width: 310px;
   text-align: start;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .global-search > svg {
   color: #89948a;
 }
 .global-search kbd {
   font-family: inherit;
-  font-size: 10px;
+  font-size: 0.625rem;
   border: 1px solid var(--border);
   padding: 2px 6px;
   border-radius: 5px;
@@ -328,7 +328,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #788479;
 }
 .icon-button {
@@ -378,10 +378,10 @@
   gap: 3px;
 }
 .topbar-profile strong {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .topbar-profile div span {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .main-content {
@@ -397,19 +397,19 @@
 .eyebrow {
   display: block;
   color: #79917b;
-  font-size: 10px;
+  font-size: 0.625rem;
   letter-spacing: 0.3px;
   font-weight: 500;
   margin-bottom: 6px;
 }
 .page-heading h1 {
-  font-size: 29px;
+  font-size: 1.8125rem;
   line-height: 1.6;
   letter-spacing: -0.6px;
   color: var(--ink);
 }
 .page-heading p {
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   margin-top: 4px;
   line-height: 1.8;
@@ -427,11 +427,19 @@
   gap: 8px;
   padding: 10px 17px;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
   white-space: nowrap;
   line-height: 1.6;
   border: 1px solid transparent;
+}
+[data-text-size]:not([data-text-size='normal']) .button {
+  max-width: 100%;
+  white-space: normal;
+}
+[data-text-size]:not([data-text-size='normal']) .page-actions {
+  flex-wrap: wrap;
+  flex-shrink: 1;
 }
 .button.primary {
   color: #fff;
@@ -484,17 +492,17 @@
   margin-bottom: 20px;
 }
 .card-heading h2 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .card-heading h3 {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .card-heading > svg {
   color: var(--muted);
 }
 .card-subtitle {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   margin-top: 5px;
 }
 .text-link {
@@ -502,7 +510,7 @@
   align-items: center;
   gap: 7px;
   color: #6c8670;
-  font-size: 10px;
+  font-size: 0.625rem;
   padding: 0;
 }
 .text-link:hover {
@@ -513,7 +521,7 @@
   align-items: center;
   white-space: nowrap;
   gap: 4px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   padding: 4px 8px;
   border-radius: 6px;
   background: var(--surface-soft);
@@ -535,14 +543,14 @@
 }
 
 .nav-item {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .page-heading p {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .global-search {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .topbar-date {
-  font-size: 11px;
+  font-size: 0.6875rem;
 }

@@ -76,7 +76,7 @@
     padding-inline: 48px;
   }
   .page-heading h1 {
-    font-size: 33px;
+    font-size: 2.0625rem;
   }
   .stat-card {
     padding: 23px;
@@ -148,7 +148,7 @@
     padding: 15px;
   }
   .stat-top {
-    font-size: 9px;
+    font-size: 0.5625rem;
   }
   .stat-icon {
     width: 25px;
@@ -158,10 +158,10 @@
     width: 15px;
   }
   .stat-foot {
-    font-size: 8px;
+    font-size: 0.5rem;
   }
   .page-heading h1 {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .calendar-layout {
     grid-template-columns: minmax(0, 1fr) 250px;
@@ -177,7 +177,7 @@
     height: 85px;
   }
   .calendar-item {
-    font-size: 6px;
+    font-size: 0.375rem;
   }
   .task-summary > small {
     display: none;
@@ -202,7 +202,7 @@
     padding: 20px;
   }
   .journal-quote h2 {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .insights-metrics {
     gap: 12px;
@@ -219,10 +219,10 @@
     padding-inline: 12px;
   }
   .brand strong {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .nav-item {
-    font-size: 11px;
+    font-size: 0.6875rem;
     gap: 10px;
     padding-inline: 11px;
   }
@@ -230,7 +230,7 @@
     inset-inline-start: -12px;
   }
   .workspace-label {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .sidebar-inspiration {
     padding: 15px;
@@ -244,7 +244,7 @@
   }
   .global-search {
     min-width: 0;
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .global-search kbd {
     margin-inline-start: 10px;
@@ -261,7 +261,7 @@
     width: 100%;
   }
   .page-heading h1 {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .dashboard-stats {
     grid-template-columns: repeat(2, 1fr);
@@ -300,13 +300,13 @@
     gap: 8px;
   }
   .task-card-description {
-    font-size: 9px;
+    font-size: 0.5625rem;
   }
   .task-title-button {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .task-status-select {
-    font-size: 8px;
+    font-size: 0.5rem;
   }
   .task-summary {
     padding: 16px;
@@ -320,7 +320,7 @@
     gap: 20px;
   }
   .skill-summary strong {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   .skill-summary-icon {
     width: 35px;
@@ -330,7 +330,7 @@
     padding: 20px;
   }
   .skill-title-button {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .journal-intro {
     grid-template-columns: repeat(2, 1fr);
@@ -344,7 +344,7 @@
     gap: 15px;
   }
   .journal-stat strong {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
   .journal-stat > span {
     margin-inline-start: auto;
@@ -373,7 +373,7 @@
     padding: 16px;
   }
   .insight-metric-value {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
 }
 /* Account status is visible wherever the dashboard is used. */
@@ -386,7 +386,7 @@
   padding: 6px 9px;
   border: 1px solid var(--border);
   border-radius: 9px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   white-space: nowrap;
 }
@@ -418,7 +418,7 @@
 @media (max-width: 760px) {
   .app-shell {
     display: block;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .sidebar {
     position: fixed;
@@ -453,11 +453,11 @@
   }
   .workspace-label {
     margin-bottom: 20px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .nav-item {
     min-height: 48px;
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .nav-item.active::before {
     inset-inline-start: -20px;
@@ -472,11 +472,11 @@
     padding-top: 16px;
   }
   .sidebar-profile strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .sidebar-profile div span,
   .local-save {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .local-save {
     line-height: 1.8;
@@ -497,7 +497,7 @@
     flex: 1;
     min-width: 0;
     min-height: 44px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     gap: 7px;
   }
   .global-search > span {
@@ -522,7 +522,7 @@
     justify-content: center;
   }
   .main-content {
-    padding: 22px 18px calc(88px + env(safe-area-inset-bottom));
+    padding: 22px 18px calc(5.5rem + env(safe-area-inset-bottom));
     scroll-margin-top: 80px;
   }
   .mobile-bottom-nav {
@@ -544,11 +544,12 @@
     align-items: center;
     justify-content: center;
     gap: 4px;
-    min-width: 44px;
+    min-width: 0;
     min-height: 56px;
     border-radius: 11px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 0.6875rem;
+    overflow-wrap: anywhere;
   }
   .mobile-bottom-nav > button.active {
     background: var(--green-pale);
@@ -563,14 +564,14 @@
     gap: 14px;
   }
   .page-heading h1 {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .page-heading p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     line-height: 1.9;
   }
   .page-heading .eyebrow {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .page-actions {
     gap: 8px;
@@ -578,7 +579,7 @@
   }
   .button {
     min-height: 44px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     padding: 10px 14px;
   }
   .icon-button,
@@ -598,22 +599,22 @@
   }
   .card-heading h2,
   .card-heading h3 {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .card-subtitle {
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.8;
   }
   .text-link {
     min-height: 44px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .badge,
   .priority-label {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .compact-select {
-    font-size: 16px;
+    font-size: 1rem;
     min-height: 44px;
   }
   .segmented-control {
@@ -622,11 +623,11 @@
   .segmented-control button {
     min-width: 44px;
     min-height: 44px;
-    font-size: 13px;
+    font-size: 0.8125rem;
     padding-inline: 13px;
   }
   .form-field {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .form-field input,
   .form-field select,
@@ -637,7 +638,7 @@
   .task-status-select,
   .focus-options select,
   .focus-skill {
-    font-size: 16px;
+    font-size: 1rem;
     min-height: 44px;
   }
   .form-field input,
@@ -647,24 +648,24 @@
   }
   input::placeholder,
   textarea::placeholder {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .form-description,
   .confirm-text {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .form-field small,
   .form-hint,
   .helper-text,
   .form-error {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .mood-field legend {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .mood-option {
     min-height: 52px;
-    font-size: 12px;
+    font-size: 0.75rem;
     flex-direction: column;
   }
   .search-field {
@@ -682,7 +683,7 @@
   .filter-count,
   .filter-results,
   .skill-result-count {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .modal-backdrop {
     padding: 16px;
@@ -693,11 +694,11 @@
     overscroll-behavior: contain;
   }
   .modal-heading h2 {
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   .toast {
     bottom: calc(84px + env(safe-area-inset-bottom));
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .floating-add {
     left: 18px;
@@ -715,24 +716,24 @@
     overflow: auto;
   }
   .notifications-popover strong {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .notifications-popover div > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .search-results strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .search-results div > span,
   .search-prompt > span,
   .help-steps span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .help-steps strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .app-footer {
-    font-size: 11px;
+    font-size: 0.6875rem;
     margin-top: 24px;
   }
   /* Dashboard summaries preserve a clear reading order on small screens. */
@@ -743,17 +744,17 @@
     padding: 17px;
   }
   .stat-top {
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.7;
     gap: 7px;
   }
   .stat-foot {
-    font-size: 11px;
+    font-size: 0.6875rem;
     line-height: 1.8;
     flex-wrap: wrap;
   }
   .stat-value {
-    font-size: 34px;
+    font-size: 2.125rem;
   }
   .dashboard-main-grid {
     grid-template-columns: 1fr 1fr;
@@ -801,7 +802,7 @@
   }
   .activity-chart-footer > span,
   .activity-chart-footer button {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .activity-chart-footer button {
     min-height: 44px;
@@ -812,10 +813,10 @@
   }
   .goal-caption,
   .goal-ring > div > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .goal-link {
-    font-size: 12px;
+    font-size: 0.75rem;
     min-height: 44px;
   }
   .focus-card {
@@ -823,7 +824,7 @@
   }
   .focus-heading > span,
   .focus-card > p {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .focus-options {
     flex-direction: column;
@@ -838,20 +839,20 @@
   .timer-reset {
     min-height: 44px;
     min-width: 44px;
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .focus-note {
-    font-size: 11px;
+    font-size: 0.6875rem;
     line-height: 1.8;
   }
   .today-task {
     gap: 12px;
   }
   .today-task-title strong {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .today-task-title > span {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .task-checkbox {
     width: 44px;
@@ -862,7 +863,7 @@
   .next-event-card button,
   .stat-featured button {
     min-height: 44px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .task-check {
     width: 44px;
@@ -879,13 +880,13 @@
     height: 23px;
   }
   .dashboard-skill-heading strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .dashboard-skill-heading div > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .skill-percentage {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .recent-activities {
     grid-template-columns: 1fr;
@@ -895,10 +896,10 @@
     border-top: 1px solid var(--border);
   }
   .recent-activity strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .recent-activity div > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .next-event-card {
     padding: 24px;
@@ -917,10 +918,10 @@
     gap: 6px;
   }
   .task-summary > div > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .task-summary strong {
-    font-size: 26px;
+    font-size: 1.625rem;
   }
   .task-toolbar {
     gap: 12px;
@@ -952,7 +953,7 @@
     padding: 14px;
   }
   .task-column-heading h2 {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .task-column-body {
     display: flex;
@@ -962,26 +963,26 @@
     padding: 18px;
   }
   .task-title-button {
-    font-size: 15px;
+    font-size: 0.9375rem;
     min-height: 44px;
     overflow-wrap: anywhere;
   }
   .task-card-description {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .task-skill-label,
   .task-due,
   .task-duration {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .task-list {
     overscroll-behavior-x: contain;
   }
   .task-list-head {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .task-list-description {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .skill-summary {
     padding: 20px;
@@ -993,20 +994,20 @@
     gap: 10px;
   }
   .skill-summary strong {
-    font-size: 23px;
+    font-size: 1.4375rem;
   }
   .skill-summary div > span:not(.skill-summary-icon) {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .skill-grid {
     gap: 16px;
   }
   .skill-card-description {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .skill-title-button {
     min-height: 44px;
-    font-size: 20px;
+    font-size: 1.25rem;
   }
   .skill-card-footer {
     flex-wrap: wrap;
@@ -1017,16 +1018,16 @@
     gap: 12px;
   }
   .skill-journal-prompt p {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .skill-detail-stat strong {
-    font-size: 22px;
+    font-size: 1.375rem;
   }
   .skill-detail-stat span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .skill-related-row strong {
-    font-size: 13px;
+    font-size: 0.8125rem;
     overflow-wrap: anywhere;
   }
   .color-options {
@@ -1051,22 +1052,22 @@
     gap: 4px;
   }
   .calendar-navigation h2 {
-    font-size: 15px;
+    font-size: 0.9375rem;
     flex: 1;
     margin-inline: 4px;
   }
   .calendar-navigation .button {
     min-height: 44px;
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .calendar-toolbar > .segmented-control {
     align-self: flex-start;
   }
   .calendar-weekdays {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .calendar-summary {
-    font-size: 12px;
+    font-size: 0.75rem;
     flex-wrap: wrap;
     gap: 12px;
   }
@@ -1075,18 +1076,18 @@
     padding: 7px 4px;
   }
   .calendar-day .day-number {
-    font-size: 14px;
-    width: 28px;
-    height: 28px;
+    font-size: 0.875rem;
+    width: 1.75rem;
+    height: 1.75rem;
   }
   .calendar-day .day-number small {
     display: none;
   }
   .calendar-item {
-    font-size: 9px;
+    font-size: 0.5625rem;
   }
   .day-markers {
-    font-size: 10px;
+    font-size: 0.625rem;
     white-space: normal;
     overflow: hidden;
     max-height: 30px;
@@ -1097,18 +1098,18 @@
     gap: 24px;
   }
   .calendar-day-detail .card-heading h2 {
-    font-size: 15px;
+    font-size: 0.9375rem;
   }
   .day-detail-summary,
   .agenda-section h3,
   .agenda-item-body > span,
   .agenda-item-body > p,
   .agenda-task-meta {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .agenda-item-body strong,
   .agenda-task strong {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .agenda-task input {
     width: 24px;
@@ -1116,7 +1117,7 @@
     margin-inline: 8px;
   }
   .day-detail-links .text-link {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .year-grid {
     grid-template-columns: 1fr;
@@ -1127,7 +1128,7 @@
   }
   .mini-month-heading {
     min-height: 44px;
-    font-size: 15px;
+    font-size: 0.9375rem;
     margin-bottom: 8px;
   }
   .mini-calendar {
@@ -1136,12 +1137,12 @@
   .mini-day {
     min-height: 44px;
     aspect-ratio: auto;
-    font-size: 14px;
+    font-size: 0.875rem;
     padding: 8px 0;
   }
   .mini-day-label,
   .mini-month-count {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .mini-day-dot {
     width: 4px;
@@ -1155,11 +1156,11 @@
     padding: 20px;
   }
   .journal-quote h2 {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .journal-quote p,
   .journal-stat > span {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .journal-stat {
     flex-direction: column;
@@ -1174,10 +1175,10 @@
     gap: 9px;
   }
   .journal-date h2 {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .journal-date > span:not(.timeline-dot):not(.badge) {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .journal-entries {
     padding-inline-start: 12px;
@@ -1187,16 +1188,16 @@
     gap: 12px;
   }
   .journal-entry h3 {
-    font-size: 15px;
+    font-size: 0.9375rem;
     overflow-wrap: anywhere;
   }
   .journal-entry p {
-    font-size: 13px;
+    font-size: 0.8125rem;
     overflow-wrap: anywhere;
   }
   .entry-kind,
   .journal-entry-meta {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .journal-entry-meta {
     gap: 12px;
@@ -1229,21 +1230,21 @@
   .insights-day-content span,
   .insights-day-content small,
   #insights-heatmap-help {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .insights-distribution-heading strong,
   .insights-day-content strong,
   .insights-review-copy h3 {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .insights-chart-columns {
     gap: 5px;
   }
   .insights-chart-label {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .insights-chart-value {
-    font-size: 9px;
+    font-size: 0.5625rem;
   }
   .insights-heatmap {
     min-width: 2520px;
@@ -1254,7 +1255,7 @@
   .insights-heatmap-weekdays {
     grid-template-rows: repeat(7, 44px);
     width: 34px;
-    font-size: 11px;
+    font-size: 0.6875rem;
     align-items: center;
   }
   .insights-heatmap-grid {
@@ -1265,14 +1266,14 @@
     min-width: 44px;
   }
   .insights-heatmap-month {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .insights-heatmap-scroll {
     padding: 5px;
     overscroll-behavior-x: contain;
   }
   .insights-heatmap-legend {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .settings-aside {
     display: flex;
@@ -1295,7 +1296,7 @@
   }
   .theme-option > span,
   .data-counts {
-    font-size: 12px;
+    font-size: 0.75rem;
   }
   .backup-actions {
     flex-wrap: wrap;
@@ -1312,7 +1313,7 @@
     display: none;
   }
   .page-heading h1 {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .page-heading .page-actions {
     width: 100%;
@@ -1339,14 +1340,14 @@
     padding: 15px;
   }
   .stat-top {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .stat-icon {
     width: 28px;
     height: 28px;
   }
   .stat-foot {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .weekly-goal-card {
     padding: 22px;
@@ -1358,7 +1359,7 @@
     padding: 24px;
   }
   .timer-value {
-    font-size: 48px;
+    font-size: 3rem;
   }
   .timer-controls {
     gap: 10px;
@@ -1379,10 +1380,10 @@
     height: 32px;
   }
   .task-summary > div > span {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .task-summary strong {
-    font-size: 25px;
+    font-size: 1.5625rem;
   }
   .task-summary > div {
     min-width: 0;
@@ -1403,7 +1404,7 @@
     height: 30px;
   }
   .skill-summary strong {
-    font-size: 21px;
+    font-size: 1.3125rem;
   }
   .skill-card {
     padding: 22px;
@@ -1415,13 +1416,13 @@
     padding: 12px 8px;
   }
   .skill-detail-stat span {
-    font-size: 11px;
+    font-size: 0.6875rem;
   }
   .calendar-card {
     padding: 10px;
   }
   .calendar-navigation h2 {
-    font-size: 13px;
+    font-size: 0.8125rem;
   }
   .calendar-navigation .button {
     flex-basis: 100%;
@@ -1439,7 +1440,7 @@
     border-radius: 3px;
   }
   .calendar-grid:not(.week-view) .calendar-more {
-    font-size: 10px;
+    font-size: 0.625rem;
   }
   .calendar-day-items {
     gap: 4px;
@@ -1456,7 +1457,7 @@
     height: 210px;
   }
   .week-view .calendar-item {
-    font-size: 10px;
+    font-size: 0.625rem;
     overflow-wrap: anywhere;
     padding: 4px 2px;
   }
@@ -1471,7 +1472,7 @@
     padding: 18px;
   }
   .journal-quote h2 {
-    font-size: 14px;
+    font-size: 0.875rem;
   }
   .journal-entry-symbol {
     display: none;

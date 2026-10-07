@@ -7,7 +7,7 @@
 }
 .insights-period-description {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .insights-metrics {
   display: grid;
@@ -33,18 +33,18 @@
   margin-bottom: 12px;
 }
 .insight-metric-label {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 .insight-metric-value {
-  font-size: 29px;
+  font-size: 1.8125rem;
   font-weight: 500;
   margin-top: 8px;
 }
 .insight-metric > small,
 .insight-metric > p {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-top: 7px;
   line-height: 1.8;
 }
@@ -58,13 +58,13 @@
   display: flex;
   gap: 10px;
   align-items: center;
-  font-size: 11px;
+  font-size: 0.6875rem;
   color: var(--muted);
   margin-bottom: 20px;
 }
 .insights-chart-total {
   color: var(--green);
-  font-size: 23px;
+  font-size: 1.4375rem;
   font-weight: 500;
 }
 .insights-skill-dot {
@@ -95,7 +95,7 @@
   justify-content: flex-end;
 }
 .insights-chart-value {
-  font-size: 8px;
+  font-size: 0.5rem;
   color: var(--muted);
   margin-bottom: 7px;
   white-space: nowrap;
@@ -118,14 +118,14 @@
   background: #3e794d;
 }
 .insights-chart-label {
-  font-size: 8px;
+  font-size: 0.5rem;
   color: var(--muted);
   margin-top: 9px;
   height: 22px;
   text-align: center;
 }
 .insights-chart-footnote {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   border-top: 1px solid var(--border);
   padding-top: 15px;
@@ -142,7 +142,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  font-size: 11px;
+  font-size: 0.6875rem;
   margin-bottom: 10px;
 }
 .insights-distribution-heading > div {
@@ -151,7 +151,7 @@
   align-items: center;
 }
 .insights-distribution-heading strong {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
 }
 .insights-distribution-meta {
@@ -159,7 +159,7 @@
   justify-content: space-between;
   gap: 10px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-top: 8px;
 }
 .insights-year-card {
@@ -172,7 +172,7 @@
 }
 .insights-year-controls > strong,
 .insights-year-controls > span {
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 500;
 }
 .insights-heatmap-toolbar {
@@ -183,7 +183,7 @@
   margin-bottom: 18px;
 }
 .insights-heatmap-summary {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
 }
 .insights-heatmap-summary strong {
@@ -207,7 +207,7 @@
 }
 .insights-heatmap-month {
   color: var(--muted);
-  font-size: 8px;
+  font-size: 0.5rem;
   white-space: nowrap;
 }
 .insights-heatmap-body {
@@ -219,7 +219,7 @@
   grid-template-rows: repeat(7, 12px);
   gap: 3px;
   width: 22px;
-  font-size: 7px;
+  font-size: 0.4375rem;
   color: var(--muted);
 }
 .insights-heatmap-grid {
@@ -275,7 +275,7 @@
   align-items: center;
   gap: 9px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 0.5rem;
   margin: 12px 0 15px;
 }
 .insights-legend-cells {
@@ -297,13 +297,13 @@
   margin-bottom: 15px;
 }
 .insights-day-heading h3 {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .insights-day-stats {
   display: flex;
   gap: 12px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .insights-day-grid {
   display: grid;
@@ -311,14 +311,14 @@
   gap: 24px;
 }
 .insights-day-list > h4 {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 500;
   margin: 0 0 9px;
   color: #8fa07d;
 }
 .insights-day-list > p {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
   line-height: 1.9;
 }
 .insights-day-item {
@@ -344,12 +344,12 @@
   gap: 5px;
 }
 .insights-day-content strong {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 500;
 }
 .insights-day-content span {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .insights-day-item > .badge {
   margin-inline-start: auto;
@@ -375,10 +375,10 @@
   color: #86a173;
 }
 .insights-review-summary h3 {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .insights-review-summary p {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 1.9;
   margin-top: 7px;
@@ -387,7 +387,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   margin-bottom: 11px;
 }
@@ -409,15 +409,15 @@
   border-radius: 7px;
   background: var(--surface-soft);
   color: #94a583;
-  font-size: 10px;
+  font-size: 0.625rem;
   flex-shrink: 0;
 }
 .insights-review-copy strong {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
 }
 .insights-review-copy p {
-  font-size: 10px;
+  font-size: 0.625rem;
   color: var(--muted);
   line-height: 1.9;
   margin-top: 6px;
@@ -443,7 +443,7 @@
 }
 .insights-review-summary > small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .insights-goal-header {
   margin-top: 10px;
@@ -454,24 +454,24 @@
   flex: 0 0 11px;
 }
 .insights-day-grid h4 {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
   margin: 0 0 9px;
   color: var(--muted);
 }
 .insights-day-content small {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   line-height: 1.8;
 }
 .insights-review-copy h3 {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .insights-review-copy .text-link {
   margin-top: 9px;
 }
 #insights-heatmap-help {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
 }
 .insights-heatmap-summary {

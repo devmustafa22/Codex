@@ -18,7 +18,7 @@
   justify-content: space-between;
   align-items: center;
   gap: 8px;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #738174;
 }
 .stat-icon {
@@ -42,7 +42,7 @@
 }
 .stat-value {
   font-family: 'IBM Plex Sans Arabic', sans-serif;
-  font-size: 33px;
+  font-size: 2.0625rem;
   font-weight: 600;
   line-height: 1.4;
   margin: 5px 0 8px;
@@ -53,7 +53,7 @@
   justify-content: flex-end;
 }
 .stat-value > span {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 400;
   color: #95a095;
   direction: rtl;
@@ -63,7 +63,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   min-height: 15px;
 }
@@ -119,7 +119,7 @@
 }
 .compact-select {
   border: 1px solid var(--border);
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #7c8b7d;
   border-radius: 7px;
   padding: 5px 8px;
@@ -140,7 +140,7 @@
   flex-direction: column;
   align-self: stretch;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #a8b0a5;
   padding: 7px 0 30px;
   width: 29px;
@@ -176,7 +176,7 @@
   height: 100%;
 }
 .activity-bar-value {
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #8c9a86;
   opacity: 0;
   white-space: nowrap;
@@ -210,7 +210,7 @@
   );
 }
 .activity-day {
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #8c978a;
   height: 22px;
   padding-top: 3px;
@@ -236,7 +236,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #9aa396;
 }
 .activity-chart-footer > span > i {
@@ -249,7 +249,7 @@
   display: flex;
   align-items: center;
   gap: 3px;
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #729073;
   padding: 0;
 }
@@ -288,24 +288,24 @@
   justify-content: center;
 }
 .goal-ring strong {
-  font-size: 33px;
+  font-size: 2.0625rem;
   font-weight: 500;
   line-height: 1.3;
   direction: ltr;
 }
 .goal-ring small {
-  font-size: 17px;
+  font-size: 1.0625rem;
   font-weight: 400;
   color: #84967d;
   margin-left: 2px;
 }
 .goal-ring > div > span {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: var(--muted);
   margin-top: 5px;
 }
 .goal-caption {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #8c9a83;
   margin-top: 9px;
   line-height: 1.9;
@@ -315,7 +315,7 @@
   align-items: center;
   gap: 8px;
   color: #5d805a;
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-top: 14px;
   background: var(--green-pale);
   border-radius: 6px;
@@ -340,14 +340,14 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .focus-heading > svg {
   color: #9dbd99;
 }
 .focus-card > p {
   position: relative;
-  font-size: 10px;
+  font-size: 0.625rem;
   color: #97b590;
   margin-top: 10px;
 }
@@ -365,7 +365,7 @@
     0 0 0 60px #c9ebaf03;
 }
 .timer-value {
-  font-size: 44px;
+  font-size: 2.75rem;
   font-weight: 400;
   text-align: center;
   letter-spacing: 2px;
@@ -388,7 +388,7 @@
   border: 1px solid #ffffff12;
   min-width: 0;
   padding: 6px;
-  font-size: 8px;
+  font-size: 0.5rem;
   border-radius: 6px;
 }
 .focus-options select:first-child {
@@ -415,7 +415,7 @@
 .timer-play {
   background: #dceccb;
   color: #234b30;
-  font-size: 10px;
+  font-size: 0.625rem;
   border-radius: 7px;
   padding: 9px 15px;
   display: flex;
@@ -441,7 +441,7 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-size: 7px;
+  font-size: 0.4375rem;
   color: #8dad84;
   margin-top: 13px;
   white-space: nowrap;
@@ -464,7 +464,7 @@
   justify-content: space-between;
   align-items: center;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 0.5625rem;
   margin-bottom: 10px;
 }
 .today-task {
@@ -502,7 +502,7 @@
   min-width: 0;
 }
 .today-task-title strong {
-  font-size: 11px;
+  font-size: 0.6875rem;
   font-weight: 500;
   line-height: 1.7;
 }
@@ -511,7 +511,7 @@
   align-items: center;
   gap: 8px;
   color: #9aa291;
-  font-size: 8px;
+  font-size: 0.5rem;
 }
 .today-task-title i {
   width: 2px;
@@ -524,7 +524,7 @@
   color: #98a492;
 }
 .priority-label {
-  font-size: 8px;
+  font-size: 0.5rem;
   border-radius: 5px;
   padding: 4px 8px;
   white-space: nowrap;
@@ -546,7 +546,7 @@
   align-items: center;
   justify-content: center;
   gap: 7px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #80947b;
   border: 1px dashed #dce5d8;
   border-radius: 8px;
@@ -584,7 +584,7 @@
   width: 32px;
   height: 32px;
   border-radius: 9px;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 500;
 }
 .dashboard-skill-heading > div {
@@ -594,16 +594,16 @@
   min-width: 0;
 }
 .dashboard-skill-heading strong {
-  font-size: 10px;
+  font-size: 0.625rem;
   font-weight: 500;
 }
 .dashboard-skill-heading div > span {
   color: var(--muted);
-  font-size: 8px;
+  font-size: 0.5rem;
 }
 .skill-percentage {
   margin-inline-start: auto;
-  font-size: 15px;
+  font-size: 0.9375rem;
   color: #617157;
   direction: ltr;
   display: flex;
@@ -611,10 +611,10 @@
   gap: 2px;
 }
 .skill-percentage small {
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .dashboard-skills + .text-link {
-  font-size: 8px;
+  font-size: 0.5rem;
   margin-top: 12px;
 }
 .dashboard-bottom-grid {
@@ -655,14 +655,14 @@
   gap: 5px;
 }
 .recent-activity strong {
-  font-size: 9px;
+  font-size: 0.5625rem;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .recent-activity div > span {
-  font-size: 8px;
+  font-size: 0.5rem;
   color: var(--muted);
 }
 .recent-check {
@@ -692,15 +692,15 @@
   height: 38px;
 }
 .next-event-card .eyebrow {
-  font-size: 8px;
+  font-size: 0.5rem;
 }
 .next-event-card h2 {
-  font-size: 12px;
+  font-size: 0.75rem;
   color: #45633f;
   max-width: 75%;
 }
 .next-event-card p {
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #95a589;
   margin-top: 4px;
 }
@@ -708,7 +708,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 9px;
+  font-size: 0.5625rem;
   color: #577c49;
   align-self: flex-start;
   margin-top: 15px;
@@ -733,7 +733,7 @@
   justify-content: space-between;
   align-items: center;
   color: #a1aa99;
-  font-size: 8px;
+  font-size: 0.5rem;
   margin-top: 20px;
 }
 .dashboard-footer > span {
@@ -746,13 +746,13 @@
   align-items: center;
   color: #8ca084;
   gap: 3px;
-  font-size: 8px;
+  font-size: 0.5rem;
   padding: 0;
 }
 .app-footer {
   display: flex;
   justify-content: space-between;
-  font-size: 8px;
+  font-size: 0.5rem;
   color: #9ca595;
   padding: 26px 0 20px;
   gap: 20px;
@@ -770,45 +770,45 @@
   direction: ltr;
 }
 .stat-top {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .stat-foot {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .card-heading h2 {
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 .card-subtitle {
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .today-task-title strong {
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 .today-task-title > span {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .dashboard-skill-heading strong {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .dashboard-skill-heading div > span {
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .activity-day {
-  font-size: 10px;
+  font-size: 0.625rem;
 }
 .activity-chart-footer > span,
 .activity-chart-footer button {
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .recent-activity strong {
-  font-size: 11px;
+  font-size: 0.6875rem;
 }
 .recent-activity div > span {
-  font-size: 9px;
+  font-size: 0.5625rem;
 }
 .focus-heading > span {
-  font-size: 12px;
+  font-size: 0.75rem;
 }
 .focus-note {
-  font-size: 8px;
+  font-size: 0.5rem;
 }
