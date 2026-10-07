@@ -1,0 +1,103 @@
+/* Design tokens: adjust the palette and spacing here before individual screens. */
+:root {
+  font-family: 'IBM Plex Sans Arabic', sans-serif;
+  color: #25382f;
+  background: #f6f7f4;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  --canvas: #f6f7f4;
+  --surface: #ffffff;
+  --surface-soft: #f7f9f6;
+  --ink: #25382f;
+  --muted: #859087;
+  --border: #e8ece6;
+  --green: #1c654a;
+  --green-dark: #164f3c;
+  --green-pale: #edf4ec;
+  --mint: #d8eacb;
+  --shadow: 0 4px 16px #25382f03;
+  --radius: 18px;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --canvas: #141e19;
+  --surface: #1e2a23;
+  --surface-soft: #243128;
+  --ink: #e2eae2;
+  --muted: #a0b0a3;
+  --border: #334238;
+  --green: #91c6a0;
+  --green-dark: #c5e4c2;
+  --green-pale: #2d4532;
+  --mint: #3a5434;
+  --shadow: 0 4px 16px #00000010;
+}
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  color: var(--ink);
+  background: var(--canvas);
+}
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: inherit;
+  border: 0;
+  background: none;
+}
+button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+a {
+  color: inherit;
+  text-decoration: none;
+}
+button,
+a,
+input,
+select,
+textarea {
+  -webkit-tap-highlight-color: transparent;
+}
+:focus-visible {
+  outline: 3px solid #9bc59e;
+  outline-offset: 3px;
+}
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid #9bc59e;
+  outline-offset: 1px;
+}
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+h1,
+h2,
+h3 {
+  font-weight: 600;
+}
+svg {
+  flex-shrink: 0;
+}
+button {
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+[hidden] {
+  display: none !important;
+}

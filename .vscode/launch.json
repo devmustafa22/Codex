@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "مدار: افتح في Chrome",
+      "type": "pwa-chrome",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173/",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "مدار: تشغيل الموقع"
+    },
+    {
+      "name": "مدار: افتح في Edge",
+      "type": "pwa-msedge",
+      "request": "launch",
+      "url": "http://127.0.0.1:5173/",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "مدار: تشغيل الموقع"
+    }
+  ]
+}

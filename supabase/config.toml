@@ -1,0 +1,3 @@
+# The caller has no session yet. Password verification happens inside this function.
+[functions.username-login]
+verify_jwt = false

@@ -1,0 +1,328 @@
+/* Skills and their actual logged evidence. */
+.skill-summary {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 25px;
+  padding: 26px;
+}
+.skill-summary > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+.skill-summary-icon {
+  display: grid;
+  place-items: center;
+  color: #7da171;
+  background: #eff4e9;
+  width: 43px;
+  height: 43px;
+  border-radius: 12px;
+}
+.skill-summary > div > div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.skill-summary strong {
+  font-size: 23px;
+  font-weight: 500;
+}
+.skill-summary div > span:not(.skill-summary-icon) {
+  font-size: 9px;
+  color: var(--muted);
+}
+.skill-summary > p {
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 2;
+  border-inline-start: 1px solid var(--border);
+  padding-inline-start: 25px;
+}
+.skill-summary b {
+  color: #7d9473;
+  font-weight: 400;
+}
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 23px;
+}
+.skill-card {
+  padding: 25px;
+  position: relative;
+  overflow: hidden;
+}
+.skill-card::after {
+  content: '';
+  height: 3px;
+  background: var(--skill-color);
+  position: absolute;
+  left: 25px;
+  right: 25px;
+  bottom: 0;
+  opacity: 0.35;
+  border-radius: 2px 2px 0 0;
+}
+.skill-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.skill-card-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  flex-shrink: 0;
+}
+.skill-card-actions {
+  display: flex;
+  gap: 4px;
+}
+.skill-category {
+  color: var(--muted);
+  font-size: 9px;
+}
+.skill-title-button {
+  display: block;
+  padding: 0;
+  text-align: start;
+  font-size: 18px;
+  font-weight: 500;
+  margin-top: 7px;
+}
+.skill-title-button:hover {
+  color: var(--green);
+}
+.skill-card-description {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.9;
+  margin-top: 10px;
+  min-height: 42px;
+}
+.skill-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11px;
+  gap: 12px;
+  margin-top: 23px;
+  margin-bottom: 12px;
+}
+.skill-progress-heading strong {
+  color: var(--skill-color, var(--green));
+  font-weight: 500;
+}
+.skill-progress-heading small {
+  color: var(--muted);
+  font-size: 10px;
+}
+.skill-weekly {
+  background: var(--surface-soft);
+  border-radius: 9px;
+  padding: 14px;
+  margin-top: 20px;
+}
+.skill-weekly-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 11px;
+  font-size: 9px;
+  color: var(--muted);
+}
+.skill-weekly-line > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.skill-weekly-line b {
+  font-weight: 400;
+  font-size: 9px;
+  color: #819477;
+}
+.skill-weekly .progress-track {
+  background: var(--border);
+  height: 3px;
+}
+.skill-goal-reached {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #7a9a6a;
+  font-size: 9px;
+  margin-top: 10px;
+}
+.skill-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 22px;
+}
+.skill-card-footer > span {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 9px;
+}
+.skill-journal-prompt {
+  margin-top: 26px;
+  padding: 18px 22px;
+  background: #edf3e7;
+  border: 1px solid #e0ead8;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #7d976e;
+}
+.skill-journal-prompt p {
+  font-size: 11px;
+  flex: 1;
+}
+.skill-detail-intro {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+.skill-detail-intro p {
+  font-size: 12px;
+  line-height: 1.9;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.skill-detail-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 23px;
+}
+.skill-detail-stat {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--muted);
+}
+.skill-detail-stat strong {
+  color: var(--ink);
+  font-size: 20px;
+  font-weight: 500;
+}
+.skill-detail-stat span {
+  font-size: 9px;
+}
+.skill-detail-progress > small {
+  display: block;
+  color: var(--muted);
+  font-size: 9px;
+  margin-top: 8px;
+  line-height: 1.9;
+}
+.skill-detail-section {
+  margin-top: 25px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+.skill-detail-section .card-heading {
+  margin-bottom: 12px;
+}
+.skill-related-row {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+.skill-related-icon {
+  width: 31px;
+  height: 31px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  background: var(--surface-soft);
+  flex-shrink: 0;
+}
+.skill-related-icon.completed {
+  color: #7a9e6a;
+}
+.skill-related-row > div {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+}
+.skill-related-row strong {
+  font-size: 11px;
+  font-weight: 500;
+}
+.skill-entry-meta {
+  font-size: 9px;
+  color: var(--muted);
+}
+.skill-related-row p {
+  font-size: 10px;
+  color: var(--muted);
+  line-height: 1.9;
+}
+.skill-detail-empty {
+  font-size: 11px;
+  color: var(--muted);
+  padding: 20px 0;
+  line-height: 2;
+}
+.status-done {
+  background: #edf4e7;
+  color: #7e9e6e;
+}
+.status-in-progress {
+  background: #faf5e4;
+  color: #b4a16c;
+}
+.color-options {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.color-swatch {
+  width: 31px;
+  height: 31px;
+  border-radius: 50%;
+  color: white;
+  display: grid;
+  place-items: center;
+  border: 3px solid var(--surface);
+  box-shadow: 0 0 0 1px transparent;
+}
+.color-swatch.selected {
+  box-shadow: 0 0 0 1px #97ac8b;
+}
+.color-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 10px;
+  margin-inline-start: 5px;
+}
+.color-picker input {
+  width: 29px;
+  height: 29px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+}
